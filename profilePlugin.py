@@ -2,7 +2,7 @@
 # 
 # Profile
 # Copyright (C) 2008  Borys Jurgiel
-#
+# Copyright (C) 2012  Patrice Verchere
 #-----------------------------------------------------------
 # 
 # licensed under the terms of GNU GPL 2
@@ -61,16 +61,29 @@ class profilePlugin:
    QMessageBox.warning(self.iface.mainWindow(), "Profile", "Quantum GIS version detected: "+ver+"\nProfile plugin requires version at least 0.11")
    return 1
   if self.iface.mapCanvas().layerCount() == 0:
-   QMessageBox.warning(self.iface.mainWindow(), "Profile", "First open any one-band raster layer, please")
+   QMessageBox.warning(self.iface.mainWindow(), "Profile", "First open any raster layer, please")
    return 2
   layer = self.iface.activeLayer()
-  if layer == None or layer.type() != layer.RasterLayer or layer.bandCount() != 1:
-   QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one-band raster layer")
+  if layer == None or layer.type() != layer.RasterLayer :
+   QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one raster layer")
+   self.choosenBand = 0
    return 3
+  if layer.bandCount() != 1:
+   listband = []
+   for i in range(0,layer.bandCount()):
+    listband.append(str(i+1))
+   testqt, ok = QInputDialog.getItem(self.iface.mainWindow(), "Band selector", "Choose the band", listband, False)
+   if ok :
+    self.choosenBand = int(testqt) - 1
+   else:
+    return 4
+  else:
+   self.choosenBand = 0
   
   QObject.connect(self.tool, SIGNAL("moved"), self.moved)
   QObject.connect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
   QObject.connect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
+  QObject.connect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
   self.saveTool = self.canvas.mapTool()
   self.canvas.setMapTool(self.tool)
   self.polygon = False
@@ -85,7 +98,10 @@ class profilePlugin:
   if len(self.pointstoDraw) > 0:
    mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
    self.rubberband.reset(self.polygon)
-   self.rubberband.addPoint(QgsPoint(self.pointstoDraw[0][0],self.pointstoDraw[0][1]))
+  
+
+   for i in range(0,len(self.pointstoDraw)):
+    self.rubberband.addPoint(QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
    self.rubberband.addPoint(QgsPoint(mapPos.x(),mapPos.y()))
 
 
@@ -110,24 +126,37 @@ class profilePlugin:
   #pat
   newPoints = [[mapPos.x(), mapPos.y()]]
   newPoints2 = [[mapPos2.x(), mapPos2.y()]]
-  if newPoints == self.lastClicked: return # sometimes a strange "double click" is given
-  if len(self.pointstoDraw) == 0 or newPoints != [self.pointstoDraw[len(self.pointstoDraw)-1]]:
-   self.pointstoDraw += newPoints
-   self.pointstoCal += newPoints2
-  if len(self.pointstoCal) > 1:
-   dialoga = doProfile.Dialog(self.iface, self.pointstoCal)
-   dialoga.exec_()
-   self.rubberband.reset(self.polygon)
-   self.pointstoDraw = []
-   self.pointstoCal = []
-   self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
-   self.lastClicked = newPoints
-
+  #if newPoints == self.lastClicked: 
+  #return # sometimes a strange "double click" is given
+  #if len(self.pointstoDraw) == 0 or newPoints != [self.pointstoDraw[len(self.pointstoDraw)-1]]:
+  self.pointstoDraw += newPoints
+  self.pointstoCal += newPoints2
+  #if len(self.pointstoCal) > 3:
+  #self.rubberband.addPoint(QgsPoint(mapPos.x(),mapPos.y()))
+   
+ def doubleClicked(self,position):
+  #QMessageBox.warning(self.iface.mainWindow(), "Profile", "dbclk")
+  mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
+  #pat
+  mapPos2 = self.tool.toLayerCoordinates(self.iface.activeLayer() , mapPos)
+  #pat
+  newPoints = [[mapPos.x(), mapPos.y()]]
+  newPoints2 = [[mapPos2.x(), mapPos2.y()]]
+  self.pointstoDraw += newPoints
+  self.pointstoCal += newPoints2
+  dialoga = doProfile.Dialog(self.iface, self.pointstoCal,self.pointstoDraw, self.choosenBand)
+  dialoga.exec_()
+  self.rubberband.reset(self.polygon)
+  self.pointstoDraw = []
+  self.pointstoCal = []
+  self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
+  #self.lastClicked = newPoints
 
  def cleaning(self):
   QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)
   QObject.disconnect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
   QObject.disconnect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
+  QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
   self.canvas.setMapTool(self.saveTool)
   self.rubberband.reset(self.polygon)
   self.points = []

@@ -2,7 +2,7 @@
 # 
 # Profile
 # Copyright (C) 2008  Borys Jurgiel
-# 
+# Copyright (C) 2012  Patrice Verchere
 #-----------------------------------------------------------
 # 
 # licensed under the terms of GNU GPL 2
@@ -37,13 +37,16 @@ import platform
 
 class Dialog(QDialog, Ui_ProfileBase):
 
- def __init__(self, iface, points):
+ def __init__(self, iface, points1 , points2, band):
   # init variables and wigdets:
   self.profiles = [{"layer": None}, {"layer": None}, {"layer": None}] # 3 dictionaries for profiles: {"l":[l],"z":[z], "layer":layer1, "curve":curve1}
   QDialog.__init__(self)
+  self.choosenBand = band
   self.iface = iface
   self.setupUi(self)
-  self.points = points
+  # points
+  self.pointstoCal = points1
+  self.pointstoDraw = points2
   QObject.connect(self.scaleSlider, SIGNAL("valueChanged(int)"), self.reScalePlot)
   QObject.connect(self.setLayer1, SIGNAL("currentIndexChanged(int)"), self.selectLayer1)
   QObject.connect(self.setLayer2, SIGNAL("currentIndexChanged(int)"), self.selectLayer2)
@@ -97,13 +100,16 @@ class Dialog(QDialog, Ui_ProfileBase):
    self.setLayer2.addItem(self.layerList[i].name())
    self.setLayer3.addItem(self.layerList[i].name())
   # general statistics label
-  text  = "Starting point: " + str(self.points[0][0]) + " : "+ str(self.points[0][1])
-  text += "\nEnding point: " + str(self.points[1][0]) + " : "+ str(self.points[1][1])
-  x1 = float(self.points[0][0])
-  y1 = float(self.points[0][1])
-  x2 = float(self.points[1][0])
-  y2 = float(self.points[1][1])
-  profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1)))
+  text  = "Starting point: " + str(self.pointstoDraw[0][0]) + " : "+ str(self.pointstoDraw[0][1])
+  text += "\nEnding point: " + str(self.pointstoDraw[len(self.pointstoDraw)-1][0]) + " : "+ str(self.pointstoDraw[len(self.pointstoDraw)-1][1])
+  profileLen = 0
+  #Compute de lenght with map crs
+  for i in range(0,len(self.pointstoDraw)-1):
+   x1 = float(self.pointstoDraw[i][0])
+   y1 = float(self.pointstoDraw[i][1])
+   x2 = float(self.pointstoDraw[i+1][0])
+   y2 = float(self.pointstoDraw[i+1][1])
+   profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
   text += "\nProfile length: "  + str(profileLen)
   self.stats.setText(text)
   # setting up the main plotting widget
@@ -117,13 +123,7 @@ class Dialog(QDialog, Ui_ProfileBase):
     picker.setTrackerPen(QPen(Qt.green))
   self.qwtPlot.insertLegend(QwtLegend(), QwtPlot.BottomLegend);
 
-  ### Here will be a marker line for polyline profiles
-  #vertLine = QwtPlotMarker()
-  #vertLine.setLineStyle(QwtPlotMarker.VLine)
-  #vertLine.setXValue(1.0)
-  #vertLine.attach(self.qwtPlot)
-
-
+  
  def clearData(self,nr): # erase one of profiles
   self.profiles[nr]["l"] = []
   self.profiles[nr]["z"] = []
@@ -137,49 +137,78 @@ class Dialog(QDialog, Ui_ProfileBase):
   self.stat2.setText(self.stat2str(1))
   self.stat3.setText(self.stat2str(2))
 
-
-
+  
  def readData(self,nr): # read data from "layer" layer, fill the "l" and "z" lists and create "curve" QwtPlotCurve
   if self.profiles[nr]["layer"] == None: return
   # calculate steps count
   steps = 1000  # max graph width in pixels
   layer = self.profiles[nr]["layer"]
-  x1 = float(self.points[0][0])
-  y1 = float(self.points[0][1])
-  x2 = float(self.points[1][0])
-  y2 = float(self.points[1][1])
-  tl = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1)))
-  res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * 1.2    # a * 1.2 is a "mean" dimiesion of pixel on any direction
-  if res != 0 and tl/res < steps:
-   steps = int(tl/res)  # use bigger steps
-  if steps < 2:
-   steps = 2
-  # calculate dx, dy and dl for one step
-  dx = (x2 - x1) / steps
-  dy = (y2 - y1) / steps
-  dl = sqrt ((dx*dx) + (dy*dy))
-  stepp = steps / 10
-  if stepp == 0:
-   stepp = 1
-  progress = "Creating profile: "
+  #Modif For ****************************************************************************************************************
   l = []
   z = []
-  # reading data
-  for n in range(steps+1):
-   x = x1 + dx * n
-   y = y1 + dy * n
-   l += [dl * n]
-   ident = layer.identify(QgsPoint(x,y))
-   # layer must be one-band, so let's fix values()[0]
+  lbefore = 0
+  for i in range(0,len(self.pointstoDraw)-2):  
+   # for each polylines, set points x,y with map crs (%D) and layer crs (%C)
+   x1D = float(self.pointstoDraw[i][0])
+   y1D = float(self.pointstoDraw[i][1])
+   x2D = float(self.pointstoDraw[i+1][0])
+   y2D = float(self.pointstoDraw[i+1][1])
+   x1C = float(self.pointstoCal[i][0])
+   y1C = float(self.pointstoCal[i][1])
+   x2C = float(self.pointstoCal[i+1][0])
+   y2C = float(self.pointstoCal[i+1][1])
+   #lenght between (x1,y1) and (x2,y2)
+   tlD = sqrt (((x2D-x1D)*(x2D-x1D)) + ((y2D-y1D)*(y2D-y1D))) 
+   tlC = sqrt (((x2C-x1C)*(x2C-x1C)) + ((y2C-y1C)*(y2C-y1C)))
+   #Set the res of calcul
+   #res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * 1.2    # a * 1.2 is a "mean" dimension of pixel on any direction
    try:
-    attr = float(ident[1].values()[0])
-   except:
-    attr = 0
-    #print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
-   z += [attr]
-   if n % stepp == 0:
-    progress += "|"
-    self.iface.mainWindow().statusBar().showMessage(QString(progress))
+    res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
+   except ZeroDivisionError:
+    return self.profiles[nr]["layer"].rasterUnitsPerPixel() * 1.2
+   #enventually use bigger step
+   if res != 0 and tlC/res < steps:
+    steps = int(tlC/res)
+   if steps < 2:
+    steps = 2
+   # calculate dx, dy and dl for one step
+   dxD = (x2D - x1D) / steps
+   dyD = (y2D - y1D) / steps
+   dlD = sqrt ((dxD*dxD) + (dyD*dyD))
+   dxC = (x2C - x1C) / steps
+   dyC = (y2C - y1C) / steps
+   dlC = sqrt ((dxC*dxC) + (dyC*dyC))
+   stepp = steps / 10
+   if stepp == 0:
+    stepp = 1
+   progress = "Creating profile: "
+
+   # reading data
+   for n in range(steps+1):
+    xD = x1D + dxD * n
+    yD = y1D + dyD * n
+    l += [dlD * n + lbefore]
+    xC = x1C + dxC * n
+    yC = y1C + dyC * n
+    #l += [dlC * n + lbefore]
+    ident = layer.identify(QgsPoint(xC,yC))
+    # layer must be one-band, so let's fix values()[0]
+    try:
+     attr = float(ident[1].values()[self.choosenBand])
+    except:
+     attr = 0
+     #print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
+    z += [attr]
+    if n % stepp == 0:
+     progress += "|"
+     self.iface.mainWindow().statusBar().showMessage(QString(progress))
+   lbefore = l[len(l)-1]
+   #Plot vertical ligne on graph when changing polyline
+   vertLine = QwtPlotMarker()
+   vertLine.setLineStyle(QwtPlotMarker.VLine)
+   vertLine.setXValue(lbefore)
+   vertLine.attach(self.qwtPlot)
+  #Fin modif for *******************************************************************************************************
   #filling the main data dictionary "profiles"
   self.profiles[nr]["l"] = l
   self.profiles[nr]["z"] = z

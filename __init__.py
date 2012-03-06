@@ -2,7 +2,7 @@
 # 
 # Profile
 # Copyright (C) 2008  Borys Jurgiel
-#
+# Copyright (C) 2010  Patrice Verchere
 #-----------------------------------------------------------
 # 
 # licensed under the terms of GNU GPL 2
@@ -30,16 +30,16 @@ def description():
  return "Plots terrain profile"
 
 def version():
- return "Version 0.2.3"
+ return "Version 3.03"
 
 def qgisMinimumVersion():
   return '1.0'
 
 def authorName():
-  return 'Borys Jurgiel'
+  return 'Borys Jurgiel - Patrice V'
 
 def homepage():
-  return 'http://bwj.aster.net.pl/qgis/'
+  return 'XXX'
 
 def classFactory(iface):
  from profilePlugin import profilePlugin

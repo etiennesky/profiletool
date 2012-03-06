@@ -41,6 +41,8 @@ class selectPointTool(QgsMapTool):
   else:
    self.emit( SIGNAL("leftClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
 
+ def canvasDoubleClickEvent(self,event):
+  self.emit( SIGNAL("doubleClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
 
  def activate(self):
   QgsMapTool.activate(self)
