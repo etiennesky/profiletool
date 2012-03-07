@@ -37,16 +37,17 @@ import platform
 
 class Dialog(QDialog, Ui_ProfileBase):
 
- def __init__(self, iface, points1 , points2, band):
+ def __init__(self, iface, points1, tool1):
   # init variables and wigdets:
   self.profiles = [{"layer": None}, {"layer": None}, {"layer": None}] # 3 dictionaries for profiles: {"l":[l],"z":[z], "layer":layer1, "curve":curve1}
   QDialog.__init__(self)
-  self.choosenBand = band
+  #self.choosenBand = band
   self.iface = iface
   self.setupUi(self)
+  self.tool = tool1
   # points
-  self.pointstoCal = points1
-  self.pointstoDraw = points2
+  #self.pointstoCal = points1
+  self.pointstoDraw = points1
   QObject.connect(self.scaleSlider, SIGNAL("valueChanged(int)"), self.reScalePlot)
   QObject.connect(self.setLayer1, SIGNAL("currentIndexChanged(int)"), self.selectLayer1)
   QObject.connect(self.setLayer2, SIGNAL("currentIndexChanged(int)"), self.selectLayer2)
@@ -140,32 +141,45 @@ class Dialog(QDialog, Ui_ProfileBase):
   
  def readData(self,nr): # read data from "layer" layer, fill the "l" and "z" lists and create "curve" QwtPlotCurve
   if self.profiles[nr]["layer"] == None: return
+  layer = self.profiles[nr]["layer"]
+  if layer.bandCount() != 1:
+   listband = []
+   for i in range(0,layer.bandCount()):
+    listband.append(str(i+1))
+   testqt, ok = QInputDialog.getItem(self, "Band selector", "Choose the band", listband, False)
+   if ok :
+    choosenBand = int(testqt) - 1
+   else:
+    return 2
+  else:
+   choosenBand = 0
   # calculate steps count
   steps = 1000  # max graph width in pixels
-  layer = self.profiles[nr]["layer"]
   #Modif For ****************************************************************************************************************
   l = []
   z = []
   lbefore = 0
   for i in range(0,len(self.pointstoDraw)-2):  
    # for each polylines, set points x,y with map crs (%D) and layer crs (%C)
+   pointstoCal1 = self.tool.toLayerCoordinates(layer , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
+   pointstoCal2 = self.tool.toLayerCoordinates(layer , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
    x1D = float(self.pointstoDraw[i][0])
    y1D = float(self.pointstoDraw[i][1])
    x2D = float(self.pointstoDraw[i+1][0])
    y2D = float(self.pointstoDraw[i+1][1])
-   x1C = float(self.pointstoCal[i][0])
-   y1C = float(self.pointstoCal[i][1])
-   x2C = float(self.pointstoCal[i+1][0])
-   y2C = float(self.pointstoCal[i+1][1])
+   x1C = float(pointstoCal1.x())
+   y1C = float(pointstoCal1.y())
+   x2C = float(pointstoCal2.x())
+   y2C = float(pointstoCal2.y())
    #lenght between (x1,y1) and (x2,y2)
    tlD = sqrt (((x2D-x1D)*(x2D-x1D)) + ((y2D-y1D)*(y2D-y1D))) 
    tlC = sqrt (((x2C-x1C)*(x2C-x1C)) + ((y2C-y1C)*(y2C-y1C)))
    #Set the res of calcul
    #res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * 1.2    # a * 1.2 is a "mean" dimension of pixel on any direction
    try:
-    res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
+    res = layer.rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
    except ZeroDivisionError:
-    return self.profiles[nr]["layer"].rasterUnitsPerPixel() * 1.2
+    return layer.rasterUnitsPerPixel() * 1.2
    #enventually use bigger step
    if res != 0 and tlC/res < steps:
     steps = int(tlC/res)
@@ -192,9 +206,9 @@ class Dialog(QDialog, Ui_ProfileBase):
     yC = y1C + dyC * n
     #l += [dlC * n + lbefore]
     ident = layer.identify(QgsPoint(xC,yC))
-    # layer must be one-band, so let's fix values()[0]
+    # layer must be one-band, so let's fix values()[0] CADUC
     try:
-     attr = float(ident[1].values()[self.choosenBand])
+     attr = float(ident[1].values()[choosenBand])
     except:
      attr = 0
      #print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
@@ -208,8 +222,10 @@ class Dialog(QDialog, Ui_ProfileBase):
    vertLine.setLineStyle(QwtPlotMarker.VLine)
    vertLine.setXValue(lbefore)
    vertLine.attach(self.qwtPlot)
+   self.iface.mainWindow().statusBar().showMessage("fin for " + str(i)+" nr "+str(nr))
   #Fin modif for *******************************************************************************************************
   #filling the main data dictionary "profiles"
+  self.iface.mainWindow().statusBar().showMessage("test1")
   self.profiles[nr]["l"] = l
   self.profiles[nr]["z"] = z
   self.iface.mainWindow().statusBar().showMessage(QString(""))
@@ -296,7 +312,7 @@ class Dialog(QDialog, Ui_ProfileBase):
 
  def setColor(self,ivoid): # update colors of: plot, "colorboxes" and labels
   palette = QPalette()
-
+  
   color = QColor(self.setR1.value()*2.55,self.setG1.value()*2.55,self.setB1.value()*2.55,230)
   if self.profiles[0]["layer"] != None:
     self.profiles[0]["curve"].setPen(QPen(color, 3))
