@@ -1,22 +1,22 @@
 #-----------------------------------------------------------
-# 
+#
 # Profile
 # Copyright (C) 2008  Borys Jurgiel
 # Copyright (C) 2012  Patrice Verchere
 #-----------------------------------------------------------
-# 
+#
 # licensed under the terms of GNU GPL 2
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, print to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -38,16 +38,15 @@ import platform
 class Dialog(QDialog, Ui_ProfileBase):
 
  def __init__(self, iface, points1, tool1):
-  # init variables and wigdets:
-  self.profiles = [{"layer": None}, {"layer": None}, {"layer": None}] # 3 dictionaries for profiles: {"l":[l],"z":[z], "layer":layer1, "curve":curve1}
+  # init variables and wigdets,3 dictionaries for profiles: 
+  # {"l":[l],"z":[z], "layer":layer1, "curve":curve1} :
+  self.profiles = [{"layer": None}, {"layer": None}, {"layer": None}]
   QDialog.__init__(self)
-  #self.choosenBand = band
   self.iface = iface
   self.setupUi(self)
   self.tool = tool1
-  # points
-  #self.pointstoCal = points1
   self.pointstoDraw = points1
+  #Listeners on dialog butons
   QObject.connect(self.scaleSlider, SIGNAL("valueChanged(int)"), self.reScalePlot)
   QObject.connect(self.setLayer1, SIGNAL("currentIndexChanged(int)"), self.selectLayer1)
   QObject.connect(self.setLayer2, SIGNAL("currentIndexChanged(int)"), self.selectLayer2)
@@ -90,7 +89,7 @@ class Dialog(QDialog, Ui_ProfileBase):
   mapCanvas = self.iface.mapCanvas()
   for i in range(mapCanvas.layerCount()):
    layer = mapCanvas.layer(i)
-   if layer.type() == layer.RasterLayer and layer.bandCount() == 1 and layer != actLayer:
+   if layer.type() == layer.RasterLayer:
     self.layerList += [layer]
   # filling the comboboxes
   self.setLayer1.addItem(actLayer.name())
@@ -103,9 +102,9 @@ class Dialog(QDialog, Ui_ProfileBase):
   # general statistics label
   text  = "Starting point: " + str(self.pointstoDraw[0][0]) + " : "+ str(self.pointstoDraw[0][1])
   text += "\nEnding point: " + str(self.pointstoDraw[len(self.pointstoDraw)-1][0]) + " : "+ str(self.pointstoDraw[len(self.pointstoDraw)-1][1])
-  profileLen = 0
   #Compute de lenght with map crs
-  for i in range(0,len(self.pointstoDraw)-1):
+  profileLen = 0
+  for i in range(0, len(self.pointstoDraw)-1):
    x1 = float(self.pointstoDraw[i][0])
    y1 = float(self.pointstoDraw[i][1])
    x2 = float(self.pointstoDraw[i+1][0])
@@ -125,7 +124,7 @@ class Dialog(QDialog, Ui_ProfileBase):
   self.qwtPlot.insertLegend(QwtLegend(), QwtPlot.BottomLegend);
 
   
- def clearData(self,nr): # erase one of profiles
+ def clearData(self, nr): # erase one of profiles
   self.profiles[nr]["l"] = []
   self.profiles[nr]["z"] = []
   try:
@@ -142,6 +141,7 @@ class Dialog(QDialog, Ui_ProfileBase):
  def readData(self,nr): # read data from "layer" layer, fill the "l" and "z" lists and create "curve" QwtPlotCurve
   if self.profiles[nr]["layer"] == None: return
   layer = self.profiles[nr]["layer"]
+  #Ask for band if more than 1
   if layer.bandCount() != 1:
    listband = []
    for i in range(0,layer.bandCount()):
@@ -153,13 +153,12 @@ class Dialog(QDialog, Ui_ProfileBase):
     return 2
   else:
    choosenBand = 0
-  # calculate steps count
+  #Get the values on the lines
   steps = 1000  # max graph width in pixels
-  #Modif For ****************************************************************************************************************
   l = []
   z = []
   lbefore = 0
-  for i in range(0,len(self.pointstoDraw)-2):  
+  for i in range(0,len(self.pointstoDraw)-2):  # work for each segement of polyline
    # for each polylines, set points x,y with map crs (%D) and layer crs (%C)
    pointstoCal1 = self.tool.toLayerCoordinates(layer , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
    pointstoCal2 = self.tool.toLayerCoordinates(layer , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
@@ -172,12 +171,10 @@ class Dialog(QDialog, Ui_ProfileBase):
    x2C = float(pointstoCal2.x())
    y2C = float(pointstoCal2.y())
    #lenght between (x1,y1) and (x2,y2)
-   tlD = sqrt (((x2D-x1D)*(x2D-x1D)) + ((y2D-y1D)*(y2D-y1D))) 
    tlC = sqrt (((x2C-x1C)*(x2C-x1C)) + ((y2C-y1C)*(y2C-y1C)))
    #Set the res of calcul
-   #res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * 1.2    # a * 1.2 is a "mean" dimension of pixel on any direction
    try:
-    res = layer.rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
+    res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
    except ZeroDivisionError:
     return layer.rasterUnitsPerPixel() * 1.2
    #enventually use bigger step
@@ -191,41 +188,37 @@ class Dialog(QDialog, Ui_ProfileBase):
    dlD = sqrt ((dxD*dxD) + (dyD*dyD))
    dxC = (x2C - x1C) / steps
    dyC = (y2C - y1C) / steps
-   dlC = sqrt ((dxC*dxC) + (dyC*dyC))
+   #dlC = sqrt ((dxC*dxC) + (dyC*dyC))
    stepp = steps / 10
    if stepp == 0:
     stepp = 1
    progress = "Creating profile: "
-
+   temp = 0
    # reading data
    for n in range(steps+1):
-    xD = x1D + dxD * n
-    yD = y1D + dyD * n
     l += [dlD * n + lbefore]
     xC = x1C + dxC * n
     yC = y1C + dyC * n
-    #l += [dlC * n + lbefore]
     ident = layer.identify(QgsPoint(xC,yC))
-    # layer must be one-band, so let's fix values()[0] CADUC
     try:
      attr = float(ident[1].values()[choosenBand])
     except:
      attr = 0
      #print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
     z += [attr]
+    temp = n
     if n % stepp == 0:
      progress += "|"
      self.iface.mainWindow().statusBar().showMessage(QString(progress))
    lbefore = l[len(l)-1]
-   #Plot vertical ligne on graph when changing polyline
-   vertLine = QwtPlotMarker()
-   vertLine.setLineStyle(QwtPlotMarker.VLine)
-   vertLine.setXValue(lbefore)
-   vertLine.attach(self.qwtPlot)
-   self.iface.mainWindow().statusBar().showMessage("fin for " + str(i)+" nr "+str(nr))
-  #Fin modif for *******************************************************************************************************
+   #Plot vertical lines between segments of the polyline
+   #vertLine = QwtPlotMarker()
+   #vertLine.setLineStyle(QwtPlotMarker.VLine)
+   #vertLine.setXValue(lbefore)
+   #vertLine.attach(self.qwtPlot)
+   #self.iface.mainWindow().statusBar().showMessage(QString("fin for " + str(i)+" nr "+str(nr) + " " + layer.name() + " " + str(temp)))
+  #End of polyline analysis
   #filling the main data dictionary "profiles"
-  self.iface.mainWindow().statusBar().showMessage("test1")
   self.profiles[nr]["l"] = l
   self.profiles[nr]["z"] = z
   self.iface.mainWindow().statusBar().showMessage(QString(""))
@@ -244,7 +237,8 @@ class Dialog(QDialog, Ui_ProfileBase):
 
  def stat2str(self,nr): #create statistics label
   profile = self.profiles[nr]
-  if profile["layer"] == None or len(profile["z"]) < 2: return ""
+  if profile["layer"] == None or len(profile["z"]) < 2:
+   return ""
   mean = float(sum(profile["z"])) / float(len(profile["z"]))
   stdDev = 0.0
   for i in profile["z"]:
@@ -275,8 +269,10 @@ class Dialog(QDialog, Ui_ProfileBase):
   maximumValue = -1000000000
   for i in [0,1,2]:
    if self.profiles[i]["layer"] != None and len(self.profiles[i]["z"]) > 0:
-    if self.findMin(i,scale) < minimumValue: minimumValue = self.findMin(i,scale)
-    if self.findMax(i,scale) > maximumValue: maximumValue = self.findMax(i,scale)
+    if self.findMin(i,scale) < minimumValue: 
+     minimumValue = self.findMin(i,scale)
+    if self.findMax(i,scale) > maximumValue: 
+     maximumValue = self.findMax(i,scale)
   if minimumValue < maximumValue:
    self.qwtPlot.setAxisScale(0,minimumValue,maximumValue,0)
    self.qwtPlot.replot()
@@ -291,11 +287,13 @@ class Dialog(QDialog, Ui_ProfileBase):
 
 
  def selectLayer2(self,item): # called when 2nd layer changed
+  self.iface.mainWindow().statusBar().showMessage("2 clear")
   self.clearData(1)
   if item == 0:
    self.profiles[1]["layer"] = None
   else:
    self.profiles[1]["layer"] = self.layerList[item]
+   self.iface.mainWindow().statusBar().showMessage("read data 1")
    self.readData(1)
 
 

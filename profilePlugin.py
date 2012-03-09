@@ -28,7 +28,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 
 from selectPointTool import *
-import resources
+#import resources
 import doProfile
 
 class profilePlugin:
@@ -68,22 +68,12 @@ class profilePlugin:
    QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one raster layer")
    #self.choosenBand = 0
    return 3
-  #if layer.bandCount() != 1:
-   #listband = []
-   #for i in range(0,layer.bandCount()):
-    #listband.append(str(i+1))
-   #testqt, ok = QInputDialog.getItem(self.iface.mainWindow(), "Band selector", "Choose the band", listband, False)
-   #if ok :
-    #self.choosenBand = int(testqt) - 1
-   #else:
-    #return 4
-  #else:
-   #self.choosenBand = 0
-  
+  #Listeners of mouse
   QObject.connect(self.tool, SIGNAL("moved"), self.moved)
   QObject.connect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
   QObject.connect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
   QObject.connect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+  #init things
   self.saveTool = self.canvas.mapTool()
   self.canvas.setMapTool(self.tool)
   self.polygon = False
@@ -96,10 +86,10 @@ class profilePlugin:
 
  def moved(self,position):
   if len(self.pointstoDraw) > 0:
+   #Get mouse coords
    mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
+   #Draw on temp layer
    self.rubberband.reset(self.polygon)
-  
-
    for i in range(0,len(self.pointstoDraw)):
     self.rubberband.addPoint(QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
    self.rubberband.addPoint(QgsPoint(mapPos.x(),mapPos.y()))
@@ -120,38 +110,24 @@ class profilePlugin:
 
 
  def leftClicked(self,position):
+  #Add point to analyse
   mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
-  #pat
-  #mapPos2 = self.tool.toLayerCoordinates(self.iface.activeLayer() , mapPos)
-  #pat
   newPoints = [[mapPos.x(), mapPos.y()]]
-  #newPoints2 = [[mapPos2.x(), mapPos2.y()]]
-  #if newPoints == self.lastClicked: 
-  #return # sometimes a strange "double click" is given
-  #if len(self.pointstoDraw) == 0 or newPoints != [self.pointstoDraw[len(self.pointstoDraw)-1]]:
   self.pointstoDraw += newPoints
-  #self.pointstoCal += newPoints2
-  #if len(self.pointstoCal) > 3:
-  #self.rubberband.addPoint(QgsPoint(mapPos.x(),mapPos.y()))
    
  def doubleClicked(self,position):
-  #QMessageBox.warning(self.iface.mainWindow(), "Profile", "dbclk")
+  #Validation of line
   mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
-  #pat
-  #mapPos2 = self.tool.toLayerCoordinates(self.iface.activeLayer() , mapPos)
-  #pat
   newPoints = [[mapPos.x(), mapPos.y()]]
-  #newPoints2 = [[mapPos2.x(), mapPos2.y()]]
   self.pointstoDraw += newPoints
-  #self.pointstoCal += newPoints2
-  #dialoga = doProfile.Dialog(self.iface, self.pointstoCal,self.pointstoDraw, self.choosenBand)
+  #launch analyses dialog
   dialoga = doProfile.Dialog(self.iface, self.pointstoDraw,self.tool)
   dialoga.exec_()
+  #Reset all
   self.rubberband.reset(self.polygon)
   self.pointstoDraw = []
   self.pointstoCal = []
   self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
-  #self.lastClicked = newPoints
 
  def cleaning(self):
   QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)
