@@ -99,19 +99,6 @@ class Dialog(QDialog, Ui_ProfileBase):
    self.setLayer1.addItem(self.layerList[i].name())
    self.setLayer2.addItem(self.layerList[i].name())
    self.setLayer3.addItem(self.layerList[i].name())
-  # general statistics label
-  text  = "Starting point: " + str(self.pointstoDraw[0][0]) + " : "+ str(self.pointstoDraw[0][1])
-  text += "\nEnding point: " + str(self.pointstoDraw[len(self.pointstoDraw)-1][0]) + " : "+ str(self.pointstoDraw[len(self.pointstoDraw)-1][1])
-  #Compute de lenght with map crs
-  profileLen = 0
-  for i in range(0, len(self.pointstoDraw)-1):
-   x1 = float(self.pointstoDraw[i][0])
-   y1 = float(self.pointstoDraw[i][1])
-   x2 = float(self.pointstoDraw[i+1][0])
-   y2 = float(self.pointstoDraw[i+1][1])
-   profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
-  text += "\nProfile length: "  + str(profileLen)
-  self.stats.setText(text)
   # setting up the main plotting widget
   self.qwtPlot.setCanvasBackground(Qt.white)
   self.qwtPlot.plotLayout().setAlignCanvasToScales(True)
@@ -122,8 +109,26 @@ class Dialog(QDialog, Ui_ProfileBase):
     picker = QwtPlotPicker(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.NoSelection, QwtPlotPicker.CrossRubberBand, QwtPicker.AlwaysOn, self.qwtPlot.canvas())
     picker.setTrackerPen(QPen(Qt.green))
   self.qwtPlot.insertLegend(QwtLegend(), QwtPlot.BottomLegend);
-
+  # general statistics label
+  text  = "Starting point: " + str(self.pointstoDraw[0][0]) + " : "+ str(self.pointstoDraw[0][1])
+  text += "\nEnding point: " + str(self.pointstoDraw[len(self.pointstoDraw)-1][0]) + " : "+ str(self.pointstoDraw[len(self.pointstoDraw)-1][1])
+  #Compute de lenght with map crs and plot vert. lines on graph
+  profileLen = 0
   
+  for i in range(0, len(self.pointstoDraw)-1):
+   x1 = float(self.pointstoDraw[i][0])
+   y1 = float(self.pointstoDraw[i][1])
+   x2 = float(self.pointstoDraw[i+1][0])
+   y2 = float(self.pointstoDraw[i+1][1])
+   profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
+   vertLine = QwtPlotMarker()
+   vertLine.setLineStyle(QwtPlotMarker.VLine)
+   vertLine.setXValue(profileLen)
+   vertLine.attach(self.qwtPlot)
+  text += "\nProfile length: "  + str(profileLen)
+  self.stats.setText(text)
+
+
  def clearData(self, nr): # erase one of profiles
   self.profiles[nr]["l"] = []
   self.profiles[nr]["z"] = []
@@ -160,8 +165,8 @@ class Dialog(QDialog, Ui_ProfileBase):
   lbefore = 0
   for i in range(0,len(self.pointstoDraw)-2):  # work for each segement of polyline
    # for each polylines, set points x,y with map crs (%D) and layer crs (%C)
-   pointstoCal1 = self.tool.toLayerCoordinates(layer , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
-   pointstoCal2 = self.tool.toLayerCoordinates(layer , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
+   pointstoCal1 = self.tool.toLayerCoordinates(self.profiles[nr]["layer"] , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
+   pointstoCal2 = self.tool.toLayerCoordinates(self.profiles[nr]["layer"] , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
    x1D = float(self.pointstoDraw[i][0])
    y1D = float(self.pointstoDraw[i][1])
    x2D = float(self.pointstoDraw[i+1][0])
@@ -176,7 +181,7 @@ class Dialog(QDialog, Ui_ProfileBase):
    try:
     res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
    except ZeroDivisionError:
-    return layer.rasterUnitsPerPixel() * 1.2
+    res = layer.rasterUnitsPerPixel() * 1.2
    #enventually use bigger step
    if res != 0 and tlC/res < steps:
     steps = int(tlC/res)
@@ -211,12 +216,6 @@ class Dialog(QDialog, Ui_ProfileBase):
      progress += "|"
      self.iface.mainWindow().statusBar().showMessage(QString(progress))
    lbefore = l[len(l)-1]
-   #Plot vertical lines between segments of the polyline
-   #vertLine = QwtPlotMarker()
-   #vertLine.setLineStyle(QwtPlotMarker.VLine)
-   #vertLine.setXValue(lbefore)
-   #vertLine.attach(self.qwtPlot)
-   #self.iface.mainWindow().statusBar().showMessage(QString("fin for " + str(i)+" nr "+str(nr) + " " + layer.name() + " " + str(temp)))
   #End of polyline analysis
   #filling the main data dictionary "profiles"
   self.profiles[nr]["l"] = l

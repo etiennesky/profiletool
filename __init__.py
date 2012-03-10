@@ -2,7 +2,7 @@
 # 
 # Profile
 # Copyright (C) 2008  Borys Jurgiel
-# Copyright (C) 2010  Patrice Verchere
+# Copyright (C) 2012  Patrice Verchere
 #-----------------------------------------------------------
 # 
 # licensed under the terms of GNU GPL 2
@@ -24,22 +24,22 @@
 #---------------------------------------------------------------------
 
 def name():
- return "Profile"
+ return "Profile Tool"
 
 def description():
  return "Plots terrain profile"
 
 def version():
- return "Version 3.03"
+ return "Version 3.1"
 
 def qgisMinimumVersion():
   return '1.0'
 
 def authorName():
-  return 'Borys Jurgiel - Patrice V'
+  return 'Borys Jurgiel - Patrice Verchere'
 
 def homepage():
-  return 'XXX'
+  return 'http://hub.qgis.org/projects/profiletool'
 
 def classFactory(iface):
  from profilePlugin import profilePlugin

@@ -28,7 +28,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 
 from selectPointTool import *
-#import resources
+import resources
 import doProfile
 
 class profilePlugin:
@@ -40,7 +40,7 @@ class profilePlugin:
 
  def initGui(self):
   # create action 
-  self.action = QAction(QIcon(":/plugins/profile/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
+  self.action = QAction(QIcon(":/plugins/profiletool/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
   self.action.setWhatsThis("Plots terrain profiles")
   QObject.connect(self.action, SIGNAL("triggered()"), self.run)
   # add toolbar button and menu item

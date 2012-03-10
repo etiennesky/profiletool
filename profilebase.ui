@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>ProfileBase</class>
- <widget class="QDialog" name="ProfileBase" >
-  <property name="geometry" >
+ <widget class="QDialog" name="ProfileBase">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,64 +10,56 @@
     <height>358</height>
    </rect>
   </property>
-  <property name="sizePolicy" >
-   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="focusPolicy" >
+  <property name="focusPolicy">
    <enum>Qt::NoFocus</enum>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Profile</string>
   </property>
-  <property name="sizeGripEnabled" >
+  <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
-  <layout class="QGridLayout" >
-   <item row="0" column="0" >
-    <widget class="QTabWidget" name="tabWidget" >
-     <property name="autoFillBackground" >
+  <layout class="QGridLayout">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="autoFillBackground">
       <bool>true</bool>
      </property>
-     <property name="tabShape" >
+     <property name="tabShape">
       <enum>QTabWidget::Rounded</enum>
      </property>
-     <property name="currentIndex" >
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <property name="elideMode" >
+     <property name="elideMode">
       <enum>Qt::ElideNone</enum>
      </property>
-     <property name="usesScrollButtons" >
+     <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="tab" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>702</width>
-        <height>273</height>
-       </rect>
-      </property>
-      <attribute name="title" >
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
        <string>&amp;Profile</string>
       </attribute>
-      <layout class="QGridLayout" >
-       <item row="1" column="0" >
-        <layout class="QHBoxLayout" >
+      <layout class="QGridLayout">
+       <item row="1" column="0">
+        <layout class="QHBoxLayout">
          <item>
-          <widget class="QSlider" name="scaleSlider" >
-           <property name="orientation" >
+          <widget class="QSlider" name="scaleSlider">
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QwtPlot" name="qwtPlot" >
-           <property name="autoFillBackground" >
+          <widget class="QwtPlot" name="qwtPlot">
+           <property name="autoFillBackground">
             <bool>false</bool>
            </property>
           </widget>
@@ -75,39 +68,31 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>640</width>
-        <height>320</height>
-       </rect>
-      </property>
-      <attribute name="title" >
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
        <string>&amp;Statistics</string>
       </attribute>
-      <layout class="QVBoxLayout" >
+      <layout class="QVBoxLayout">
        <item>
-        <layout class="QHBoxLayout" >
+        <layout class="QHBoxLayout">
          <item>
-          <widget class="QGroupBox" name="statBox1" >
-           <property name="title" >
+          <widget class="QGroupBox" name="statBox1">
+           <property name="title">
             <string>Profile 1</string>
            </property>
-           <layout class="QGridLayout" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="stat1" >
-              <property name="text" >
+           <layout class="QGridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="stat1">
+              <property name="text">
                <string>TextLabel</string>
               </property>
-              <property name="textFormat" >
+              <property name="textFormat">
                <enum>Qt::AutoText</enum>
               </property>
-              <property name="alignment" >
+              <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>true</bool>
               </property>
              </widget>
@@ -116,20 +101,20 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="statBox2" >
-           <property name="title" >
+          <widget class="QGroupBox" name="statBox2">
+           <property name="title">
             <string>Profile 2</string>
            </property>
-           <layout class="QGridLayout" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="stat2" >
-              <property name="text" >
+           <layout class="QGridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="stat2">
+              <property name="text">
                <string>TextLabel</string>
               </property>
-              <property name="alignment" >
+              <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>true</bool>
               </property>
              </widget>
@@ -138,20 +123,20 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="statBox3" >
-           <property name="title" >
+          <widget class="QGroupBox" name="statBox3">
+           <property name="title">
             <string>Profile 3</string>
            </property>
-           <layout class="QGridLayout" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="stat3" >
-              <property name="text" >
+           <layout class="QGridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="stat3">
+              <property name="text">
                <string>TextLabel</string>
               </property>
-              <property name="alignment" >
+              <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>true</bool>
               </property>
              </widget>
@@ -162,43 +147,43 @@
         </layout>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+        <widget class="QGroupBox" name="groupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="minimumSize" >
+         <property name="minimumSize">
           <size>
            <width>0</width>
            <height>90</height>
           </size>
          </property>
-         <property name="maximumSize" >
+         <property name="maximumSize">
           <size>
            <width>16777215</width>
            <height>100</height>
           </size>
          </property>
-         <property name="title" >
+         <property name="title">
           <string>General</string>
          </property>
-         <layout class="QGridLayout" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="stats" >
-            <property name="text" >
+         <layout class="QGridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="stats">
+            <property name="text">
              <string>Start
 Stop
 Length</string>
             </property>
-            <property name="textFormat" >
+            <property name="textFormat">
              <enum>Qt::AutoText</enum>
             </property>
-            <property name="alignment" >
+            <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
             </property>
-            <property name="wordWrap" >
+            <property name="wordWrap">
              <bool>true</bool>
             </property>
            </widget>
@@ -208,34 +193,26 @@ Length</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_4" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>640</width>
-        <height>320</height>
-       </rect>
-      </property>
-      <attribute name="title" >
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
        <string>S&amp;etup</string>
       </attribute>
-      <layout class="QGridLayout" >
-       <item row="0" column="0" >
-        <layout class="QHBoxLayout" >
+      <layout class="QGridLayout">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout">
          <item>
-          <layout class="QVBoxLayout" >
+          <layout class="QVBoxLayout">
            <item>
-            <widget class="QLabel" name="label_23" >
-             <property name="text" >
+            <widget class="QLabel" name="label_23">
+             <property name="text">
               <string>Profile 1:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="setLayer1" >
-             <property name="sizePolicy" >
-              <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+            <widget class="QComboBox" name="setLayer1">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -244,10 +221,10 @@ Length</string>
            </item>
            <item>
             <spacer>
-             <property name="orientation" >
+             <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>40</width>
                <height>20</height>
@@ -258,26 +235,26 @@ Length</string>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" >
+          <layout class="QHBoxLayout">
            <item>
-            <layout class="QVBoxLayout" >
+            <layout class="QVBoxLayout">
              <item>
-              <widget class="QLabel" name="label_24" >
-               <property name="text" >
+              <widget class="QLabel" name="label_24">
+               <property name="text">
                 <string>R</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_25" >
-               <property name="text" >
+              <widget class="QLabel" name="label_25">
+               <property name="text">
                 <string>G</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_26" >
-               <property name="text" >
+              <widget class="QLabel" name="label_26">
+               <property name="text">
                 <string>B</string>
                </property>
               </widget>
@@ -285,48 +262,48 @@ Length</string>
             </layout>
            </item>
            <item>
-            <layout class="QVBoxLayout" >
+            <layout class="QVBoxLayout">
              <item>
-              <widget class="QSlider" name="setR1" >
-               <property name="minimumSize" >
+              <widget class="QSlider" name="setR1">
+               <property name="minimumSize">
                 <size>
                  <width>35</width>
                  <height>0</height>
                 </size>
                </property>
-               <property name="maximumSize" >
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSlider" name="setG1" >
-               <property name="maximumSize" >
+              <widget class="QSlider" name="setG1">
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSlider" name="setB1" >
-               <property name="maximumSize" >
+              <widget class="QSlider" name="setB1">
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
@@ -334,41 +311,41 @@ Length</string>
             </layout>
            </item>
            <item>
-            <widget class="QGraphicsView" name="colorBox1" >
-             <property name="sizePolicy" >
-              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+            <widget class="QGraphicsView" name="colorBox1">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="maximumSize" >
+             <property name="maximumSize">
               <size>
                <width>50</width>
                <height>50</height>
               </size>
              </property>
-             <property name="cursor" stdset="0" >
+             <property name="cursor" stdset="0">
               <cursorShape>ArrowCursor</cursorShape>
              </property>
-             <property name="focusPolicy" >
+             <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>
              </property>
-             <property name="acceptDrops" >
+             <property name="acceptDrops">
               <bool>false</bool>
              </property>
-             <property name="autoFillBackground" >
+             <property name="autoFillBackground">
               <bool>true</bool>
              </property>
-             <property name="interactive" >
+             <property name="interactive">
               <bool>false</bool>
              </property>
-             <property name="transformationAnchor" >
+             <property name="transformationAnchor">
               <enum>QGraphicsView::NoAnchor</enum>
              </property>
-             <property name="viewportUpdateMode" >
+             <property name="viewportUpdateMode">
               <enum>QGraphicsView::FullViewportUpdate</enum>
              </property>
-             <property name="optimizationFlags" >
+             <property name="optimizationFlags">
               <set>QGraphicsView::DontClipPainter</set>
              </property>
             </widget>
@@ -377,21 +354,21 @@ Length</string>
          </item>
         </layout>
        </item>
-       <item row="1" column="0" >
-        <layout class="QHBoxLayout" >
+       <item row="1" column="0">
+        <layout class="QHBoxLayout">
          <item>
-          <layout class="QVBoxLayout" >
+          <layout class="QVBoxLayout">
            <item>
-            <widget class="QLabel" name="label_28" >
-             <property name="text" >
+            <widget class="QLabel" name="label_28">
+             <property name="text">
               <string>Profile 2:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="setLayer2" >
-             <property name="sizePolicy" >
-              <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+            <widget class="QComboBox" name="setLayer2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -400,10 +377,10 @@ Length</string>
            </item>
            <item>
             <spacer>
-             <property name="orientation" >
+             <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>40</width>
                <height>20</height>
@@ -414,26 +391,26 @@ Length</string>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" >
+          <layout class="QHBoxLayout">
            <item>
-            <layout class="QVBoxLayout" >
+            <layout class="QVBoxLayout">
              <item>
-              <widget class="QLabel" name="label_29" >
-               <property name="text" >
+              <widget class="QLabel" name="label_29">
+               <property name="text">
                 <string>R</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_30" >
-               <property name="text" >
+              <widget class="QLabel" name="label_30">
+               <property name="text">
                 <string>G</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_31" >
-               <property name="text" >
+              <widget class="QLabel" name="label_31">
+               <property name="text">
                 <string>B</string>
                </property>
               </widget>
@@ -441,48 +418,48 @@ Length</string>
             </layout>
            </item>
            <item>
-            <layout class="QVBoxLayout" >
+            <layout class="QVBoxLayout">
              <item>
-              <widget class="QSlider" name="setR2" >
-               <property name="minimumSize" >
+              <widget class="QSlider" name="setR2">
+               <property name="minimumSize">
                 <size>
                  <width>35</width>
                  <height>0</height>
                 </size>
                </property>
-               <property name="maximumSize" >
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSlider" name="setG2" >
-               <property name="maximumSize" >
+              <widget class="QSlider" name="setG2">
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSlider" name="setB2" >
-               <property name="maximumSize" >
+              <widget class="QSlider" name="setB2">
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
@@ -490,23 +467,23 @@ Length</string>
             </layout>
            </item>
            <item>
-            <widget class="QGraphicsView" name="colorBox2" >
-             <property name="sizePolicy" >
-              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+            <widget class="QGraphicsView" name="colorBox2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="maximumSize" >
+             <property name="maximumSize">
               <size>
                <width>50</width>
                <height>50</height>
               </size>
              </property>
-             <property name="focusPolicy" >
+             <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>
              </property>
-             <property name="acceptDrops" >
+             <property name="acceptDrops">
               <bool>false</bool>
              </property>
             </widget>
@@ -515,21 +492,21 @@ Length</string>
          </item>
         </layout>
        </item>
-       <item row="2" column="0" >
-        <layout class="QHBoxLayout" >
+       <item row="2" column="0">
+        <layout class="QHBoxLayout">
          <item>
-          <layout class="QVBoxLayout" >
+          <layout class="QVBoxLayout">
            <item>
-            <widget class="QLabel" name="label_32" >
-             <property name="text" >
+            <widget class="QLabel" name="label_32">
+             <property name="text">
               <string>Profile 3:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="setLayer3" >
-             <property name="sizePolicy" >
-              <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+            <widget class="QComboBox" name="setLayer3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -538,10 +515,10 @@ Length</string>
            </item>
            <item>
             <spacer>
-             <property name="orientation" >
+             <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>40</width>
                <height>20</height>
@@ -552,26 +529,26 @@ Length</string>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" >
+          <layout class="QHBoxLayout">
            <item>
-            <layout class="QVBoxLayout" >
+            <layout class="QVBoxLayout">
              <item>
-              <widget class="QLabel" name="label_33" >
-               <property name="text" >
+              <widget class="QLabel" name="label_33">
+               <property name="text">
                 <string>R</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_34" >
-               <property name="text" >
+              <widget class="QLabel" name="label_34">
+               <property name="text">
                 <string>G</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_35" >
-               <property name="text" >
+              <widget class="QLabel" name="label_35">
+               <property name="text">
                 <string>B</string>
                </property>
               </widget>
@@ -579,48 +556,48 @@ Length</string>
             </layout>
            </item>
            <item>
-            <layout class="QVBoxLayout" >
+            <layout class="QVBoxLayout">
              <item>
-              <widget class="QSlider" name="setR3" >
-               <property name="minimumSize" >
+              <widget class="QSlider" name="setR3">
+               <property name="minimumSize">
                 <size>
                  <width>35</width>
                  <height>0</height>
                 </size>
                </property>
-               <property name="maximumSize" >
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSlider" name="setG3" >
-               <property name="maximumSize" >
+              <widget class="QSlider" name="setG3">
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSlider" name="setB3" >
-               <property name="maximumSize" >
+              <widget class="QSlider" name="setB3">
+               <property name="maximumSize">
                 <size>
                  <width>200</width>
                  <height>16777215</height>
                 </size>
                </property>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
@@ -628,23 +605,23 @@ Length</string>
             </layout>
            </item>
            <item>
-            <widget class="QGraphicsView" name="colorBox3" >
-             <property name="sizePolicy" >
-              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+            <widget class="QGraphicsView" name="colorBox3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="maximumSize" >
+             <property name="maximumSize">
               <size>
                <width>50</width>
                <height>50</height>
               </size>
              </property>
-             <property name="focusPolicy" >
+             <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>
              </property>
-             <property name="acceptDrops" >
+             <property name="acceptDrops">
               <bool>false</bool>
              </property>
             </widget>
@@ -655,53 +632,53 @@ Length</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>702</width>
-        <height>273</height>
-       </rect>
-      </property>
-      <attribute name="title" >
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
        <string>&amp;About</string>
       </attribute>
-      <layout class="QGridLayout" >
-       <item row="0" column="0" >
-        <widget class="QLabel" name="label_3" >
-         <property name="cursor" >
+      <layout class="QGridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="cursor">
           <cursorShape>ArrowCursor</cursorShape>
          </property>
-         <property name="text" >
-          <string>Terrain Profile Plugin (2008)
-Written by Borys Jurgiel (borys@wolf.most.org.pl)
-
-The Profile Plugin plots terrain profiles along interactive pointed lines. It handles one-band rasters of any format supported by QGis. You can compare up to three layers together, control height scale and line colors. It is on very early stage of development yet and I plan to code a number of improvements in the next weeks (see README file). Unfortunately it has huge requirements: development version of QGIS and Qwt5.
-
-Please send me your reflections, opinions, suggestions and wishes (especially related to this plugin;). If you find this plugin useful please don't hesitate to let me know desired improvements!
-
-REQUIREMENTS:
-- Qwt5 (python-qwt5-qt4)
-- QT ver 4.1 for saving to PDF and 4.3 for saving to SVG
-</string>
+         <property name="text">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Profile Tool Plugin&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The Profile Plugin plots terrain profiles along interactive pointed polylines. It handles  any format supported by QGis. You can compare up to three layers together, control height scale and line colors. Unfortunately it has huge requirements: development version of QGIS and Qwt5.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Please send me your reflections, opinions, suggestions and wishes (especially related to this plugin;) on &lt;a href=&quot;http://hub.qgis.org/projects/profiletool/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://hub.qgis.org/projects/profiletool/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you find this plugin useful please don't hesitate to let me know desired improvements!&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Profile Tool Plugin - License GNU GPL 2&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Written in 2008 by Borys Jurgiel (borys@wolf.most.org.pl)&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Written in 2012 by Borys Jurgiel, Patrice Verchere&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;REQUIREMENTS:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;- Qwt5 (python-qwt5-qt4)&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;- QT ver 4.1 for saving to PDF and 4.3 for saving to SVG&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <property name="textFormat" >
+         <property name="textFormat">
           <enum>Qt::AutoText</enum>
          </property>
-         <property name="scaledContents" >
+         <property name="scaledContents">
           <bool>false</bool>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
-         <property name="wordWrap" >
+         <property name="wordWrap">
           <bool>true</bool>
          </property>
-         <property name="openExternalLinks" >
+         <property name="openExternalLinks">
           <bool>true</bool>
          </property>
-         <property name="textInteractionFlags" >
+         <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse</set>
          </property>
         </widget>
@@ -710,17 +687,17 @@ REQUIREMENTS:
      </widget>
     </widget>
    </item>
-   <item row="1" column="0" >
-    <layout class="QHBoxLayout" >
+   <item row="1" column="0">
+    <layout class="QHBoxLayout">
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Fixed</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>5</width>
          <height>20</height>
@@ -729,74 +706,74 @@ REQUIREMENTS:
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="butPrint" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+      <widget class="QPushButton" name="butPrint">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize" >
+       <property name="minimumSize">
         <size>
          <width>100</width>
          <height>0</height>
         </size>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Print</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="butPDF" >
-       <property name="enabled" >
+      <widget class="QPushButton" name="butPDF">
+       <property name="enabled">
         <bool>false</bool>
        </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize" >
+       <property name="minimumSize">
         <size>
          <width>100</width>
          <height>0</height>
         </size>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Save as PDF</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="butSVG" >
-       <property name="enabled" >
+      <widget class="QPushButton" name="butSVG">
+       <property name="enabled">
         <bool>false</bool>
        </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize" >
+       <property name="minimumSize">
         <size>
          <width>100</width>
          <height>0</height>
         </size>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Save as SVG</string>
        </property>
       </widget>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
          <height>20</height>
@@ -805,29 +782,29 @@ REQUIREMENTS:
       </spacer>
      </item>
      <item>
-      <widget class="QDialogButtonBox" name="buttonBox" >
-       <property name="enabled" >
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="layoutDirection" >
+       <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
-       <property name="autoFillBackground" >
+       <property name="autoFillBackground">
         <bool>false</bool>
        </property>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="standardButtons" >
+       <property name="standardButtons">
         <set>QDialogButtonBox::Close</set>
        </property>
-       <property name="centerButtons" >
+       <property name="centerButtons">
         <bool>false</bool>
        </property>
       </widget>
@@ -871,11 +848,11 @@ REQUIREMENTS:
    <receiver>ProfileBase</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>689</x>
      <y>344</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -887,11 +864,11 @@ REQUIREMENTS:
    <receiver>ProfileBase</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>689</x>
      <y>344</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

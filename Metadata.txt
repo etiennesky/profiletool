@@ -4,11 +4,13 @@ name=Profile tool
 qgisMinimumVersion=1.0
 description=Plots terrain profile
 category=Raster
-version=version 3.03
+version=version 3.1
 ; end of mandatory metadata
 
 ; start of optional metadata
-changelog=3.03 Adjust resolution and mark polyline on graph
+changelog=
+    3.1 : Bug fixes
+    3.03 Adjust resolution and mark polyline on graph
     3.02 : enable multiband query
     3.01 : Add metadata.txt
     3.0  : -Enable profile along polyline
@@ -21,9 +23,9 @@ tags=raster,profile
 ; in a future version of the web application it will
 ; be probably possible to create a project on redmine
 ; if they are not filled
-homepage=http://waiting
-tracker=http://waiting
-repository=http://waiting
+homepage=http://hub.qgis.org/projects/profiletool
+tracker=http://hub.qgis.org/projects/profiletool/issues
+repository=http://hub.qgis.org/projects/profiletool/repository
 icon=profileIcon.png
 
 ; experimental flag
