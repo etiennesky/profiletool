@@ -1,0 +1,35 @@
+; the next section is mandatory
+[general]
+name=Profile tool
+qgisMinimumVersion=1.0
+description=Plots terrain profile
+category=Raster
+version=version 3.1
+; end of mandatory metadata
+
+; start of optional metadata
+changelog=
+    3.1 : Bug fixes
+    3.03 Adjust resolution and mark polyline on graph
+    3.02 : enable multiband query
+    3.01 : Add metadata.txt
+    3.0  : -Enable profile along polyline
+           -Enable "on the fly" working with raster
+
+; tags are in comma separated value format, spaces are allowed
+tags=raster,profile
+
+; these metadata can be empty
+; in a future version of the web application it will
+; be probably possible to create a project on redmine
+; if they are not filled
+homepage=http://hub.qgis.org/projects/profiletool
+tracker=http://hub.qgis.org/projects/profiletool/issues
+repository=http://hub.qgis.org/projects/profiletool/repository
+icon=profileIcon.png
+
+; experimental flag
+experimental=True
+
+; deprecated flag (applies to the whole plugin and not only to the uploaded version)
+deprecated=False
