@@ -391,27 +391,27 @@ class DoProfile:
 		printer.setOrientation(QPrinter.Portrait)
 		dialog = QPrintDialog(printer)
 		if dialog.exec_():
-			self.qwtPlot.print_(printer)
+			self.dockwidget.qwtPlot.print_(printer)
 
 
 
 	def outPDF(self):
-		fileName = QFileDialog.getSaveFileName(self, "Save As","Profile of " + self.profiles[0]["layer"].name() + ".pdf","Portable Document Format (*.pdf)")
+		fileName = QFileDialog.getSaveFileName(self.iface.mainWindow(), "Save As","Profile of " + self.profiles[0]["layer"].name() + ".pdf","Portable Document Format (*.pdf)")
 		if not fileName.isEmpty():
 			printer = QPrinter()
 			printer.setCreator('QGIS Profile Plugin')
 			printer.setOutputFileName(fileName)
 			printer.setOutputFormat(QPrinter.PdfFormat)
 			printer.setOrientation(QPrinter.Landscape)
-			self.qwtPlot.print_(printer)
+			self.dockwidget.qwtPlot.print_(printer)
 
 
 
 	def outSVG(self):
-		fileName = QFileDialog.getSaveFileName(self, "Save As","Profile of " + self.profiles[0]["layer"].name() + ".svg","Scalable Vector Graphics (*.svg)")
+		fileName = QFileDialog.getSaveFileName(self.iface.mainWindow(), "Save As","Profile of " + self.profiles[0]["layer"].name() + ".svg","Scalable Vector Graphics (*.svg)")
 		if not fileName.isEmpty():
 			printer = QSvgGenerator()
 			printer.setFileName(fileName)
 			printer.setSize(QSize(800, 400))
-			self.qwtPlot.print_(printer)
+			self.dockwidget.qwtPlot.print_(printer)
 
