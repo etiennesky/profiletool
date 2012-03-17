@@ -76,6 +76,7 @@ class profilePlugin:
 			QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one raster layer")
 			#self.choosenBand = 0
 			return 3
+		
 
 	#if dock not already opened, open the dock
 		if self.dockOpened == False : 
@@ -113,7 +114,7 @@ class profilePlugin:
 			#self.wdg.tableView.setModel(self.mdl)
 			#self.wdg.tableView.setItemDelegateForColumn(0,CheckBoxDelegate(self.wdg.tableView))
 			#self.wdg.tableView.setItemDelegateForColumn(1,ColorChooserDelegate(self.wdg.tableView))
-
+			self.addLayer(self.layerlist, self.iface.activeLayer())
 
 
 
@@ -128,7 +129,7 @@ class profilePlugin:
 		self.canvas.setMapTool(self.tool)
 		self.polygon = False
 		self.rubberband = QgsRubberBand(self.canvas, self.polygon)
-		self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
+		#self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
 		self.pointstoDraw = []
 		self.pointstoCal = []
 		self.lastClicked = [[-9999999999.9,9999999999.9]]
@@ -166,7 +167,8 @@ class profilePlugin:
 		newPoints = [[mapPos.x(), mapPos.y()]]
 		if newPoints == self.dblclktemp:
 			return
-		self.pointstoDraw += newPoints
+		else :
+			self.pointstoDraw += newPoints
    
 	def doubleClicked(self,position):
 		#Validation of line
@@ -175,13 +177,13 @@ class profilePlugin:
 		self.pointstoDraw += newPoints
 		#launch analyses dialog
 		self.doprofile.calculateProfil(self.pointstoDraw,self.layerlist)
-		self.wdg.setLayer1.emit( SIGNAL("currentIndexChanged(int)"),0)
+		#self.wdg.setLayer1.emit( SIGNAL("currentIndexChanged(int)"),0)
 		#dialoga = tools.doProfile.Dialog(self.iface, self.pointstoDraw,self.tool)
 		#dialoga.exec_()
 		#Reset all
 		self.rubberband.reset(self.polygon)
 		self.pointstoDraw = []
-		self.pointstoCal = []
+		#self.pointstoCal = []
 		self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
 		self.dblclktemp = newPoints
 
@@ -199,3 +201,23 @@ class profilePlugin:
 	def cleaning2(self):
 		self.dockOpened = False
 		self.cleaning()
+
+	def addLayer(self , layerlist1 , layer1):
+		if layer1.bandCount() != 1:
+			listband = []
+			for i in range(0,layer1.bandCount()):
+				listband.append(str(i+1))
+			testqt, ok = QInputDialog.getItem(self.iface.mainWindow(), "Band selector", "Choose the band", listband, False)
+			if ok :
+				choosenBand = int(testqt) - 1
+			else:
+				return 2
+		else:
+			choosenBand = 0
+		layerlist1.append([layer1,choosenBand])
+
+
+
+
+
+

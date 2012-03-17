@@ -51,18 +51,18 @@ class DoProfile:
 		self.pointstoDraw = None
 		#Listeners on dialog butons
 		QObject.connect(self.dockwidget.scaleSlider, SIGNAL("valueChanged(int)"), self.reScalePlot)
-		QObject.connect(self.dockwidget.setLayer1, SIGNAL("currentIndexChanged(int)"), self.selectLayer1)
-		QObject.connect(self.dockwidget.setLayer2, SIGNAL("currentIndexChanged(int)"), self.selectLayer2)
-		QObject.connect(self.dockwidget.setLayer3, SIGNAL("currentIndexChanged(int)"), self.selectLayer3)
-		QObject.connect(self.dockwidget.setR1, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setG1, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setB1, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setR2, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setG2, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setB2, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setR3, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setG3, SIGNAL("valueChanged(int)"), self.setColor)
-		QObject.connect(self.dockwidget.setB3, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setLayer1, SIGNAL("currentIndexChanged(int)"), self.selectLayer1)
+		#QObject.connect(self.dockwidget.setLayer2, SIGNAL("currentIndexChanged(int)"), self.selectLayer2)
+		#QObject.connect(self.dockwidget.setLayer3, SIGNAL("currentIndexChanged(int)"), self.selectLayer3)
+		##QObject.connect(self.dockwidget.setR1, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setG1, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setB1, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setR2, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setG2, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setB2, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setR3, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setG3, SIGNAL("valueChanged(int)"), self.setColor)
+		#QObject.connect(self.dockwidget.setB3, SIGNAL("valueChanged(int)"), self.setColor)
 		QObject.connect(self.dockwidget.butPrint, SIGNAL("clicked()"), self.outPrint)
 		QObject.connect(self.dockwidget.butPDF, SIGNAL("clicked()"), self.outPDF)
 		QObject.connect(self.dockwidget.butSVG, SIGNAL("clicked()"), self.outSVG)
@@ -72,15 +72,15 @@ class DoProfile:
 		if QT_VERSION >= 0X040300:
 			self.dockwidget.butSVG.setEnabled(True)
 		# setting up the sliders
-		self.dockwidget.setR1.setValue(100)
-		self.dockwidget.setG1.setValue(0)
-		self.dockwidget.setB1.setValue(0)
-		self.dockwidget.setR2.setValue(0)
-		self.dockwidget.setG2.setValue(100)
-		self.dockwidget.setB2.setValue(0)
-		self.dockwidget.setR3.setValue(0)
-		self.dockwidget.setG3.setValue(0)
-		self.dockwidget.setB3.setValue(100)
+		#self.dockwidget.setR1.setValue(100)
+		#self.dockwidget.setG1.setValue(0)
+		#self.dockwidget.setB1.setValue(0)
+		#self.dockwidget.setR2.setValue(0)
+		#self.dockwidget.setG2.setValue(100)
+		#self.dockwidget.setB2.setValue(0)
+		#self.dockwidget.setR3.setValue(0)
+		#self.dockwidget.setG3.setValue(0)
+		#self.dockwidget.setB3.setValue(100)
 		self.dockwidget.scaleSlider.setMinimum(0)
 		self.dockwidget.scaleSlider.setMaximum(100)
 		self.dockwidget.scaleSlider.setValue(100)
@@ -95,13 +95,13 @@ class DoProfile:
 			if layer.type() == layer.RasterLayer:
 				self.layerList += [layer]
 		# filling the comboboxes
-		self.dockwidget.setLayer1.addItem(actLayer.name())
-		self.dockwidget.setLayer2.addItem("")
-		self.dockwidget.setLayer3.addItem("")
-		for i in range(1,len(self.layerList)):
-			self.dockwidget.setLayer1.addItem(self.layerList[i].name())
-			self.dockwidget.setLayer2.addItem(self.layerList[i].name())
-			self.dockwidget.setLayer3.addItem(self.layerList[i].name())
+		#self.dockwidget.setLayer1.addItem(actLayer.name())
+		#self.dockwidget.setLayer2.addItem("")
+		#self.dockwidget.setLayer3.addItem("")
+		#for i in range(1,len(self.layerList)):
+			#self.dockwidget.setLayer1.addItem(self.layerList[i].name())
+			#self.dockwidget.setLayer2.addItem(self.layerList[i].name())
+			#self.dockwidget.setLayer3.addItem(self.layerList[i].name())
 		# setting up the main plotting widget
 		self.dockwidget.qwtPlot.setCanvasBackground(Qt.white)
 		self.dockwidget.qwtPlot.plotLayout().setAlignCanvasToScales(True)
@@ -131,8 +131,13 @@ class DoProfile:
 			text += "\nProfile length: "  + str(profileLen)
 			self.stats.setText(text)"""
 
+		grid = Qwt.QwtPlotGrid()
+		grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
+		grid.attach(self.dockwidget.qwtPlot)
+
 
 	def clearData(self, nr): # erase one of profiles
+		self.dockwidget.qwtPlot.clear()
 		self.profiles[nr]["l"] = []
 		self.profiles[nr]["z"] = []
 		try:
@@ -141,9 +146,9 @@ class DoProfile:
 			None
 		self.dockwidget.qwtPlot.replot()
 		self.reScalePlot(self.dockwidget.scaleSlider.value())
-		self.dockwidget.stat1.setText(self.stat2str(0))
-		self.dockwidget.stat2.setText(self.stat2str(1))
-		self.dockwidget.stat3.setText(self.stat2str(2))
+		#self.dockwidget.stat1.setText(self.stat2str(0))
+		#self.dockwidget.stat2.setText(self.stat2str(1))
+		#self.dockwidget.stat3.setText(self.stat2str(2))
 
 	def calculateProfil(self, points1, layer1):
 		self.pointstoDraw = points1
@@ -152,10 +157,23 @@ class DoProfile:
 			return
 		for i in range(0,len(self.profiles)):
 			self.clearData(i)
+		profileLen = 0
+		for i in range(0, len(self.pointstoDraw)-1):
+			x1 = float(self.pointstoDraw[i][0])
+			y1 = float(self.pointstoDraw[i][1])
+			x2 = float(self.pointstoDraw[i+1][0])
+			y2 = float(self.pointstoDraw[i+1][1])
+			profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
+			vertLine = QwtPlotMarker()
+			vertLine.setLineStyle(QwtPlotMarker.VLine)
+			vertLine.setXValue(profileLen)
+			vertLine.attach(self.dockwidget.qwtPlot)
+		profileLen = 0
 		for i in range(0,len(layerList)):
-			self.profiles.append({"layer": layerList[i]})
+			self.profiles.append({"layer": layerList[i][0]})
+			self.profiles[i]["band"] = layerList[i][1]
 			self.readData(i)
-
+	
   
 	def readData(self,nr): # read data from "layer" layer, fill the "l" and "z" lists and create "curve" QwtPlotCurve
 		if self.pointstoDraw == None: 
@@ -164,7 +182,7 @@ class DoProfile:
 			return
 		layer = self.profiles[nr]["layer"]
 		#Ask for band if more than 1
-		if layer.bandCount() != 1:
+		"""if layer.bandCount() != 1:
 			listband = []
 			for i in range(0,layer.bandCount()):
 				listband.append(str(i+1))
@@ -174,13 +192,14 @@ class DoProfile:
 			else:
 				return 2
 		else:
-			choosenBand = 0
+			choosenBand = 0"""
+		choosenBand = self.profiles[nr]["band"]
 		#Get the values on the lines
 		steps = 1000  # max graph width in pixels
 		l = []
 		z = []
 		lbefore = 0
-		for i in range(0,len(self.pointstoDraw)-2):  # work for each segement of polyline
+		for i in range(0,len(self.pointstoDraw)-2):  # work for each segment of polyline
 			# for each polylines, set points x,y with map crs (%D) and layer crs (%C)
 			pointstoCal1 = self.tool.toLayerCoordinates(self.profiles[nr]["layer"] , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
 			pointstoCal2 = self.tool.toLayerCoordinates(self.profiles[nr]["layer"] , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
@@ -232,7 +251,7 @@ class DoProfile:
 				if n % stepp == 0:
 					progress += "|"
 					self.iface.mainWindow().statusBar().showMessage(QString(progress))
-				lbefore = l[len(l)-1]
+			lbefore = l[len(l)-1]
 		#End of polyline analysis
 		#filling the main data dictionary "profiles"
 		self.profiles[nr]["l"] = l
@@ -242,12 +261,12 @@ class DoProfile:
 		self.profiles[nr]["curve"].setData(l, z)
 		self.profiles[nr]["curve"].attach(self.dockwidget.qwtPlot)
 		# updating everything
-		self.setColor(None)
+		#self.setColor(None)
 		self.dockwidget.qwtPlot.replot()
 		self.reScalePlot(self.dockwidget.scaleSlider.value())
-		self.dockwidget.stat1.setText(self.stat2str(0))
-		self.dockwidget.stat2.setText(self.stat2str(1))
-		self.dockwidget.stat3.setText(self.stat2str(2))
+		#self.dockwidget.stat1.setText(self.stat2str(0))
+		#self.dockwidget.stat2.setText(self.stat2str(1))
+		#self.dockwidget.stat3.setText(self.stat2str(2))
 
 
 
@@ -293,7 +312,7 @@ class DoProfile:
 			self.dockwidget.qwtPlot.setAxisScale(0,minimumValue,maximumValue,0)
 			self.dockwidget.qwtPlot.replot()
 
-
+	"""
 
 	def selectLayer1(self,item): # called when 1st layer changed
 		self.clearData(0)
@@ -321,8 +340,8 @@ class DoProfile:
 		else:
 			self.profiles[2]["layer"] = self.layerList[item]
 			self.readData(2)
-
-
+	
+	"""
 
 	def setColor(self,ivoid): # update colors of: plot, "colorboxes" and labels
 		palette = QPalette()
