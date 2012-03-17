@@ -19,7 +19,7 @@
 # Makefile for a PyQGIS plugin 
 PLUGINNAME = profiletool
 PY_FILES = doProfile.py profilebase.py __init__.py  profilePlugin.py selectPointTool.py
-EXTRAS = profileIcon.png Metadata.txt
+EXTRAS = profileIcon.png metadata.txt
 UI_FILES = profilebase.py
 RESOURCE_FILES = resources.py
 
