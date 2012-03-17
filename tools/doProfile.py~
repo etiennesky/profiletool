@@ -148,7 +148,8 @@ class DoProfile:
 	def calculateProfil(self, points1, layer1):
 		self.pointstoDraw = points1
 		layerList = layer1
-		if self.pointstoDraw == None: return
+		if self.pointstoDraw == None: 
+			return
 		for i in range(0,len(self.profiles)):
 			self.clearData(i)
 		for i in range(0,len(layerList)):
@@ -157,8 +158,10 @@ class DoProfile:
 
   
 	def readData(self,nr): # read data from "layer" layer, fill the "l" and "z" lists and create "curve" QwtPlotCurve
-		if self.pointstoDraw == None: return
-		if self.profiles[nr]["layer"] == None: return
+		if self.pointstoDraw == None: 
+			return
+		if self.profiles[nr]["layer"] == None: 
+			return
 		layer = self.profiles[nr]["layer"]
 		#Ask for band if more than 1
 		if layer.bandCount() != 1:

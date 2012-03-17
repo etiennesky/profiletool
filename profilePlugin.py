@@ -45,6 +45,7 @@ class profilePlugin:
 		self.dockOpened = False		#remember for not reopening dock if there's already one opened
 		self.layerlist = []			#layers which are analysed
 		self.pointstoDraw = None	#Polyline in mapcanvas CRS analysed
+		self.dblclktemp = None
 		self.mdl = QStandardItemModel(0, 3)
 		# create action 
 		self.action = QAction(QIcon(":/plugins/profiletool/icons/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
@@ -88,11 +89,20 @@ class profilePlugin:
 			self.wdg.setMaximumSize(maxsize)
 			position = self.wdg.getLocation()
 
-			mapCanvas = self.iface.mapCanvas()
+			"""mapCanvas = self.iface.mapCanvas()
+			oldSize = mapCanvas.size()
 			prevFlag = mapCanvas.renderFlag()
-			mapCanvas.setRenderFlag(False)
+			mapCanvas.setRenderFlag(False)"""
 			self.iface.addDockWidget(position, self.wdg)
-			mapCanvas.setRenderFlag(prevFlag)
+
+			"""newSize = mapCanvas.size()
+			if newSize != oldSize:
+				# trick: update the canvas size
+				mapCanvas.resize(newSize.width() - 1, newSize.height())
+				mapCanvas.setRenderFlag(prevFlag)
+				mapCanvas.resize(newSize)
+			else:
+				mapCanvas.setRenderFlag(prevFlag)"""
 			QObject.connect(self.wdg, SIGNAL( "closed(PyQt_PyObject)" ), self.cleaning2)
 			#init the calcul class 
 			self.doprofile = DoProfile(self.iface,self.wdg,self.tool)
@@ -154,6 +164,8 @@ class profilePlugin:
 		#Add point to analyse
 		mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
 		newPoints = [[mapPos.x(), mapPos.y()]]
+		if newPoints == self.dblclktemp:
+			return
 		self.pointstoDraw += newPoints
    
 	def doubleClicked(self,position):
@@ -171,6 +183,7 @@ class profilePlugin:
 		self.pointstoDraw = []
 		self.pointstoCal = []
 		self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
+		self.dblclktemp = newPoints
 
 	def cleaning(self):
 		QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)

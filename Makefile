@@ -26,6 +26,8 @@ RESOURCE_FILES = resources.py
 TOOL_DIR = tools
 ICONS_DIR = icons
 
+UI_SOURCES=$(wildcard tools/*.ui)
+UI_FILES=$(patsubst %.ui,%.py,$(UI_SOURCES))
 RC_SOURCES=$(wildcard *.qrc)
 RC_FILES=$(patsubst %.qrc,%.py,$(RC_SOURCES))
 
