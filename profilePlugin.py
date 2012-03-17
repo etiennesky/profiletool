@@ -31,111 +31,158 @@ from qgis.gui import *
 #from selectPointTool import *
 import resources
 import tools
+from tools.ui_profiletool2 import ui_ProfileTool2
+from tools.doProfile import DoProfile
 
 class profilePlugin:
 
- def __init__(self, iface):
-  self.iface = iface
-  self.canvas = iface.mapCanvas()
+	def __init__(self, iface):
+		self.iface = iface
+		self.canvas = iface.mapCanvas()
 
 
- def initGui(self):
-  # create action 
-  self.action = QAction(QIcon(":/plugins/profiletool/icons/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
-  self.action.setWhatsThis("Plots terrain profiles")
-  QObject.connect(self.action, SIGNAL("triggered()"), self.run)
-  # add toolbar button and menu item
-  self.iface.addToolBarIcon(self.action)
-  self.iface.addPluginToMenu("&Analyses", self.action)
-  self.tool = tools.selectPointTool.selectPointTool(self.iface.mapCanvas(),self.action)
+	def initGui(self):
+		self.dockOpened = False		#remember for not reopening dock if there's already one opened
+		self.layerlist = []			#layers which are analysed
+		self.pointstoDraw = None	#Polyline in mapcanvas CRS analysed
+		self.mdl = QStandardItemModel(0, 3)
+		# create action 
+		self.action = QAction(QIcon(":/plugins/profiletool/icons/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
+		self.action.setWhatsThis("Plots terrain profiles")
+		QObject.connect(self.action, SIGNAL("triggered()"), self.run)
+		# add toolbar button and menu item
+		self.iface.addToolBarIcon(self.action)
+		self.iface.addPluginToMenu("&Analyses", self.action)
+		self.tool = tools.selectPointTool.selectPointTool(self.iface.mapCanvas(),self.action)
 
 
- def unload(self):
-  self.iface.removePluginMenu("&Analyses",self.action)
-  self.iface.removeToolBarIcon(self.action)
+	def unload(self):
+		self.iface.removePluginMenu("&Analyses",self.action)
+		self.iface.removeToolBarIcon(self.action)
 
 
- def run(self):
-  # first, check posibility
-  ver = str(QGis.QGIS_VERSION)
-  if ver[0] == "0" and ((ver[2] != "1") or (ver[3] != "1")):
-   QMessageBox.warning(self.iface.mainWindow(), "Profile", "Quantum GIS version detected: "+ver+"\nProfile plugin requires version at least 0.11")
-   return 1
-  if self.iface.mapCanvas().layerCount() == 0:
-   QMessageBox.warning(self.iface.mainWindow(), "Profile", "First open any raster layer, please")
-   return 2
-  layer = self.iface.activeLayer()
-  if layer == None or layer.type() != layer.RasterLayer :
-   QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one raster layer")
-   #self.choosenBand = 0
-   return 3
-  #Listeners of mouse
-  QObject.connect(self.tool, SIGNAL("moved"), self.moved)
-  QObject.connect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
-  QObject.connect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
-  QObject.connect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
-  #init things
-  self.saveTool = self.canvas.mapTool()
-  self.canvas.setMapTool(self.tool)
-  self.polygon = False
-  self.rubberband = QgsRubberBand(self.canvas, self.polygon)
-  self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
-  self.pointstoDraw = []
-  self.pointstoCal = []
-  self.lastClicked = [[-9999999999.9,9999999999.9]]
+	def run(self):
+		# first, check posibility
+		ver = str(QGis.QGIS_VERSION)
+		if ver[0] == "0" and ((ver[2] != "1") or (ver[3] != "1")):
+			QMessageBox.warning(self.iface.mainWindow(), "Profile", "Quantum GIS version detected: "+ver+"\nProfile plugin requires version at least 0.11")
+			return 1
+		if self.iface.mapCanvas().layerCount() == 0:
+			QMessageBox.warning(self.iface.mainWindow(), "Profile", "First open any raster layer, please")
+			return 2
+		layer = self.iface.activeLayer()
+		if layer == None or layer.type() != layer.RasterLayer :
+			QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one raster layer")
+			#self.choosenBand = 0
+			return 3
+
+	#if dock not already opened, open the dock
+		if self.dockOpened == False : 
+			self.dockOpened = True
+			self.wdg = ui_ProfileTool2(self.iface.mainWindow(), self.iface)
+			#Set size properties
+			self.wdg.setLocation( Qt.BottomDockWidgetArea )
+			minsize = self.wdg.minimumSize()
+			maxsize = self.wdg.maximumSize()
+			self.wdg.setMinimumSize(minsize)
+			self.wdg.setMaximumSize(maxsize)
+			position = self.wdg.getLocation()
+
+			mapCanvas = self.iface.mapCanvas()
+			prevFlag = mapCanvas.renderFlag()
+			mapCanvas.setRenderFlag(False)
+			self.iface.addDockWidget(position, self.wdg)
+			mapCanvas.setRenderFlag(prevFlag)
+			QObject.connect(self.wdg, SIGNAL( "closed(PyQt_PyObject)" ), self.cleaning2)
+			#init the calcul class 
+			self.doprofile = DoProfile(self.iface,self.wdg,self.tool)
+			#init the table model in tab "profile" for choosing analysed layers
+			#self.wdg.tableView.setColumnWidth(0, 4)
+			#self.wdg.tableView.setColumnWidth(1, 4)
+			#self.wdg.tableView.setColumnWidth(2, 80)
+			#self.wdg.tableView.setModel(self.mdl)
+			#self.wdg.tableView.setItemDelegateForColumn(0,CheckBoxDelegate(self.wdg.tableView))
+			#self.wdg.tableView.setItemDelegateForColumn(1,ColorChooserDelegate(self.wdg.tableView))
 
 
- def moved(self,position):
-  if len(self.pointstoDraw) > 0:
-   #Get mouse coords
-   mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
-   #Draw on temp layer
-   self.rubberband.reset(self.polygon)
-   for i in range(0,len(self.pointstoDraw)):
-    self.rubberband.addPoint(QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
-   self.rubberband.addPoint(QgsPoint(mapPos.x(),mapPos.y()))
 
 
- def rightClicked(self,position):
-  #user cancelled
-  mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
-  newPoints = [[mapPos.x(), mapPos.y()]]
-  if newPoints == self.lastClicked: return # sometimes a strange "double click" is given
-  if len(self.pointstoDraw) > 0:
-   self.pointstoDraw = []
-   self.pointstoCal = []
-   self.rubberband.reset(self.polygon)
-  else:
-   self.cleaning()
-   self.lastClicked = newPoints
+
+		#Listeners of mouse
+		QObject.connect(self.tool, SIGNAL("moved"), self.moved)
+		QObject.connect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
+		QObject.connect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
+		QObject.connect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+		#init things
+		self.saveTool = self.canvas.mapTool()
+		self.canvas.setMapTool(self.tool)
+		self.polygon = False
+		self.rubberband = QgsRubberBand(self.canvas, self.polygon)
+		self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
+		self.pointstoDraw = []
+		self.pointstoCal = []
+		self.lastClicked = [[-9999999999.9,9999999999.9]]
 
 
- def leftClicked(self,position):
-  #Add point to analyse
-  mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
-  newPoints = [[mapPos.x(), mapPos.y()]]
-  self.pointstoDraw += newPoints
+	def moved(self,position):
+		if len(self.pointstoDraw) > 0:
+			#Get mouse coords
+			mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
+			#Draw on temp layer
+			self.rubberband.reset(self.polygon)
+			for i in range(0,len(self.pointstoDraw)):
+ 				self.rubberband.addPoint(QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
+			self.rubberband.addPoint(QgsPoint(mapPos.x(),mapPos.y()))
+
+
+
+	def rightClicked(self,position):
+		#user cancelled
+		mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
+		newPoints = [[mapPos.x(), mapPos.y()]]
+		if newPoints == self.lastClicked: return # sometimes a strange "double click" is given
+		if len(self.pointstoDraw) > 0:
+			self.pointstoDraw = []
+			self.pointstoCal = []
+			self.rubberband.reset(self.polygon)
+		else:
+			self.cleaning()
+			self.lastClicked = newPoints
+
+
+	def leftClicked(self,position):
+		#Add point to analyse
+		mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
+		newPoints = [[mapPos.x(), mapPos.y()]]
+		self.pointstoDraw += newPoints
    
- def doubleClicked(self,position):
-  #Validation of line
-  mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
-  newPoints = [[mapPos.x(), mapPos.y()]]
-  self.pointstoDraw += newPoints
-  #launch analyses dialog
-  dialoga = tools.doProfile.Dialog(self.iface, self.pointstoDraw,self.tool)
-  dialoga.exec_()
-  #Reset all
-  self.rubberband.reset(self.polygon)
-  self.pointstoDraw = []
-  self.pointstoCal = []
-  self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
+	def doubleClicked(self,position):
+		#Validation of line
+		mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
+		newPoints = [[mapPos.x(), mapPos.y()]]
+		self.pointstoDraw += newPoints
+		#launch analyses dialog
+		self.doprofile.calculateProfil(self.pointstoDraw,self.layerlist)
+		self.wdg.setLayer1.emit( SIGNAL("currentIndexChanged(int)"),0)
+		#dialoga = tools.doProfile.Dialog(self.iface, self.pointstoDraw,self.tool)
+		#dialoga.exec_()
+		#Reset all
+		self.rubberband.reset(self.polygon)
+		self.pointstoDraw = []
+		self.pointstoCal = []
+		self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
 
- def cleaning(self):
-  QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)
-  QObject.disconnect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
-  QObject.disconnect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
-  QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
-  self.canvas.setMapTool(self.saveTool)
-  self.rubberband.reset(self.polygon)
-  self.points = []
-  self.iface.mainWindow().statusBar().showMessage(QString(""))
+	def cleaning(self):
+		QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)
+		QObject.disconnect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
+		QObject.disconnect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
+		QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+		self.canvas.setMapTool(self.saveTool)
+		self.rubberband.reset(self.polygon)
+		self.points = []
+		self.iface.mainWindow().statusBar().showMessage(QString(""))
+
+
+	def cleaning2(self):
+		self.dockOpened = False
+		self.cleaning()
