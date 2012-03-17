@@ -18,10 +18,13 @@
 # ***************************************************************************/
 # Makefile for a PyQGIS plugin 
 PLUGINNAME = profiletool
-PY_FILES = doProfile.py profilebase.py __init__.py  profilePlugin.py selectPointTool.py
-EXTRAS = profileIcon.png metadata.txt
-UI_FILES = profilebase.py
+PY_FILES =  __init__.py  profilePlugin.py
+PY_FILES1 = doProfile.py profilebase.py  selectPointTool.py
+EXTRAS = metadata.txt
+UI_FILES = tools/profilebase.py
 RESOURCE_FILES = resources.py
+TOOL_DIR = tools
+ICONS_DIR = icons
 
 default: compile
 
@@ -42,4 +45,6 @@ deploy: compile
 	cp -vf $(UI_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
 	cp -vf $(RESOURCE_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
 	cp -vf $(EXTRAS) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
+	cp -rvf $(TOOL_DIR) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
+	cp -rvf $(ICONS_DIR) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
 

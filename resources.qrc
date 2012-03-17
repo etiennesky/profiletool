@@ -1,5 +1,5 @@
 <RCC>
  <qresource prefix="/plugins/profiletool">
-  <file>profileIcon.png</file>
+  <file>icons/profileIcon.png</file>
  </qresource>
 </RCC>

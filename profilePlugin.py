@@ -26,10 +26,11 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
+from qgis.gui import *
 
-from selectPointTool import *
+#from selectPointTool import *
 import resources
-import doProfile
+import tools
 
 class profilePlugin:
 
@@ -40,13 +41,13 @@ class profilePlugin:
 
  def initGui(self):
   # create action 
-  self.action = QAction(QIcon(":/plugins/profiletool/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
+  self.action = QAction(QIcon(":/plugins/profiletool/icons/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
   self.action.setWhatsThis("Plots terrain profiles")
   QObject.connect(self.action, SIGNAL("triggered()"), self.run)
   # add toolbar button and menu item
   self.iface.addToolBarIcon(self.action)
   self.iface.addPluginToMenu("&Analyses", self.action)
-  self.tool = selectPointTool(self.iface.mapCanvas(),self.action)
+  self.tool = tools.selectPointTool.selectPointTool(self.iface.mapCanvas(),self.action)
 
 
  def unload(self):
@@ -121,7 +122,7 @@ class profilePlugin:
   newPoints = [[mapPos.x(), mapPos.y()]]
   self.pointstoDraw += newPoints
   #launch analyses dialog
-  dialoga = doProfile.Dialog(self.iface, self.pointstoDraw,self.tool)
+  dialoga = tools.doProfile.Dialog(self.iface, self.pointstoDraw,self.tool)
   dialoga.exec_()
   #Reset all
   self.rubberband.reset(self.polygon)
