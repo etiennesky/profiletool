@@ -39,7 +39,7 @@ import platform
 
 class DataReaderTool:
 
-	def dataReaderTool(self, iface1,widget1,tool1,profile1,pointstoDraw1,nr1):
+	def dataReaderTool(self, iface1,widget1,tool1,profile1,pointstoDraw1,color1,nr1):
 		self.dockwidget = widget1
 		self.tool = tool1
 		self.profiles = profile1
@@ -119,12 +119,14 @@ class DataReaderTool:
 		self.profiles[nr]["curve"] = QwtPlotCurve(layer.name())
 		self.profiles[nr]["curve"].setData(l, z)
 		self.profiles[nr]["curve"].attach(self.dockwidget.qwtPlot)
+		self.profiles[nr]["curve"].setPen(QPen(color1, 3))
 		# updating everything
 		#self.setColor(None)
 		self.dockwidget.qwtPlot.replot()
 		#self.reScalePlot(self.dockwidget.scaleSlider.value())
 
-
+	def getProfileCurve(self,nr):
+		return self.profiles[nr]["curve"]
 
 
 

@@ -87,6 +87,8 @@ class DoProfile:
 		grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
 		grid.attach(self.dockwidget.qwtPlot)
 
+		self.datardrtl = DataReaderTool()
+
 
 	def clearData(self, nr): # erase one of profiles
 		self.dockwidget.qwtPlot.clear()
@@ -101,6 +103,12 @@ class DoProfile:
 		#self.dockwidget.stat1.setText(self.stat2str(0))
 		#self.dockwidget.stat2.setText(self.stat2str(1))
 		#self.dockwidget.stat3.setText(self.stat2str(2))
+
+	def changeColor(self,color1,nr):
+		self.datardrtl.getProfileCurve(nr).setPen(QPen(color1, 3))
+		self.dockwidget.qwtPlot.replot()
+
+
 
 	def calculateProfil(self, points1, model1):
 
@@ -121,6 +129,9 @@ class DoProfile:
 			#self.iface.mainWindow().statusBar().showMessage(str(layertemp))
 			bandtemp = model1.item(i,3).data(Qt.EditRole).toPyObject()
 			bandtemp = bandtemp - 1
+			color = model1.item(i,1).data(Qt.BackgroundRole).toPyObject()
+			#self.iface.mainWindow().statusBar().showMessage("color " + str(color))
+			#color1 = color1.Color()
 			layerList.append([layertemp,bandtemp])
 
 
@@ -140,12 +151,11 @@ class DoProfile:
 
 
 		for i in range(0,len(layerList)):
-			self.iface.mainWindow().statusBar().showMessage(str(layerList))
+
 			self.profiles.append({"layer": layerList[i][0]})
 			self.profiles[i]["band"] = layerList[i][1]
-			temp = DataReaderTool()
 			#dataReaderTool.dataReaderTool1(self.dockwidget,self.tool,self.profiles,self.pointstoDraw)
-			temp.dataReaderTool(self.iface,self.dockwidget,self.tool,self.profiles,self.pointstoDraw,i)
+			self.datardrtl.dataReaderTool(self.iface,self.dockwidget,self.tool,self.profiles,self.pointstoDraw,color,i)
 			#self.readData(i)
 		self.reScalePlot(self.dockwidget.scaleSlider.value())
   

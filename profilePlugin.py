@@ -118,6 +118,8 @@ class profilePlugin:
 			hh.setStretchLastSection(True)
 			self.wdg.tableView.setColumnHidden(4 , True)
 			self.mdl.setHorizontalHeaderLabels(["","","Layer","Band"])
+			QObject.connect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
+			#self.wdg.tableView.clicked.connect(self._onClick)
 			
 			#self.wdg.tableView.stretchLastSection(True)
 
@@ -256,10 +258,29 @@ class profilePlugin:
 
 		row = self.mdl.rowCount()
 		self.mdl.insertRow(row)
-		self.mdl.setData( self.mdl.index(row, 0, QModelIndex())  ,QVariant(True))
-		self.mdl.setData( self.mdl.index(row, 1, QModelIndex())  ,QVariant(True))
-		self.mdl.setData( self.mdl.index(row, 2, QModelIndex())  ,QVariant(layer2.name()))
-		self.mdl.setData( self.mdl.index(row, 3, QModelIndex())  ,QVariant(choosenBand + 1))
-		self.mdl.setData( self.mdl.index(row, 4, QModelIndex())  ,layer2)
 
+		self.mdl.setData( self.mdl.index(row, 0, QModelIndex())  ,QVariant(True))
+		self.mdl.item(row,0).setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled) 
+		self.mdl.setData( self.mdl.index(row, 1, QModelIndex())  ,QVariant(QColor(Qt.red)) , Qt.BackgroundRole)
+		self.mdl.item(row,1).setFlags(Qt.NoItemFlags) 
+		self.mdl.setData( self.mdl.index(row, 2, QModelIndex())  ,QVariant(layer2.name()))
+		self.mdl.item(row,2).setFlags(Qt.NoItemFlags) 
+		self.mdl.setData( self.mdl.index(row, 3, QModelIndex())  ,QVariant(choosenBand + 1))
+		self.mdl.item(row,3).setFlags(Qt.NoItemFlags) 
+		self.mdl.setData( self.mdl.index(row, 4, QModelIndex())  ,layer2)
+		self.mdl.item(row,4).setFlags(Qt.NoItemFlags) 
+
+
+	def _onClick(self,index1):
+		temp = self.mdl.itemFromIndex(index1)
+		if index1.column() == 1:
+			#self.iface.mainWindow().statusBar().showMessage("Click " + str(temp.type()))
+			color = QColorDialog().getColor(temp.data(Qt.BackgroundRole).toPyObject())
+			self.mdl.setData( self.mdl.index(temp.row(), 1, QModelIndex())  ,QVariant(color) , Qt.BackgroundRole)
+			#self.doprofile.calculateProfil(self.pointstoDraw,self.mdl)
+			self.doprofile.changeColor(color,temp.row())
+		else:
+			return
+	
+		
 
