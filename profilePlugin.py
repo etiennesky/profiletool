@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #-----------------------------------------------------------
 # 
 # Profile
@@ -92,8 +93,8 @@ class profilePlugin:
 
 			"""mapCanvas = self.iface.mapCanvas()
 			oldSize = mapCanvas.size()
-			prevFlag = mapCanvas.renderFlag()
-			mapCanvas.setRenderFlag(False)"""
+			prevFlag = mapCanvas.renderFlag()"""
+			self.iface.mapCanvas().setRenderFlag(False)
 			self.iface.addDockWidget(position, self.wdg)
 
 			"""newSize = mapCanvas.size()
@@ -115,6 +116,7 @@ class profilePlugin:
 			#self.wdg.tableView.setItemDelegateForColumn(0,CheckBoxDelegate(self.wdg.tableView))
 			#self.wdg.tableView.setItemDelegateForColumn(1,ColorChooserDelegate(self.wdg.tableView))
 			self.addLayer(self.layerlist, self.iface.activeLayer())
+			self.iface.mapCanvas().setRenderFlag(True)
 
 
 
@@ -184,7 +186,7 @@ class profilePlugin:
 		self.rubberband.reset(self.polygon)
 		self.pointstoDraw = []
 		#self.pointstoCal = []
-		self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
+		#self.iface.mainWindow().statusBar().showMessage(QString("Select starting and ending point"))
 		self.dblclktemp = newPoints
 
 	def cleaning(self):
@@ -195,7 +197,7 @@ class profilePlugin:
 		self.canvas.setMapTool(self.saveTool)
 		self.rubberband.reset(self.polygon)
 		self.points = []
-		self.iface.mainWindow().statusBar().showMessage(QString(""))
+		#self.iface.mainWindow().statusBar().showMessage(QString(""))
 
 
 	def cleaning2(self):
