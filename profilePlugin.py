@@ -111,8 +111,8 @@ class profilePlugin:
 			self.mdl = QStandardItemModel(0, 5)
 			#init the table model in tab "profile" for choosing analysed layers
 			self.wdg.tableView.setModel(self.mdl)
-			self.wdg.tableView.setColumnWidth(0, 16)
-			self.wdg.tableView.setColumnWidth(1, 16)
+			self.wdg.tableView.setColumnWidth(0, 20)
+			self.wdg.tableView.setColumnWidth(1, 20)
 			self.wdg.tableView.setColumnWidth(2, 150)
 			hh = self.wdg.tableView.horizontalHeader()
 			hh.setStretchLastSection(True)
@@ -259,7 +259,7 @@ class profilePlugin:
 		row = self.mdl.rowCount()
 		self.mdl.insertRow(row)
 
-		self.mdl.setData( self.mdl.index(row, 0, QModelIndex())  ,QVariant(True))
+		self.mdl.setData( self.mdl.index(row, 0, QModelIndex())  ,QVariant(True), Qt.CheckStateRole)
 		self.mdl.item(row,0).setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled) 
 		self.mdl.setData( self.mdl.index(row, 1, QModelIndex())  ,QVariant(QColor(Qt.red)) , Qt.BackgroundRole)
 		self.mdl.item(row,1).setFlags(Qt.NoItemFlags) 
@@ -279,6 +279,14 @@ class profilePlugin:
 			self.mdl.setData( self.mdl.index(temp.row(), 1, QModelIndex())  ,QVariant(color) , Qt.BackgroundRole)
 			#self.doprofile.calculateProfil(self.pointstoDraw,self.mdl)
 			self.doprofile.changeColor(color,temp.row())
+		elif index1.column() == 0:
+			booltemp = temp.data(Qt.CheckStateRole).toPyObject()
+			if booltemp == True:
+				booltemp = False
+			else:
+				booltemp = True
+			self.mdl.setData( self.mdl.index(temp.row(), 0, QModelIndex())  ,QVariant(booltemp), Qt.CheckStateRole)
+			self.doprofile.changeattachcurve(booltemp,temp.row())
 		else:
 			return
 	

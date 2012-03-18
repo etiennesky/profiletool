@@ -105,10 +105,21 @@ class DoProfile:
 		#self.dockwidget.stat3.setText(self.stat2str(2))
 
 	def changeColor(self,color1,nr):
-		self.datardrtl.getProfileCurve(nr).setPen(QPen(color1, 3))
-		self.dockwidget.qwtPlot.replot()
+		if self.datardrtl.getProfileCurve(nr) == None: 
+			return
+		else:
+			self.datardrtl.getProfileCurve(nr).setPen(QPen(color1, 3))
+			self.dockwidget.qwtPlot.replot()
 
-
+	def changeattachcurve(self,bool,nr):
+		if self.datardrtl.getProfileCurve(nr) == None: 
+			return
+		else:
+			if bool:
+				self.datardrtl.getProfileCurve(nr).attach(self.dockwidget.qwtPlot)
+			else:
+				self.datardrtl.getProfileCurve(nr).detach()
+			self.dockwidget.qwtPlot.replot()
 
 	def calculateProfil(self, points1, model1):
 
@@ -121,7 +132,7 @@ class DoProfile:
 		self.profiles = []
 		layerList = []
 
-
+	
 
 		
 		for i in range(0,model1.rowCount()):
@@ -130,6 +141,7 @@ class DoProfile:
 			bandtemp = model1.item(i,3).data(Qt.EditRole).toPyObject()
 			bandtemp = bandtemp - 1
 			color = model1.item(i,1).data(Qt.BackgroundRole).toPyObject()
+			boolisprofil = model1.item(i,0).data(Qt.CheckStateRole).toPyObject()
 			#self.iface.mainWindow().statusBar().showMessage("color " + str(color))
 			#color1 = color1.Color()
 			layerList.append([layertemp,bandtemp])
@@ -155,7 +167,7 @@ class DoProfile:
 			self.profiles.append({"layer": layerList[i][0]})
 			self.profiles[i]["band"] = layerList[i][1]
 			#dataReaderTool.dataReaderTool1(self.dockwidget,self.tool,self.profiles,self.pointstoDraw)
-			self.datardrtl.dataReaderTool(self.iface,self.dockwidget,self.tool,self.profiles,self.pointstoDraw,color,i)
+			self.datardrtl.dataReaderTool(self.iface,self.dockwidget,self.tool,self.profiles,self.pointstoDraw,color,boolisprofil,i)
 			#self.readData(i)
 		self.reScalePlot(self.dockwidget.scaleSlider.value())
   
