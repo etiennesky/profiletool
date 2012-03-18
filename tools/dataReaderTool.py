@@ -32,7 +32,6 @@ from PyQt4.QtSvg import * # required in some distros
 from qgis.core import *
 
 from math import sqrt
-from profilebase import Ui_ProfileBase
 
 import platform
 
@@ -42,20 +41,15 @@ class DataReaderTool:
 	def __init__(self):
 		self.profiles = None
 
-	def dataReaderTool(self, iface1,widget1,tool1,profile1,pointstoDraw1,color1,bool1,nr1):
-		self.dockwidget = widget1
+	def dataReaderTool(self, iface1,tool1, profile1, pointstoDraw1):
+		#init
 		self.tool = tool1
 		self.profiles = profile1
 		self.pointstoDraw = pointstoDraw1
-		nr = nr1
-		self.iface = iface1
-		if self.pointstoDraw == None: 
-			return
-		if self.profiles[nr]["layer"] == None: 
-			return
-		layer = self.profiles[nr]["layer"]
+		self.iface = iface1		
+		layer = self.profiles["layer"]
+		choosenBand = self.profiles["band"]
 
-		choosenBand = self.profiles[nr]["band"]
 		#Get the values on the lines
 		steps = 1000  # max graph width in pixels
 		l = []
@@ -63,8 +57,8 @@ class DataReaderTool:
 		lbefore = 0
 		for i in range(0,len(self.pointstoDraw)-2):  # work for each segment of polyline
 			# for each polylines, set points x,y with map crs (%D) and layer crs (%C)
-			pointstoCal1 = self.tool.toLayerCoordinates(self.profiles[nr]["layer"] , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
-			pointstoCal2 = self.tool.toLayerCoordinates(self.profiles[nr]["layer"] , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
+			pointstoCal1 = self.tool.toLayerCoordinates(self.profiles["layer"] , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
+			pointstoCal2 = self.tool.toLayerCoordinates(self.profiles["layer"] , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
 			x1D = float(self.pointstoDraw[i][0])
 			y1D = float(self.pointstoDraw[i][1])
 			x2D = float(self.pointstoDraw[i+1][0])
@@ -77,7 +71,7 @@ class DataReaderTool:
 			tlC = sqrt (((x2C-x1C)*(x2C-x1C)) + ((y2C-y1C)*(y2C-y1C)))
 			#Set the res of calcul
 			try:
-				res = self.profiles[nr]["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
+				res = self.profiles["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
 			except ZeroDivisionError:
 				res = layer.rasterUnitsPerPixel() * 1.2
 			#enventually use bigger step
@@ -112,28 +106,16 @@ class DataReaderTool:
 				temp = n
 				if n % stepp == 0:
 					progress += "|"
-					#self.iface.mainWindow().statusBar().showMessage(QString(progress))
+					self.iface.mainWindow().statusBar().showMessage(QString(progress))
 			lbefore = l[len(l)-1]
 		#End of polyline analysis
 		#filling the main data dictionary "profiles"
-		self.profiles[nr]["l"] = l
-		self.profiles[nr]["z"] = z
-		#self.iface.mainWindow().statusBar().showMessage(QString(""))
-		self.profiles[nr]["curve"] = QwtPlotCurve(layer.name())
-		self.profiles[nr]["curve"].setData(l, z)
-		if bool1:
-			self.profiles[nr]["curve"].attach(self.dockwidget.qwtPlot)
-		self.profiles[nr]["curve"].setPen(QPen(color1, 3))
-		# updating everything
-		#self.setColor(None)
-		self.dockwidget.qwtPlot.replot()
-		#self.reScalePlot(self.dockwidget.scaleSlider.value())
-
-	def getProfileCurve(self,nr):
-		try:
-			return self.profiles[nr]["curve"]
-		except:
-			return None
+		self.profiles["l"] = l
+		self.profiles["z"] = z
+		self.iface.mainWindow().statusBar().showMessage(QString(""))
+		self.profiles["curve"] = QwtPlotCurve(layer.name())
+		self.profiles["curve"].setData(l, z)
+		return self.profiles
 
 
 
