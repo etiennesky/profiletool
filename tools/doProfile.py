@@ -81,7 +81,7 @@ class DoProfile:
     	# disable picker in Windows due to crashes
 			picker = QwtPlotPicker(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.NoSelection, QwtPlotPicker.CrossRubberBand, QwtPicker.AlwaysOn, self.dockwidget.qwtPlot.canvas())
 			picker.setTrackerPen(QPen(Qt.green))
-		self.dockwidget.qwtPlot.insertLegend(QwtLegend(), QwtPlot.BottomLegend);
+		#self.dockwidget.qwtPlot.insertLegend(QwtLegend(), QwtPlot.BottomLegend);
 		#add grid to qwtplot
 		grid = Qwt.QwtPlotGrid()
 		grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
@@ -102,14 +102,28 @@ class DoProfile:
 		#self.dockwidget.stat2.setText(self.stat2str(1))
 		#self.dockwidget.stat3.setText(self.stat2str(2))
 
-	def calculateProfil(self, points1, layer1):
+	def calculateProfil(self, points1, model1):
+
 		self.pointstoDraw = points1
-		layerList = layer1
+
 		if self.pointstoDraw == None: 
 			return
 		for i in range(0,len(self.profiles)):
 			self.clearData(i)
 		self.profiles = []
+		layerList = []
+
+
+
+		
+		for i in range(0,model1.rowCount()):
+			layertemp = model1.item(i,4).data(Qt.EditRole).toPyObject()
+			#self.iface.mainWindow().statusBar().showMessage(str(layertemp))
+			bandtemp = model1.item(i,3).data(Qt.EditRole).toPyObject()
+			bandtemp = bandtemp - 1
+			layerList.append([layertemp,bandtemp])
+
+
 		profileLen = 0
 		for i in range(0, len(self.pointstoDraw)-1):
 			x1 = float(self.pointstoDraw[i][0])
@@ -122,8 +136,11 @@ class DoProfile:
 			vertLine.setXValue(profileLen)
 			vertLine.attach(self.dockwidget.qwtPlot)
 		profileLen = 0
-		self.iface.mainWindow().statusBar().showMessage("nombre " + str(len(layerList)) )
+		#self.iface.mainWindow().statusBar().showMessage("nombre " + str(len(layerList)) )
+
+
 		for i in range(0,len(layerList)):
+			self.iface.mainWindow().statusBar().showMessage(str(layerList))
 			self.profiles.append({"layer": layerList[i][0]})
 			self.profiles[i]["band"] = layerList[i][1]
 			temp = DataReaderTool()

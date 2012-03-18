@@ -47,7 +47,7 @@ class profilePlugin:
 		self.layerlist = []			#layers which are analysed
 		self.pointstoDraw = None	#Polyline in mapcanvas CRS analysed
 		self.dblclktemp = None
-		self.mdl = QStandardItemModel(0, 3)
+		self.mdl = None
 		# create action 
 		self.action = QAction(QIcon(":/plugins/profiletool/icons/profileIcon.png"), "Terrain profile", self.iface.mainWindow())
 		self.action.setWhatsThis("Plots terrain profiles")
@@ -79,7 +79,7 @@ class profilePlugin:
 			return 3
 		
 
-	#if dock not already opened, open the dock
+		#if dock not already opened, open the dock and all the necessary thong (model,doProfile...)
 		if self.dockOpened == False : 
 			self.dockOpened = True
 			self.wdg = ui_ProfileTool2(self.iface.mainWindow(), self.iface)
@@ -108,16 +108,28 @@ class profilePlugin:
 			QObject.connect(self.wdg, SIGNAL( "closed(PyQt_PyObject)" ), self.cleaning2)
 			#init the calcul class 
 			self.doprofile = DoProfile(self.iface,self.wdg,self.tool)
+			self.mdl = QStandardItemModel(0, 5)
 			#init the table model in tab "profile" for choosing analysed layers
-			#self.wdg.tableView.setColumnWidth(0, 4)
-			#self.wdg.tableView.setColumnWidth(1, 4)
-			#self.wdg.tableView.setColumnWidth(2, 80)
-			#self.wdg.tableView.setModel(self.mdl)
+			self.wdg.tableView.setModel(self.mdl)
+			self.wdg.tableView.setColumnWidth(0, 16)
+			self.wdg.tableView.setColumnWidth(1, 16)
+			self.wdg.tableView.setColumnWidth(2, 150)
+			hh = self.wdg.tableView.horizontalHeader()
+			hh.setStretchLastSection(True)
+			self.wdg.tableView.setColumnHidden(4 , True)
+			self.mdl.setHorizontalHeaderLabels(["","","Layer","Band"])
+			
+			#self.wdg.tableView.stretchLastSection(True)
+
 			#self.wdg.tableView.setItemDelegateForColumn(0,CheckBoxDelegate(self.wdg.tableView))
 			#self.wdg.tableView.setItemDelegateForColumn(1,ColorChooserDelegate(self.wdg.tableView))
-			self.addLayer(self.layerlist, self.iface.activeLayer())
-			self.iface.mapCanvas().setRenderFlag(True)
 
+			self.iface.mapCanvas().setRenderFlag(True)
+			#Listener add raster
+			QObject.connect(self.wdg.pushButton_2, SIGNAL("clicked()"), self.addLayer)
+
+			self.addLayer(self.iface.activeLayer())		
+			
 
 
 
@@ -126,6 +138,7 @@ class profilePlugin:
 		QObject.connect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
 		QObject.connect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
 		QObject.connect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+
 		#init things
 		self.saveTool = self.canvas.mapTool()
 		self.canvas.setMapTool(self.tool)
@@ -178,7 +191,7 @@ class profilePlugin:
 		newPoints = [[mapPos.x(), mapPos.y()]]
 		self.pointstoDraw += newPoints
 		#launch analyses dialog
-		self.doprofile.calculateProfil(self.pointstoDraw,self.layerlist)
+		self.doprofile.calculateProfil(self.pointstoDraw,self.mdl)
 		#self.wdg.setLayer1.emit( SIGNAL("currentIndexChanged(int)"),0)
 		#dialoga = tools.doProfile.Dialog(self.iface, self.pointstoDraw,self.tool)
 		#dialoga.exec_()
@@ -201,13 +214,36 @@ class profilePlugin:
 
 
 	def cleaning2(self):
+		self.mdl = None
 		self.dockOpened = False
 		self.cleaning()
 
-	def addLayer(self , layerlist1 , layer1):
-		if layer1.bandCount() != 1:
+	def addLayer(self , layer1 = None):
+		if layer1 == None:
+			templist=[]
+			tempdico=[]
+			j=0
+			for i in range(0,self.iface.mapCanvas().layerCount()):
+				layer = self.iface.mapCanvas().layer(i)
+				if layer.type() == layer.RasterLayer:
+					tempdico += [{"layer": layer , "layername" : layer.name()}]
+					#templist.append(layer.name())
+			#self.iface.mainWindow().statusBar().showMessage(str(i) + " " + str(tempdico)+ " " + str(len(tempdico)))
+			testqt, ok = QInputDialog.getItem(self.iface.mainWindow(), "Band selector", "Choose layer", [tempdico[j]["layername"] for j in range(0,len(tempdico))], False)
+			if ok:
+				for i in range (0,len(tempdico)):
+					if tempdico[i]["layername"] == testqt:
+						layer2 = tempdico[i]["layer"]
+			else: return
+
+
+		else : 
+			layer2 = layer1
+
+
+		if layer2.bandCount() != 1:
 			listband = []
-			for i in range(0,layer1.bandCount()):
+			for i in range(0,layer2.bandCount()):
 				listband.append(str(i+1))
 			testqt, ok = QInputDialog.getItem(self.iface.mainWindow(), "Band selector", "Choose the band", listband, False)
 			if ok :
@@ -216,10 +252,14 @@ class profilePlugin:
 				return 2
 		else:
 			choosenBand = 0
-		layerlist1.append([layer1,choosenBand])
 
 
-
-
+		row = self.mdl.rowCount()
+		self.mdl.insertRow(row)
+		self.mdl.setData( self.mdl.index(row, 0, QModelIndex())  ,QVariant(True))
+		self.mdl.setData( self.mdl.index(row, 1, QModelIndex())  ,QVariant(True))
+		self.mdl.setData( self.mdl.index(row, 2, QModelIndex())  ,QVariant(layer2.name()))
+		self.mdl.setData( self.mdl.index(row, 3, QModelIndex())  ,QVariant(choosenBand + 1))
+		self.mdl.setData( self.mdl.index(row, 4, QModelIndex())  ,layer2)
 
 
