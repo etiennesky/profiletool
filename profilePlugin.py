@@ -115,6 +115,7 @@ class profilePlugin:
 			self.iface.mapCanvas().setRenderFlag(True)
 			#Listener add raster
 			QObject.connect(self.wdg.pushButton_2, SIGNAL("clicked()"), self.addLayer)
+			QObject.connect(self.wdg.pushButton, SIGNAL("clicked()"), self.removeLayer)
 			#Add the selctionned raster to model
 			self.addLayer(self.iface.activeLayer())		
 			
@@ -266,6 +267,18 @@ class profilePlugin:
 			self.doprofile.changeattachcurve(booltemp,temp.row())
 		else:
 			return
+
+	def removeLayer(self):
+		list1 = []
+		for i in range(0,self.mdl.rowCount()):
+			list1.append(str(i +1) + " : " + self.mdl.item(i,2).data(Qt.EditRole).toPyObject())
+		testqt, ok = QInputDialog.getItem(self.iface.mainWindow(), "Layer selector", "Choose the Layer", list1, False)
+		if ok:
+			for i in range(0,self.mdl.rowCount()):
+				if testqt == (str(i+1) + " : " + self.mdl.item(i,2).data(Qt.EditRole).toPyObject()):
+					self.mdl.removeRow(i)
+					break
+			
 
 	#******************************** Button of Dock for printing ****************************************
 

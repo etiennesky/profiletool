@@ -107,8 +107,13 @@ class DoProfile:
 				self.profiles[i]["curve"].attach(self.dockwidget.qwtPlot)
 
 		#scaling this
+		try:
+			self.dockwidget.qwtPlot.setAxisScale(2,0,max(self.profiles[0]["l"]),0)
+			self.reScalePlot(self.dockwidget.scaleSlider.value())
+		except:
+			return
 		self.dockwidget.qwtPlot.replot()
-		self.reScalePlot(self.dockwidget.scaleSlider.value())
+
 
 
 
