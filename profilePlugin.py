@@ -260,7 +260,7 @@ class profilePlugin:
 		self.mdl.insertRow(row)
 
 		self.mdl.setData( self.mdl.index(row, 0, QModelIndex())  ,QVariant(True), Qt.CheckStateRole)
-		self.mdl.item(row,0).setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled) 
+		self.mdl.item(row,0).setFlags(Qt.ItemIsSelectable) 
 		self.mdl.setData( self.mdl.index(row, 1, QModelIndex())  ,QVariant(QColor(Qt.red)) , Qt.BackgroundRole)
 		self.mdl.item(row,1).setFlags(Qt.NoItemFlags) 
 		self.mdl.setData( self.mdl.index(row, 2, QModelIndex())  ,QVariant(layer2.name()))

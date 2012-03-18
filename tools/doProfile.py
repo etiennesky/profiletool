@@ -144,7 +144,7 @@ class DoProfile:
 			boolisprofil = model1.item(i,0).data(Qt.CheckStateRole).toPyObject()
 			#self.iface.mainWindow().statusBar().showMessage("color " + str(color))
 			#color1 = color1.Color()
-			layerList.append([layertemp,bandtemp])
+			layerList.append([layertemp,bandtemp,color,boolisprofil])
 
 
 		profileLen = 0
@@ -167,7 +167,7 @@ class DoProfile:
 			self.profiles.append({"layer": layerList[i][0]})
 			self.profiles[i]["band"] = layerList[i][1]
 			#dataReaderTool.dataReaderTool1(self.dockwidget,self.tool,self.profiles,self.pointstoDraw)
-			self.datardrtl.dataReaderTool(self.iface,self.dockwidget,self.tool,self.profiles,self.pointstoDraw,color,boolisprofil,i)
+			self.datardrtl.dataReaderTool(self.iface,self.dockwidget,self.tool,self.profiles,self.pointstoDraw,layerList[i][2],layerList[i][3],i)
 			#self.readData(i)
 		self.reScalePlot(self.dockwidget.scaleSlider.value())
   
