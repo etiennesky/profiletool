@@ -102,9 +102,10 @@ class DoProfile:
 			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole).toPyObject() - 1
 			self.iface.mainWindow().statusBar().showMessage(str(i) + " " + str(self.profiles[0]["layer"]))
 			self.profiles[i] = self.datardrtl.dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw)
+			self.profiles[i]["curve"].setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), 3))
 			if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
 				self.profiles[i]["curve"].attach(self.dockwidget.qwtPlot)
-				self.profiles[i]["curve"].setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), 3))
+
 		#scaling this
 		self.dockwidget.qwtPlot.replot()
 		self.reScalePlot(self.dockwidget.scaleSlider.value())

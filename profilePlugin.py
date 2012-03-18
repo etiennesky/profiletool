@@ -271,9 +271,9 @@ class profilePlugin:
 
 	def outPrint(self): # Postscript file rendering doesn't work properly yet.
 		for i in range (0,self.mdl.rowCount()):
-			if  model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				name = str(model1.item(i,2).data(Qt.EditRole).toPyObject())
-				return
+			if  self.mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(self.mdl.item(i,2).data(Qt.EditRole).toPyObject())
+				#return
 		fileName = "Profile of " + name + ".ps"
 		printer = QPrinter()
 		printer.setCreator("QGIS Profile Plugin")
@@ -288,9 +288,9 @@ class profilePlugin:
 
 	def outPDF(self):
 		for i in range (0,self.mdl.rowCount()):
-			if  model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				name = str(model1.item(i,2).data(Qt.EditRole).toPyObject())
-				return
+			if  self.mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(self.mdl.item(i,2).data(Qt.EditRole).toPyObject())
+				break
 		fileName = QFileDialog.getSaveFileName(self.iface.mainWindow(), "Save As","Profile of " + name + ".pdf","Portable Document Format (*.pdf)")
 		if not fileName.isEmpty():
 			printer = QPrinter()
@@ -302,9 +302,9 @@ class profilePlugin:
 
 	def outSVG(self):
 		for i in range (0,self.mdl.rowCount()):
-			if  model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				name = str(model1.item(i,2).data(Qt.EditRole).toPyObject())
-				return
+			if  self.mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(self.mdl.item(i,2).data(Qt.EditRole).toPyObject())
+				#return
 		fileName = QFileDialog.getSaveFileName(self.iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
 		if not fileName.isEmpty():
 			printer = QSvgGenerator()

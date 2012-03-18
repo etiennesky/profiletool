@@ -4,11 +4,12 @@ name=Profile tool
 qgisMinimumVersion=1.0
 description=Plots terrain profile
 category=Raster
-version=version 3.1
+version=version 3.2
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+	3.2 : Docking widget and new ui
     3.1 : Bug fixes
     3.03 Adjust resolution and mark polyline on graph
     3.02 : enable multiband query
