@@ -98,20 +98,17 @@ class DoProfile:
 		#creating the plots of profiles
 		for i in range(0 , model1.rowCount()):
 			self.profiles.append( {"layer": model1.item(i,4).data(Qt.EditRole).toPyObject() } )
-			#self.profiles[i]["layer"] = model1.item(i,4).data(Qt.EditRole).toPyObject()
 			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole).toPyObject() - 1
-			self.iface.mainWindow().statusBar().showMessage(str(i) + " " + str(self.profiles[0]["layer"]))
 			self.profiles[i] = self.datardrtl.dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw)
 			self.profiles[i]["curve"].setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), 3))
 			if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
 				self.profiles[i]["curve"].attach(self.dockwidget.qwtPlot)
-
 		#scaling this
 		try:
-			self.dockwidget.qwtPlot.setAxisScale(2,0,max(self.profiles[0]["l"]),0)
+			self.dockwidget.qwtPlot.setAxisScale(2,0,max(self.profiles[len(self.profiles) - 1]["l"]),0)
 			self.reScalePlot(self.dockwidget.scaleSlider.value())
 		except:
-			return
+			self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
 		self.dockwidget.qwtPlot.replot()
 
 

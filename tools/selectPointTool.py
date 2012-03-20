@@ -25,7 +25,7 @@ from qgis.gui import *
 
 class selectPointTool(QgsMapTool):
 
- def __init__(self, canvas, button):
+ def __init__(self, canvas,button):
   QgsMapTool.__init__(self,canvas)
   self.canvas = canvas
   self.cursor = QCursor(Qt.CrossCursor)
@@ -52,6 +52,7 @@ class selectPointTool(QgsMapTool):
 
 
  def deactivate(self):
+  self.emit( SIGNAL("deactivate") )
   self.button.setCheckable(False)
   QgsMapTool.deactivate(self)
 

@@ -124,6 +124,7 @@ class profilePlugin:
 		QObject.connect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
 		QObject.connect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
 		QObject.connect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+		QObject.connect(self.tool, SIGNAL("deactivate"), self.deactivate)
 
 		#init the mouse listener comportement and save the classic to restore it on quit
 		self.saveTool = self.canvas.mapTool()
@@ -177,12 +178,16 @@ class profilePlugin:
 		newPoints = [[mapPos.x(), mapPos.y()]]
 		self.pointstoDraw += newPoints
 		#launch analyses
+		self.iface.mainWindow().statusBar().showMessage(str(self.pointstoDraw))
 		self.doprofile.calculateProfil(self.pointstoDraw,self.mdl)
 		#Reset
 		self.rubberband.reset(self.polygon)
 		self.pointstoDraw = []
 		#temp point to distinct leftclick and dbleclick
 		self.dblclktemp = newPoints
+
+	def deactivate(self):		#enable clean exit of the plugin
+		self.cleaning()
 
 	#***************************** Quit functions *******************************************
 	
@@ -193,7 +198,6 @@ class profilePlugin:
 		QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
 		self.canvas.setMapTool(self.saveTool)
 		self.rubberband.reset(self.polygon)
-		self.points = []
 		self.iface.mainWindow().statusBar().showMessage(QString(""))
 
 
