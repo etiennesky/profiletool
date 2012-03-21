@@ -56,7 +56,7 @@ class profilePlugin:
 		#self.layerlist = []			#layers which are analysed
 		self.pointstoDraw = None	#Polyline in mapcanvas CRS analysed
 		self.dblclktemp = None		#enable disctinction between leftclick and doubleclick
-		self.mdl = None				#the model whitch in are saved layers analysed caracteristics
+		self.mdl = QStandardItemModel(0, 5)				#the model whitch in are saved layers analysed caracteristics
 
 
 	def unload(self):
@@ -74,10 +74,11 @@ class profilePlugin:
 			QMessageBox.warning(self.iface.mainWindow(), "Profile", "First open any raster layer, please")
 			return 2
 		layer = self.iface.activeLayer()
-		if layer == None or layer.type() != layer.RasterLayer :			#Check if a raster layer is opened and selectionned
-			QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one raster layer")
-			#self.choosenBand = 0
-			return 3
+		if layer == None or layer.type() != layer.RasterLayer :	#Check if a raster layer is opened and selectionned
+			if self.mdl.rowCount() == 0:
+				QMessageBox.warning(self.iface.mainWindow(), "Profile", "Please select one raster layer")
+				return 3
+
 		
 		#if dock not already opened, open the dock and all the necessary thing (model,doProfile...)
 		if self.dockOpened == False : 
@@ -116,7 +117,7 @@ class profilePlugin:
 			#Listener add raster
 			QObject.connect(self.wdg.pushButton_2, SIGNAL("clicked()"), self.addLayer)
 			QObject.connect(self.wdg.pushButton, SIGNAL("clicked()"), self.removeLayer)
-			#Add the selctionned raster to model
+			#Add the selectionned raster to model
 			self.addLayer(self.iface.activeLayer())		
 			
 		#Listeners of mouse
@@ -187,7 +188,10 @@ class profilePlugin:
 		self.dblclktemp = newPoints
 
 	def deactivate(self):		#enable clean exit of the plugin
-		self.cleaning()
+		try:
+			self.cleaning()
+		except:
+			self.iface.mainWindow().statusBar().showMessage("deactivate failed")
 
 	#***************************** Quit functions *******************************************
 	
