@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'tools/ui_profiletool.ui'
+# Form implementation generated from reading ui file 'ui_profiletool.ui'
 #
-# Created: Sat Mar 17 14:33:36 2012
+# Created: Sat Mar 24 09:56:34 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,15 +17,13 @@ except AttributeError:
 class Ui_ui_profiletool(object):
     def setupUi(self, ui_profiletool):
         ui_profiletool.setObjectName(_fromUtf8("ui_profiletool"))
-        ui_profiletool.resize(501, 342)
+        ui_profiletool.resize(655, 296)
         ui_profiletool.setWindowTitle(QtGui.QApplication.translate("ui_profiletool", "Profile Tool", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetContents = QtGui.QWidget()
         self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
-        self.formLayout = QtGui.QFormLayout(self.dockWidgetContents)
-        self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.ExpandingFieldsGrow)
-        self.formLayout.setMargin(2)
-        self.formLayout.setSpacing(2)
-        self.formLayout.setObjectName(_fromUtf8("formLayout"))
+        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.dockWidgetContents)
+        self.horizontalLayout_2.setMargin(2)
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.tabWidget = QtGui.QTabWidget(self.dockWidgetContents)
         self.tabWidget.setAutoFillBackground(True)
         self.tabWidget.setTabPosition(QtGui.QTabWidget.North)
@@ -134,6 +132,16 @@ class Ui_ui_profiletool(object):
         self.tabWidget.addTab(self.tab_1, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.tab_2)
+        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.scrollArea = QtGui.QScrollArea(self.tab_2)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
+        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 625, 222))
+        self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.addWidget(self.scrollArea)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.tab_3 = QtGui.QWidget()
         self.tab_3.setObjectName(_fromUtf8("tab_3"))
@@ -142,7 +150,15 @@ class Ui_ui_profiletool(object):
         self.tab_4.setObjectName(_fromUtf8("tab_4"))
         self._25 = QtGui.QGridLayout(self.tab_4)
         self._25.setObjectName(_fromUtf8("_25"))
-        self.label_3 = QtGui.QLabel(self.tab_4)
+        self.scrollArea_2 = QtGui.QScrollArea(self.tab_4)
+        self.scrollArea_2.setWidgetResizable(True)
+        self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
+        self.scrollAreaWidgetContents_2 = QtGui.QWidget()
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 610, 288))
+        self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
+        self.verticalLayout_3 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
+        self.label_3 = QtGui.QLabel(self.scrollAreaWidgetContents_2)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -178,9 +194,11 @@ class Ui_ui_profiletool(object):
         self.label_3.setOpenExternalLinks(True)
         self.label_3.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse)
         self.label_3.setObjectName(_fromUtf8("label_3"))
-        self._25.addWidget(self.label_3, 0, 0, 1, 1)
+        self.verticalLayout_3.addWidget(self.label_3)
+        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
+        self._25.addWidget(self.scrollArea_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
-        self.formLayout.setWidget(0, QtGui.QFormLayout.SpanningRole, self.tabWidget)
+        self.horizontalLayout_2.addWidget(self.tabWidget)
         ui_profiletool.setWidget(self.dockWidgetContents)
 
         self.retranslateUi(ui_profiletool)

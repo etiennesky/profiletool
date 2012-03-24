@@ -188,21 +188,23 @@ class profilePlugin:
 		self.dblclktemp = newPoints
 
 	def deactivate(self):		#enable clean exit of the plugin
-		try:
-			self.cleaning()
-		except:
-			self.iface.mainWindow().statusBar().showMessage("deactivate failed")
-
-	#***************************** Quit functions *******************************************
-	
-	def cleaning(self):			#used on right click
 		QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)
 		QObject.disconnect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
 		QObject.disconnect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
 		QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
-		self.canvas.setMapTool(self.saveTool)
 		self.rubberband.reset(self.polygon)
 		self.iface.mainWindow().statusBar().showMessage(QString(""))
+
+	#***************************** Quit functions *******************************************
+	
+	def cleaning(self):			#used on right click
+		#QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)
+		#QObject.disconnect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
+		#QObject.disconnect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
+		#QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+		self.canvas.setMapTool(self.saveTool)
+		#self.rubberband.reset(self.polygon)
+		#self.iface.mainWindow().statusBar().showMessage(QString(""))
 
 
 	def cleaning2(self):		#used when Dock dialog is closed

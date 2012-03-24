@@ -54,7 +54,7 @@ class selectPointTool(QgsMapTool):
  def deactivate(self):
   self.emit( SIGNAL("deactivate") )
   self.button.setCheckable(False)
-  QgsMapTool.deactivate(self)
+  #QgsMapTool.deactivate(self)
 
 
  def isZoomTool(self):

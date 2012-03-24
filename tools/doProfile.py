@@ -111,8 +111,84 @@ class DoProfile:
 			self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
 		self.dockwidget.qwtPlot.replot()
 
+		#*********************** TAble tab *************************************************
+		#self.verticalLayout = None
+		try:
+			self.VLayout = self.dockwidget.scrollAreaWidgetContents.layout()
+ 			while 1:
+				child = self.VLayout.takeAt(0)
+				if not child:
+					break
+ 				child.widget().deleteLater()
+		except:
+			self.VLayout = QVBoxLayout(self.dockwidget.scrollAreaWidgetContents)
+			self.VLayout.setContentsMargins(9, -1, -1, -1)
+			#self.VLayout.setObjectName(_fromUtf8("VLayout"))
 
 
+
+
+		#del self.verticalLayout
+		#self.verticalLayout = QVBoxLayout(self.dockwidget.scrollAreaWidgetContents)
+		self.groupBox = []
+		self.pushButton = []
+		self.tableView = []
+		self.verticalLayout = []
+		for i in range(0 , model1.rowCount()):
+			#groupBox1 = QGroupBox(self.dockwidget.scrollAreaWidgetContents)
+			self.groupBox.append( QGroupBox(self.dockwidget.scrollAreaWidgetContents) )
+			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+			sizePolicy.setHorizontalStretch(0)
+			sizePolicy.setVerticalStretch(0)
+			sizePolicy.setHeightForWidth(self.groupBox[i].sizePolicy().hasHeightForWidth())
+			self.groupBox[i].setSizePolicy(sizePolicy)
+			self.groupBox[i].setMinimumSize(QSize(0, 150))
+			self.groupBox[i].setMaximumSize(QSize(16777215, 150))
+			self.groupBox[i].setTitle(QApplication.translate("GroupBox" + str(i), self.profiles[i]["layer"].name(), None, QApplication.UnicodeUTF8))
+			self.groupBox[i].setObjectName(QString.fromUtf8("groupBox" + str(i)))
+			#self.verticalLayout.addWidget(self.groupBox[i])
+
+			#verticalLayout1 = QVBoxLayout(self.groupBox[i])
+			self.verticalLayout.append( QVBoxLayout(self.groupBox[i]) )
+			self.verticalLayout[i].setObjectName(QString.fromUtf8("verticalLayout"))
+			#tableView1 = QTableView(self.groupBox[i])
+			self.tableView.append( QTableView(self.groupBox[i]) )
+			self.tableView[i].setObjectName(QString.fromUtf8("tableView" + str(i)))
+			#self.tableView[i].setRowHeight(0,10)
+			#self.tableView[i].setRowHeight(1,10)		
+			font = QFont("Arial", 8)
+			column = len(self.profiles[i]["l"])
+			self.mdl = QStandardItemModel(2, column)
+			for j in range(len(self.profiles[i]["l"])):
+				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,QVariant(self.profiles[i]["l"][j]))
+				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,font ,Qt.FontRole)				
+				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,QVariant(self.profiles[i]["z"][j]))
+				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,font ,Qt.FontRole)	
+			#self.mdl.setData(self.profiles[i]["l"],self.profiles[i]["z"])
+			#self.tableView[i].setRowHeight(0,10)
+			#self.tableView[i].setRowHeight(1,10)
+			self.tableView[i].verticalHeader().setDefaultSectionSize(18)	
+			self.tableView[i].horizontalHeader().setDefaultSectionSize(60)	
+			self.tableView[i].setModel(self.mdl)
+
+
+			self.verticalLayout[i].addWidget(self.tableView[i])
+
+			#pushButton1 = QPushButton(self.groupBox[i])
+			self.pushButton.append( QPushButton(self.groupBox[i]) )
+			sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+			sizePolicy.setHorizontalStretch(0)
+			sizePolicy.setVerticalStretch(0)
+			sizePolicy.setHeightForWidth(self.pushButton[i].sizePolicy().hasHeightForWidth())
+			self.pushButton[i].setSizePolicy(sizePolicy)
+			self.pushButton[i].setText(QApplication.translate("GroupBox", "Copy to clipboard", None, QApplication.UnicodeUTF8))
+			self.pushButton[i].setObjectName(QString.fromUtf8("pushButton" + str(i)))
+			self.verticalLayout[i].addWidget(self.pushButton[i])
+
+			self.VLayout.addWidget(self.groupBox[i])
+
+
+		
 
 	def clearData(self, nr): 							# erase one of profiles
 		self.dockwidget.qwtPlot.clear()
