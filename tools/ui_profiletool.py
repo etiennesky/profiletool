@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_profiletool.ui'
+# Form implementation generated from reading ui file 'tools/ui_profiletool.ui'
 #
-# Created: Sat Mar 24 09:56:34 2012
+# Created: Sun Mar 25 07:49:11 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,13 +17,12 @@ except AttributeError:
 class Ui_ui_profiletool(object):
     def setupUi(self, ui_profiletool):
         ui_profiletool.setObjectName(_fromUtf8("ui_profiletool"))
-        ui_profiletool.resize(655, 296)
+        ui_profiletool.resize(589, 332)
         ui_profiletool.setWindowTitle(QtGui.QApplication.translate("ui_profiletool", "Profile Tool", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetContents = QtGui.QWidget()
         self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
-        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.dockWidgetContents)
-        self.horizontalLayout_2.setMargin(2)
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.verticalLayout_6 = QtGui.QVBoxLayout(self.dockWidgetContents)
+        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
         self.tabWidget = QtGui.QTabWidget(self.dockWidgetContents)
         self.tabWidget.setAutoFillBackground(True)
         self.tabWidget.setTabPosition(QtGui.QTabWidget.North)
@@ -138,13 +137,59 @@ class Ui_ui_profiletool(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 625, 222))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 545, 244))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_2.addWidget(self.scrollArea)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.tab_3 = QtGui.QWidget()
         self.tab_3.setObjectName(_fromUtf8("tab_3"))
+        self.verticalLayout_4 = QtGui.QVBoxLayout(self.tab_3)
+        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+        self.frame = QtGui.QFrame(self.tab_3)
+        self.frame.setBaseSize(QtCore.QSize(50, 50))
+        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtGui.QFrame.Raised)
+        self.frame.setLineWidth(0)
+        self.frame.setMidLineWidth(0)
+        self.frame.setObjectName(_fromUtf8("frame"))
+        self.gridLayout_2 = QtGui.QGridLayout(self.frame)
+        self.gridLayout_2.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+        self.groupBox_4 = QtGui.QGroupBox(self.frame)
+        self.groupBox_4.setTitle(QtGui.QApplication.translate("ui_profiletool", "Selection type", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
+        self.verticalLayout_5 = QtGui.QVBoxLayout(self.groupBox_4)
+        self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
+        self.comboBox = QtGui.QComboBox(self.groupBox_4)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
+        self.comboBox.setSizePolicy(sizePolicy)
+        self.comboBox.setObjectName(_fromUtf8("comboBox"))
+        self.verticalLayout_5.addWidget(self.comboBox)
+        self.gridLayout_2.addWidget(self.groupBox_4, 0, 0, 1, 1)
+        self.groupBox_2 = QtGui.QGroupBox(self.frame)
+        self.groupBox_2.setTitle(QtGui.QApplication.translate("ui_profiletool", "Full Resolution", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
+        self.verticalLayout_7 = QtGui.QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
+        self.checkBox = QtGui.QCheckBox(self.groupBox_2)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.checkBox.sizePolicy().hasHeightForWidth())
+        self.checkBox.setSizePolicy(sizePolicy)
+        self.checkBox.setText(QtGui.QApplication.translate("ui_profiletool", "Full resolution enabled", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkBox.setObjectName(_fromUtf8("checkBox"))
+        self.verticalLayout_7.addWidget(self.checkBox)
+        self.gridLayout_2.addWidget(self.groupBox_2, 2, 0, 1, 1)
+        self.groupBox_3 = QtGui.QGroupBox(self.frame)
+        self.groupBox_3.setTitle(QtGui.QApplication.translate("ui_profiletool", "ToDo", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
+        self.gridLayout_2.addWidget(self.groupBox_3, 0, 1, 1, 1)
+        self.verticalLayout_4.addWidget(self.frame)
         self.tabWidget.addTab(self.tab_3, _fromUtf8(""))
         self.tab_4 = QtGui.QWidget()
         self.tab_4.setObjectName(_fromUtf8("tab_4"))
@@ -154,7 +199,7 @@ class Ui_ui_profiletool(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName(_fromUtf8("scrollArea_2"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 610, 288))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 530, 303))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
@@ -174,13 +219,13 @@ class Ui_ui_profiletool(object):
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Profile Tool Plugin</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">The Profile Plugin plots terrain profiles along interactive pointed polylines. It handles  any format supported by QGis. You can compare up to three layers together, control height scale and line colors. Unfortunately it has huge requirements: development version of QGIS and Qwt5.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">The Profile Plugin plots terrain profiles along interactive pointed or selected polylines. It handles  any format supported by QGis. You can compare layers together, control height scale and line colors. Unfortunately it requires Qwt5 library.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Please send me your reflections, opinions, suggestions and wishes (especially related to this plugin;) on <a href=\"http://hub.qgis.org/projects/profiletool/issues\"><span style=\" text-decoration: underline; color:#0000ff;\">http://hub.qgis.org/projects/profiletool/issues</span></a></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Please send your reflections, opinions, suggestions and wishes (especially related to this plugin;) on <a href=\"http://hub.qgis.org/projects/profiletool/issues\"><span style=\" text-decoration: underline; color:#0000ff;\">http://hub.qgis.org/projects/profiletool/issues</span></a></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If you find this plugin useful please don\'t hesitate to let me know desired improvements!</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Profile Tool Plugin - License GNU GPL 2</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Written in 2008 by Borys Jurgiel (borys@wolf.most.org.pl)</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Written in 2008 by Borys Jurgiel</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Written in 2012 by Borys Jurgiel, Patrice Verchere</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">REQUIREMENTS:</p>\n"
@@ -198,7 +243,7 @@ class Ui_ui_profiletool(object):
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
         self._25.addWidget(self.scrollArea_2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
-        self.horizontalLayout_2.addWidget(self.tabWidget)
+        self.verticalLayout_6.addWidget(self.tabWidget)
         ui_profiletool.setWidget(self.dockWidgetContents)
 
         self.retranslateUi(ui_profiletool)

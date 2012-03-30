@@ -44,6 +44,7 @@ class ui_ProfileTool2(QDockWidget,Ui_ui_profiletool):
 
 	def closeEvent(self, event):
 		self.emit( SIGNAL( "closed(PyQt_PyObject)" ), self )
+		#event.accept()
 		return QDockWidget.closeEvent(self, event)
 
 	def setNumber(self, n=-1):

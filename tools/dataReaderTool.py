@@ -92,7 +92,11 @@ class DataReaderTool:
 			progress = "Creating profile: "
 			temp = 0
 			# reading data
-			for n in range(steps+1):
+			if i == 0:
+				debut = 0
+			else:
+				debut = 1
+			for n in range(debut, steps+1):
 				l += [dlD * n + lbefore]
 				xC = x1C + dxC * n
 				yC = y1C + dyC * n
