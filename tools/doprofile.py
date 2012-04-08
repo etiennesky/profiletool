@@ -54,7 +54,7 @@ class DoProfile(QWidget):
 		self.dockwidget.scaleSlider.setMaximum(100)
 		self.dockwidget.scaleSlider.setValue(100)
 		# setting up the main plotting widget
-		self.dockwidget.qwtPlot.setCanvasBackground(Qt.white)
+		"""self.dockwidget.qwtPlot.setCanvasBackground(Qt.white)
 		self.dockwidget.qwtPlot.plotLayout().setAlignCanvasToScales(True)
 		zoomer = QwtPlotZoomer(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.DragSelection, QwtPicker.AlwaysOff, self.dockwidget.qwtPlot.canvas())
 		zoomer.setRubberBandPen(QPen(Qt.blue))
@@ -66,7 +66,7 @@ class DoProfile(QWidget):
 		#add grid to qwtplot
 		grid = Qwt.QwtPlotGrid()
 		grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
-		grid.attach(self.dockwidget.qwtPlot)
+		grid.attach(self.dockwidget.qwtPlot)"""
 		#init the readertool
 		self.datardrtl = DataReaderTool()
 
@@ -94,7 +94,7 @@ class DoProfile(QWidget):
 				vertLine = QwtPlotMarker()
 				vertLine.setLineStyle(QwtPlotMarker.VLine)
 				vertLine.setXValue(profileLen)
-				vertLine.attach(self.dockwidget.qwtPlot)
+				vertLine.attach(self.dockwidget.plotWdg)
 			profileLen = 0
 
 		#creating the plots of profiles
@@ -104,14 +104,14 @@ class DoProfile(QWidget):
 			self.profiles[i] = self.datardrtl.dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw)
 			self.profiles[i]["curve"].setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), 3))
 			if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				self.profiles[i]["curve"].attach(self.dockwidget.qwtPlot)
+				self.profiles[i]["curve"].attach(self.dockwidget.plotWdg)
 		#scaling this
 		try:
-			self.dockwidget.qwtPlot.setAxisScale(2,0,max(self.profiles[len(self.profiles) - 1]["l"]),0)
+			self.dockwidget.plotWdg.setAxisScale(2,0,max(self.profiles[len(self.profiles) - 1]["l"]),0)
 			self.reScalePlot(self.dockwidget.scaleSlider.value())
 		except:
 			self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
-		self.dockwidget.qwtPlot.replot()
+		self.dockwidget.plotWdg.replot()
 
 		#*********************** TAble tab *************************************************
 		try:																	#Reinitializing the table tab
@@ -181,14 +181,14 @@ class DoProfile(QWidget):
 		self.clipboard.setText(text)
 
 	def clearData(self, nr): 							# erase one of profiles
-		self.dockwidget.qwtPlot.clear()
+		self.dockwidget.plotWdg.clear()
 		self.profiles[nr]["l"] = []
 		self.profiles[nr]["z"] = []
 		try:
 			self.profiles[nr]["curve"].detach()
 		except:
 			None
-		self.dockwidget.qwtPlot.replot()
+		self.dockwidget.plotWdg.replot()
 		self.reScalePlot(self.dockwidget.scaleSlider.value())
 
 
@@ -197,7 +197,7 @@ class DoProfile(QWidget):
 			return
 		else:
 			self.getProfileCurve(nr).setPen(QPen(color1, 3))
-			self.dockwidget.qwtPlot.replot()
+			self.dockwidget.plotWdg.replot()
 
 
 
@@ -206,10 +206,10 @@ class DoProfile(QWidget):
 			return
 		else:
 			if bool:
-				self.getProfileCurve(nr).attach(self.dockwidget.qwtPlot)
+				self.getProfileCurve(nr).attach(self.dockwidget.plotWdg)
 			else:
 				self.getProfileCurve(nr).detach()
-			self.dockwidget.qwtPlot.replot()
+			self.dockwidget.plotWdg.replot()
 
 
 	def findMin(self,nr,scale):
@@ -233,8 +233,8 @@ class DoProfile(QWidget):
 					if self.findMax(i,scale) > maximumValue: 
 						maximumValue = self.findMax(i,scale)
 			if minimumValue < maximumValue:
-				self.dockwidget.qwtPlot.setAxisScale(0,minimumValue,maximumValue,0)
-				self.dockwidget.qwtPlot.replot()
+				self.dockwidget.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)
+				self.dockwidget.plotWdg.replot()
 		except:
 			return
 

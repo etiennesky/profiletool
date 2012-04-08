@@ -18,15 +18,15 @@
 # ***************************************************************************/
 # Makefile for a PyQGIS plugin 
 PLUGINNAME = profiletool
-PY_FILES =  __init__.py  profilePlugin.py
+PY_FILES =  __init__.py  profileplugin.py
 PY_FILES1 = doProfile.py  selectPointTool.py
 EXTRAS = metadata.txt resources.qrc
-UI_FILES1 =  tools/ui_profiletool.py
+UI_FILES1 =  ui/profiletool.py
 RESOURCE_FILES = resources.py
-TOOL_DIR = tools
+TOOL_DIR = tools ui
 ICONS_DIR = icons
 
-UI_SOURCES=$(wildcard tools/*.ui)
+UI_SOURCES=$(wildcard ui/*.ui)
 UI_FILES=$(patsubst %.ui,%.py,$(UI_SOURCES))
 RC_SOURCES=$(wildcard *.qrc)
 RC_FILES=$(patsubst %.qrc,%.py,$(RC_SOURCES))

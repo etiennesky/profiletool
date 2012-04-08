@@ -42,5 +42,5 @@ def homepage():
   return 'http://hub.qgis.org/projects/profiletool'
 
 def classFactory(iface):
- from profilePlugin import profilePlugin
- return profilePlugin(iface)
+ from profileplugin import ProfilePlugin
+ return ProfilePlugin(iface)

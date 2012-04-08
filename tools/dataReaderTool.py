@@ -42,11 +42,19 @@ class DataReaderTool:
 		self.profiles = None
 
 	def dataReaderTool(self, iface1,tool1, profile1, pointstoDraw1):
+		"""
+		Return a dictionnary : {"layer" : layer read, 
+								"band" : band read, 
+								"l" : array of computed lenght, 
+								"z" : array of computed z ,
+								"curve" : qwtplot curve } 
+		"""
 		#init
-		self.tool = tool1
-		self.profiles = profile1
-		self.pointstoDraw = pointstoDraw1
-		self.iface = iface1		
+		self.tool = tool1						#needed to transform point coordinates
+		self.profiles = profile1				#profile with layer and band to compute
+		self.pointstoDraw = pointstoDraw1		#the polyline to compute
+		self.iface = iface1						#QGis interface to show messages in status bar
+		
 		layer = self.profiles["layer"]
 		choosenBand = self.profiles["band"]
 

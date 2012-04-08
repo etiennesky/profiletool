@@ -26,9 +26,9 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-from ui_profiletool import *
+from profiletool import Ui_ProfileTool
 
-class ui_ProfileTool2(QDockWidget,Ui_ui_profiletool):
+class UI_PTDockWidget(QDockWidget,Ui_ProfileTool):
 
 	TITLE = "MirrorMap"
 
