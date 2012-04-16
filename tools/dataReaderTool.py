@@ -38,8 +38,8 @@ import platform
 
 class DataReaderTool:
 
-	def __init__(self):
-		self.profiles = None
+	"""def __init__(self):
+		self.profiles = None"""
 
 	def dataReaderTool(self, iface1,tool1, profile1, pointstoDraw1):
 		"""
@@ -125,8 +125,8 @@ class DataReaderTool:
 		self.profiles["l"] = l
 		self.profiles["z"] = z
 		self.iface.mainWindow().statusBar().showMessage(QString(""))
-		self.profiles["curve"] = QwtPlotCurve(layer.name())
-		self.profiles["curve"].setData(l, z)
+		"""self.profiles["curve"] = QwtPlotCurve(layer.name())
+		self.profiles["curve"].setData(l, z)"""
 		return self.profiles
 
 

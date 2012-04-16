@@ -37,13 +37,16 @@ class TableViewTool:
 			templist=[]
 			j=0
 			# Ask the layer by a input dialog 
-			for i in range(0,iface.mapCanvas().layerCount()):
+			for i in range(0, iface.mapCanvas().layerCount()):
 				donothing = False
 				layer = iface.mapCanvas().layer(i)
 				if layer.type() == layer.RasterLayer:
 					for j in range(0, mdl.rowCount()):
 						if str(mdl.item(j,2).data(Qt.EditRole).toPyObject()) == str(layer.name()):
 							donothing = True
+				else:
+					donothing = True
+					
 				if donothing == False:
 					templist +=  [[layer, layer.name()]]
 						

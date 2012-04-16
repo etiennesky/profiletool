@@ -33,7 +33,7 @@ from qgis.gui import *
 import resources
 from ui.ui_ptdockwidget import Ui_PTDockWidget
 from tools.doprofile import DoProfile
-from tools.selectpointtool import SelectPointTool
+from tools.ptmaptool import ProfiletoolMapTool
 from tools.tableviewtool import TableViewTool
 from tools.selectlinetool import SelectLineTool
 
@@ -58,7 +58,7 @@ class ProfilePlugin:
 		self.iface.addPluginToMenu("&Profile Tool", self.aboutAction)
 		
 		#Init classe variables
-		self.tool = SelectPointTool(self.iface.mapCanvas(),self.action)		#the mouselistener
+		self.tool = ProfiletoolMapTool(self.iface.mapCanvas(),self.action)		#the mouselistener
 		self.dockOpened = False		#remember for not reopening dock if there's already one opened
 		self.pointstoDraw = None	#Polyline in mapcanvas CRS analysed
 		self.dblclktemp = None		#enable disctinction between leftclick and doubleclick
@@ -170,8 +170,11 @@ class ProfilePlugin:
 					self.rubberband.reset(self.polygon)
 				self.pointstoDraw += newPoints
 		if self.selectionmethod == 1:
-			self.pointstoDraw = SelectLineTool().getPointTableFromSelectedLine(self.iface, self.tool, newPoints, self.layerindex, self.previousLayer )
-			self.doprofile.calculateProfil(self.pointstoDraw,self.mdl,False)
+			result = SelectLineTool().getPointTableFromSelectedLine(self.iface, self.tool, newPoints, self.layerindex, self.previousLayer , self.pointstoDraw)
+			self.pointstoDraw = result[0]
+			self.layerindex = result[1]
+			self.previousLayer = result[2]
+			self.doprofile.calculateProfil(self.pointstoDraw, self.mdl,self.plotlibrary, False)
 			self.pointstoDraw = []
 			self.iface.mainWindow().statusBar().showMessage(QString(self.textquit1))
 
@@ -183,7 +186,7 @@ class ProfilePlugin:
 			self.pointstoDraw += newPoints
 			#launch analyses
 			self.iface.mainWindow().statusBar().showMessage(str(self.pointstoDraw))
-			self.doprofile.calculateProfil(self.pointstoDraw,self.mdl)
+			self.doprofile.calculateProfil(self.pointstoDraw,self.mdl, self.plotlibrary)
 			#Reset
 			self.pointstoDraw = []
 			#temp point to distinct leftclick and dbleclick
@@ -231,7 +234,12 @@ class ProfilePlugin:
 		self.iface.mainWindow().statusBar().showMessage(QString(""))
 
 	def cleaning(self):			#used on right click
-		#self.previousLayer.removeSelection(False)
+		try:
+			#print str(self.previousLayer)
+			self.previousLayer.removeSelection(False)
+			#self.previousLayer.select(None)
+		except:
+			pass
 		self.canvas.unsetMapTool(self.tool)
 		self.canvas.setMapTool(self.saveTool)
 		#self.rubberband.reset(self.polygon)
@@ -269,6 +277,7 @@ class ProfilePlugin:
 				
 	def changePlotLibrary(self, item):
 		self.plotlibrary = self.wdg.comboBox_2.itemText(item)
+		self.wdg.addPlotWidget(self.plotlibrary)
 
 	#************************* tableview function ******************************************
 

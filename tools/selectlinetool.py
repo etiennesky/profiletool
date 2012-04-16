@@ -30,23 +30,23 @@ from PyQt4.QtGui import *
 
 class SelectLineTool:
 	
-	def getPointTableFromSelectedLine(self, iface, tool, newPoints, layerindex, previousLayer1 ):
+	def getPointTableFromSelectedLine(self, iface, tool, newPoints, layerindex, previousLayer, pointstoDraw ):
 		pointstoDraw = []
-		self.previousLayer = previousLayer1
+		#self.previousLayer = previousLayer1
 		layer = iface.activeLayer()
 		if layer == None or layer.type() != QgsMapLayer.VectorLayer:
 			QMessageBox.warning( iface.mainWindow(), "Closest Feature Finder", "No vector layers selected" )
-			return
+			return [pointstoDraw, layerindex, previousLayer]
 		if not layer.hasGeometryType():
 			QMessageBox.warning( iface.mainWindow(), "Closest Feature Finder", "The selected layer has either no or unknown geometry" )
-			return			
+			return [pointstoDraw, layerindex, previousLayer]
 		# get the point coordinates in the layer's CRS
 		point = tool.toLayerCoordinates(layer, QgsPoint(newPoints[0][0],newPoints[0][1]))
 
 		# retrieve all the layer's features
 		layer.select([])
 
-		if layerindex == None or layer != self.previousLayer:
+		if layerindex == None or layer != previousLayer:
 			# there's no previously created index or it's not the same layer,
 			# then create the index
 			layerindex = QgsSpatialIndex()
@@ -112,7 +112,7 @@ class SelectLineTool:
 			if featureId == None or layer.featureAtId(featureId, closestFeature, True, False) == False:
 				closestFeature = None
 
-		self.previousLayer = layer
+		previousLayer = layer
 
 		iface.mainWindow().statusBar().showMessage(QString("selectline"))
 		layer.removeSelection( False )
@@ -122,5 +122,4 @@ class SelectLineTool:
 			point2 = tool.toMapCoordinates(layer, closestFeature.geometry().vertexAt(k) )
 			pointstoDraw += [[point2.x(),point2.y()]]
 			k += 1
-		#self.doprofile.calculateProfil(self.pointstoDraw,self.mdl,False)
-		return pointstoDraw
+		return [pointstoDraw, layerindex, previousLayer]

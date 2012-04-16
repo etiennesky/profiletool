@@ -30,10 +30,11 @@ from PyQt4.Qt import *
 from PyQt4.Qwt5 import *
 from PyQt4.QtSvg import * # required in some distros
 from qgis.core import *
+from plottingtool import PlottingTool
 
 from math import sqrt
 #from profilebase import Ui_ProfileBase
-from dataReaderTool import *
+from dataReaderTool import DataReaderTool
 import platform
 import sys
 from PyQt4.QtCore import SIGNAL,SLOT,pyqtSignature
@@ -53,66 +54,35 @@ class DoProfile(QWidget):
 		self.dockwidget.scaleSlider.setMinimum(0)
 		self.dockwidget.scaleSlider.setMaximum(100)
 		self.dockwidget.scaleSlider.setValue(100)
-		# setting up the main plotting widget
-		"""self.dockwidget.qwtPlot.setCanvasBackground(Qt.white)
-		self.dockwidget.qwtPlot.plotLayout().setAlignCanvasToScales(True)
-		zoomer = QwtPlotZoomer(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.DragSelection, QwtPicker.AlwaysOff, self.dockwidget.qwtPlot.canvas())
-		zoomer.setRubberBandPen(QPen(Qt.blue))
-		if platform.system() != "Windows":
-    	# disable picker in Windows due to crashes
-			picker = QwtPlotPicker(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.NoSelection, QwtPlotPicker.CrossRubberBand, QwtPicker.AlwaysOn, self.dockwidget.qwtPlot.canvas())
-			picker.setTrackerPen(QPen(Qt.green))
-		#self.dockwidget.qwtPlot.insertLegend(QwtLegend(), QwtPlot.BottomLegend);
-		#add grid to qwtplot
-		grid = Qwt.QwtPlotGrid()
-		grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
-		grid.attach(self.dockwidget.qwtPlot)"""
 		#init the readertool
-		self.datardrtl = DataReaderTool()
+		#self.datardrtl = DataReaderTool()
+
 
 	#**************************** function part *************************************************
 
-	def calculateProfil(self, points1, model1, vertline = True):
+	def calculateProfil(self, points1, model1, library, vertline = True):
 		self.pointstoDraw = points1
 
 		if self.pointstoDraw == None: 
 			return
 		try:
-			for i in range(0,len(self.profiles)):
-				self.clearData(i)
+			PlottingTool().clearData(self.dockwidget, self.profiles, library) 
+			PlottingTool().reScalePlot(self.wdg.scaleSlider.value(), self.dockwidget, self.profiles, library)
 		except:
 			pass
 		self.profiles = []
 		if vertline:						#Plotting vertical lines at the node of polyline draw
-			profileLen = 0
-			for i in range(0, len(self.pointstoDraw)-1):
-				x1 = float(self.pointstoDraw[i][0])
-				y1 = float(self.pointstoDraw[i][1])
-				x2 = float(self.pointstoDraw[i+1][0])
-				y2 = float(self.pointstoDraw[i+1][1])
-				profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
-				vertLine = QwtPlotMarker()
-				vertLine.setLineStyle(QwtPlotMarker.VLine)
-				vertLine.setXValue(profileLen)
-				vertLine.attach(self.dockwidget.plotWdg)
-			profileLen = 0
+			PlottingTool().drawVertLine(self.dockwidget, self.pointstoDraw, library)
 
 		#creating the plots of profiles
 		for i in range(0 , model1.rowCount()):
 			self.profiles.append( {"layer": model1.item(i,4).data(Qt.EditRole).toPyObject() } )
 			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole).toPyObject() - 1
-			self.profiles[i] = self.datardrtl.dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw)
-			self.profiles[i]["curve"].setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), 3))
-			if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				self.profiles[i]["curve"].attach(self.dockwidget.plotWdg)
-		#scaling this
-		try:
-			self.dockwidget.plotWdg.setAxisScale(2,0,max(self.profiles[len(self.profiles) - 1]["l"]),0)
-			self.reScalePlot(self.dockwidget.scaleSlider.value())
-		except:
-			self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
-		self.dockwidget.plotWdg.replot()
-
+			#self.profiles[i] = self.datardrtl.dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw)
+			self.profiles[i] = DataReaderTool().dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw)			
+		PlottingTool().attachCurves(self.dockwidget, self.profiles, model1, library)
+		PlottingTool().reScalePlot(self.dockwidget.scaleSlider.value(), self.dockwidget, self.profiles, library)
+			
 		#*********************** TAble tab *************************************************
 		try:																	#Reinitializing the table tab
 			self.VLayout = self.dockwidget.scrollAreaWidgetContents.layout()
@@ -180,63 +150,9 @@ class DoProfile(QWidget):
 			text += str(self.profiles[nr]["l"][i]) + "\t" + str(self.profiles[nr]["z"][i]) + "\n"
 		self.clipboard.setText(text)
 
-	def clearData(self, nr): 							# erase one of profiles
-		self.dockwidget.plotWdg.clear()
-		self.profiles[nr]["l"] = []
-		self.profiles[nr]["z"] = []
-		try:
-			self.profiles[nr]["curve"].detach()
-		except:
-			None
-		self.dockwidget.plotWdg.replot()
-		self.reScalePlot(self.dockwidget.scaleSlider.value())
-
-
-	def changeColor(self,color1,nr):					#Action when clicking the tableview - color
-		if self.getProfileCurve(nr) == None: 
-			return
-		else:
-			self.getProfileCurve(nr).setPen(QPen(color1, 3))
-			self.dockwidget.plotWdg.replot()
-
-
-
-	def changeattachcurve(self,bool,nr):				#Action when clicking the tableview - checkstate
-		if self.getProfileCurve(nr) == None: 
-			return
-		else:
-			if bool:
-				self.getProfileCurve(nr).attach(self.dockwidget.plotWdg)
-			else:
-				self.getProfileCurve(nr).detach()
-			self.dockwidget.plotWdg.replot()
-
-
-	def findMin(self,nr,scale):
-		return min(self.profiles[nr]["z"]) * 97 / (200-scale)
-
-
-
-	def findMax(self,nr,scale):
-		return max(self.profiles[nr]["z"]) * (126-scale) / 25
-
-
 
 	def reScalePlot(self,scale): 						# called when scale slider moved
-		try:
-			minimumValue = 1000000000
-			maximumValue = -1000000000
-			for i in range(0,len(self.profiles)):
-				if self.profiles[i]["layer"] != None and len(self.profiles[i]["z"]) > 0:
-					if self.findMin(i,scale) < minimumValue: 
-						minimumValue = self.findMin(i,scale)
-					if self.findMax(i,scale) > maximumValue: 
-						maximumValue = self.findMax(i,scale)
-			if minimumValue < maximumValue:
-				self.dockwidget.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)
-				self.dockwidget.plotWdg.replot()
-		except:
-			return
+		PlottingTool().reScalePlot(self.dockwidget.scaleSlider.value(), self.dockwidget, self.profiles, self.dockwidget.comboBox_2.currentText () )
 
 
 	def getProfileCurve(self,nr):

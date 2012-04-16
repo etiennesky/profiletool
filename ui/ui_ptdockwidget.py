@@ -27,11 +27,26 @@ from qgis.core import *
 from qgis.gui import *
 
 from profiletool import Ui_ProfileTool
+from ..tools.plottingtool import *
+
+try:
+	from PyQt4.Qwt5 import *
+	Qwt5_loaded = True
+except ImportError:
+	Qwt5_loaded = False 
+try:
+	from matplotlib import *
+	import matplotlib
+	matplotlib_loaded = True
+except ImportError:
+	matplotlib_loaded = False 
 
 import platform
 
 
 class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
+
+
 
 	TITLE = "MirrorMap"
 
@@ -71,69 +86,47 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 		self.tableView.setColumnHidden(4 , True)
 		self.mdl.setHorizontalHeaderLabels(["","","Layer","Band"])
 		self.checkBox.setEnabled(False)
+		
+		self.verticalLayout_plot = QVBoxLayout(self.frame_for_plot)
+		
 		#The ploting area
 		self.plotWdg = None
-		#self.addQwt5PlotWidget()
-		#self.addMatPlotLibWidget()
 		#Draw the widget
 		self.iface.addDockWidget(self.location, self)
 		self.iface.mapCanvas().setRenderFlag(True)
 		
 		
-		"""QObject.connect(self.wdg.pushButton_2, SIGNAL("clicked()"), self.addLayer)
-		QObject.connect(self.wdg.pushButton, SIGNAL("clicked()"), self.removeLayer)
-		QObject.connect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
-		QObject.connect(self.wdg.comboBox_2, SIGNAL("currentIndexChanged(int)"), self.changePlotLibrary)"""
-		
 	def addOptionComboboxItems(self):
 		self.comboBox.addItem("Temporary polyline")
 		self.comboBox.addItem("Selected polyline")
-		self.addQwt5PlotWidget()
-		self.addMatPlotLibWidget()
+		if Qwt5_loaded:
+			self.comboBox_2.addItem("Qwt5")
+		if matplotlib_loaded:
+			self.comboBox_2.addItem("Matplotlib")						
+
+
 
 	def closeEvent(self, event):
 		self.emit( SIGNAL( "closed(PyQt_PyObject)" ), self )
 		return QDockWidget.closeEvent(self, event)
 
 
-	def addQwt5PlotWidget(self):
-		try:
-			from PyQt4.Qwt5 import QwtPlot
-			from PyQt4.Qwt5 import *
-			#If succeed, add in option/item box
-			self.comboBox_2.addItem("Qwt5")
-			#Layout things
-			self.verticalLayout_plot = QVBoxLayout(self.frame_for_plot)
-			self.plotWdg = QwtPlot(self.frame_for_plot)
-			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-			sizePolicy.setHorizontalStretch(0)
-			sizePolicy.setVerticalStretch(0)
-			sizePolicy.setHeightForWidth(self.plotWdg.sizePolicy().hasHeightForWidth())
-			self.plotWdg.setSizePolicy(sizePolicy)
-			self.plotWdg.setMinimumSize(QSize(0,0))
-			self.plotWdg.setAutoFillBackground(False)
-			#Decoration					
-			self.plotWdg.setCanvasBackground(Qt.white)
-			self.plotWdg.plotLayout().setAlignCanvasToScales(True)
-			zoomer = QwtPlotZoomer(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.DragSelection, QwtPicker.AlwaysOff, self.plotWdg.canvas())
-			zoomer.setRubberBandPen(QPen(Qt.blue))
-			if platform.system() != "Windows":
-				# disable picker in Windows due to crashes
-				picker = QwtPlotPicker(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.NoSelection, QwtPlotPicker.CrossRubberBand, QwtPicker.AlwaysOn, self.plotWdg.canvas())
-				picker.setTrackerPen(QPen(Qt.green))
-			#self.dockwidget.qwtPlot.insertLegend(QwtLegend(), QwtPlot.BottomLegend);
-			grid = Qwt.QwtPlotGrid()
-			grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
-			grid.attach(self.plotWdg)
-			#Display it
-			self.verticalLayout_plot.addWidget(self.plotWdg)
-		except:
-			pass
-
-	def addMatPlotLibWidget(self):
-		try:
-			from matplotlib import *
-			self.comboBox_2.addItem("Matplotlib")
-		except:
-			pass
+	def addPlotWidget(self, library):
+		layout = self.frame_for_plot.layout()
+ 		while 1:
+			child = layout.takeAt(0)
+			if not child:
+				break
+			child.widget().deleteLater()
 		
+		
+		if library == "Qwt5":
+			#self.verticalLayout_plot = QVBoxLayout(self.frame_for_plot)
+			self.plotWdg = PlottingTool().changePlotWidget("Qwt5", self.frame_for_plot)
+			self.verticalLayout_plot.addWidget(self.plotWdg)
+		if library == "Matplotlib":
+			#self.verticalLayout_plot = QVBoxLayout(self.frame_for_plot)
+			self.plotWdg = PlottingTool().changePlotWidget("Matplotlib", self.frame_for_plot)
+			self.verticalLayout_plot.addWidget(self.plotWdg)
+
+

@@ -23,7 +23,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-class SelectPointTool(QgsMapTool):
+class ProfiletoolMapTool(QgsMapTool):
 
 	def __init__(self, canvas,button):
 		QgsMapTool.__init__(self,canvas)
