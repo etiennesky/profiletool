@@ -75,17 +75,29 @@ class PlottingTool:
 			from matplotlib.figure import Figure
 			from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 			#fig = figure.Figure((1.0, 1.0), dpi=dpi)
-			fig = Figure((1.0, 1.0), dpi=dpi)			
-			font = {'family' : 'arial', 'weight' : 'normal', 'size'   : 2.5}
+			#fig = Figure( (1.0, 1.0), dpi=dpi, linewidth=0.0, subplotpars = figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)	
+			fig = Figure( (1.0, 1.0), linewidth=0.0, subplotpars = figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)				
+					
+			font = {'family' : 'arial', 'weight' : 'normal', 'size'   : 12}
 			rc('font', **font)
+			
+			rect = fig.patch
+			rect.set_facecolor((0.9,0.9,0.9))
 
-			self.subplot = fig.add_subplot(1, 1, 1)
+			#self.subplot = fig.add_subplot(1, 1, 1)
+			self.subplot = fig.add_axes((0.05, 0.15, 0.92,0.82))
+			#self.subplot = fig.add_subplot(1, 1, 1, adjustable = "box-forced")
 			self.subplot.set_xbound(0,1000)
 			self.subplot.set_ybound(0,1000)			
 			#self.subplot.grid(True, which = "both" , linewidth = 1)
 			self.manageMatplotlibAxe(self.subplot)
 			#return backends.backend_qt4agg.FigureCanvasQTAgg(fig)
-			return FigureCanvasQTAgg(fig)
+			temp4 = FigureCanvasQTAgg(fig)
+			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+			sizePolicy.setHorizontalStretch(0)
+			sizePolicy.setVerticalStretch(0)
+			temp4.setSizePolicy(sizePolicy)
+			return temp4
 
 
 	def drawVertLine(self,wdg, pointstoDraw, library):
@@ -110,7 +122,7 @@ class PlottingTool:
 				x2 = float(pointstoDraw[i+1][0])
 				y2 = float(pointstoDraw[i+1][1])
 				profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
-				wdg.plotWdg.figure.get_axes()[0].vlines(profileLen, 0, 1000, linewidth = 0.1)
+				wdg.plotWdg.figure.get_axes()[0].vlines(profileLen, 0, 1000, linewidth = 1)
 			profileLen = 0	
 			#wdg.plotWdg.draw()
 			#pass
@@ -139,9 +151,9 @@ class PlottingTool:
 			for i in range(0 , model1.rowCount()):
 
 				if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
-					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), visible = True)
+					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = True)
 				else:
-					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), visible = False)				
+					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = False)				
 				self.changeColor(wdg, "Matplotlib", model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), profiles[i]["layer"].name())
 				try:
 					self.reScalePlot(self.dockwidget.scaleSlider.value())
@@ -149,6 +161,8 @@ class PlottingTool:
 				except:
 					pass
 					#self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
+			#wdg.plotWdg.draw()
+			wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 			wdg.plotWdg.draw()
 			
 			pass
@@ -182,6 +196,8 @@ class PlottingTool:
 					wdg.plotWdg.replot()
 				if library == "Matplotlib":
 					wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
+					#wdg.plotWdg.draw()
+					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					pass
 
@@ -197,11 +213,13 @@ class PlottingTool:
 				#print str(temp1[j].rtti()) + " ** " + str(QwtPlotItem.Rtti_PlotCurve)
 				if temp1[j].rtti() == QwtPlotItem.Rtti_PlotCurve:
 					temp1[j].detach()
-			wdg.plotWdg.replot()
+			#wdg.plotWdg.replot()
 		if library == "Matplotlib":
 			wdg.plotWdg.figure.get_axes()[0].cla()
 			self.manageMatplotlibAxe(wdg.plotWdg.figure.get_axes()[0])					
-			wdg.plotWdg.draw()		
+			#wdg.plotWdg.draw()
+			#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
+			#wdg.plotWdg.draw()	
 
 
 	
@@ -219,6 +237,8 @@ class PlottingTool:
 			for i in range(len(temp1)):
 				if name == str(temp1[i].get_gid()):
 					temp1[i].set_color((color1.red() / 255 , color1.green() / 255 , color1.blue() / 255 ,  color1.alpha() / 255 ))
+					#wdg.plotWdg.draw()
+					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break
 			
@@ -247,15 +267,21 @@ class PlottingTool:
 						temp1[i].set_visible(True)
 					else:
 						temp1[i].set_visible(False)
+					#wdg.plotWdg.draw()
+					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break	
 
 			
 	def manageMatplotlibAxe(self, axe1):
-		axe1.grid(True, which = "major" , linewidth = 0.05, linestyle = "-.")
+		#axe1.grid( which = "major" , linewidth = 0.05, linestyle = ":")
 		#axe1.grid(True, which = "major" , linestyle = ".")
-		axe1.tick_params(axis = "both", which = "major", direction= "out", length=3, width=0.2)
-		axe1.tick_params(axis = "both", which = "minor", direction= "out", length=1, width=0.1)
+		axe1.grid()
+		#axe1.tick_params(axis = "both", which = "major", direction= "out", pad = 0, length=10, width=1, bottom = True, top = False, left = True, right = False)
+		axe1.tick_params(axis = "both", which = "major", direction= "out", length=10, width=1, bottom = True, top = False, left = True, right = False)
+		axe1.minorticks_on()
+		axe1.tick_params(axis = "both", which = "minor", direction= "out", length=5, width=1, bottom = True, top = False, left = True, right = False)
+		#axe1.tick(
+		#axe1.set_ticks_position("left", "bottom")
+		
 
-
-			

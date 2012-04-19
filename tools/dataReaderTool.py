@@ -41,7 +41,7 @@ class DataReaderTool:
 	"""def __init__(self):
 		self.profiles = None"""
 
-	def dataReaderTool(self, iface1,tool1, profile1, pointstoDraw1):
+	def dataReaderTool(self, iface1,tool1, profile1, pointstoDraw1, fullresolution1):
 		"""
 		Return a dictionnary : {"layer" : layer read, 
 								"band" : band read, 
@@ -59,11 +59,11 @@ class DataReaderTool:
 		choosenBand = self.profiles["band"]
 
 		#Get the values on the lines
-		steps = 1000  # max graph width in pixels
 		l = []
 		z = []
 		lbefore = 0
 		for i in range(0,len(self.pointstoDraw)-2):  # work for each segment of polyline
+
 			# for each polylines, set points x,y with map crs (%D) and layer crs (%C)
 			pointstoCal1 = self.tool.toLayerCoordinates(self.profiles["layer"] , QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
 			pointstoCal2 = self.tool.toLayerCoordinates(self.profiles["layer"] , QgsPoint(self.pointstoDraw[i+1][0],self.pointstoDraw[i+1][1]))
@@ -83,10 +83,17 @@ class DataReaderTool:
 			except ZeroDivisionError:
 				res = layer.rasterUnitsPerPixel() * 1.2
 			#enventually use bigger step
-			if res != 0 and tlC/res < steps:
+			steps = 1000  # max graph width in pixels
+			if fullresolution1:
 				steps = int(tlC/res)
-			if steps < 2:
-				steps = 2
+			else:
+				if res != 0 and tlC/res < steps:
+					steps = int(tlC/res)
+				else:
+					steps = 1000		
+
+			if steps < 1:
+				steps = 1
 			# calculate dx, dy and dl for one step
 			dxD = (x2D - x1D) / steps
 			dyD = (y2D - y1D) / steps

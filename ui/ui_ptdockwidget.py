@@ -85,9 +85,10 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 		hh.setStretchLastSection(True)
 		self.tableView.setColumnHidden(4 , True)
 		self.mdl.setHorizontalHeaderLabels(["","","Layer","Band"])
-		self.checkBox.setEnabled(False)
+		#self.checkBox.setEnabled(False)
 		
 		self.verticalLayout_plot = QVBoxLayout(self.frame_for_plot)
+		self.verticalLayout_plot.setMargin(0)
 		
 		#The ploting area
 		self.plotWdg = None
