@@ -4,11 +4,12 @@ name=Profile tool
 qgisMinimumVersion=1.0
 description=Plots terrain profile
 category=Raster
-version=version 3.3.1
+version=version 3.4.0
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+	3.4.0 : add matplotlib library
 	3.3.1 : Add polyline selection
 	3.2.1 : Add table
 	3.2 : Docking widget and new ui

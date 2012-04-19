@@ -30,16 +30,16 @@ def description():
  return "Plots terrain profile"
 
 def version():
- return "Version 3.3.1"
+ return "Version 3.4.0"
 
 def qgisMinimumVersion():
-  return '1.0'
+  return '1.6'
 
 def authorName():
   return 'Borys Jurgiel - Patrice Verchere'
 
 def homepage():
-  return 'http://hub.qgis.org/projects/profiletool'
+  return 'http://hub.qgis.org/projects/profiletool/wiki'
 
 def classFactory(iface):
  from profileplugin import ProfilePlugin

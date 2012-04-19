@@ -28,7 +28,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qt import *
 from PyQt4.Qwt5 import *
-#from PyQt4.QtSvg import * # required in some distros
 from qgis.core import *
 
 from math import sqrt
@@ -82,7 +81,7 @@ class DataReaderTool:
 				res = self.profiles["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
 			except ZeroDivisionError:
 				res = layer.rasterUnitsPerPixel() * 1.2
-			#enventually use bigger step
+			#enventually use bigger step, wether full res is selected or not
 			steps = 1000  # max graph width in pixels
 			if fullresolution1:
 				steps = int(tlC/res)
@@ -132,8 +131,7 @@ class DataReaderTool:
 		self.profiles["l"] = l
 		self.profiles["z"] = z
 		self.iface.mainWindow().statusBar().showMessage(QString(""))
-		"""self.profiles["curve"] = QwtPlotCurve(layer.name())
-		self.profiles["curve"].setData(l, z)"""
+
 		return self.profiles
 
 

@@ -27,20 +27,21 @@ from qgis.core import *
 from qgis.gui import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtSvg import *
 import platform
 from math import sqrt
 try:
 	from PyQt4.Qwt5 import *
-	print "Qwt5 imported"
+	#print "Qwt5 imported"
 except:
 	pass
 try:
 	from matplotlib import *
-	print "matplotlib imported"	
+	#print "matplotlib imported"	
 except:
 	pass	
 
-
+	
 
 class PlottingTool:
 
@@ -70,12 +71,9 @@ class PlottingTool:
 			grid.attach(plotWdg)
 			return plotWdg
 		if library == "Matplotlib":
-			dpi = 300
-			#fig = figure.Figure((1.0, 1.0), dpi=dpi)
 			from matplotlib.figure import Figure
 			from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
-			#fig = figure.Figure((1.0, 1.0), dpi=dpi)
-			#fig = Figure( (1.0, 1.0), dpi=dpi, linewidth=0.0, subplotpars = figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)	
+
 			fig = Figure( (1.0, 1.0), linewidth=0.0, subplotpars = figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)				
 					
 			font = {'family' : 'arial', 'weight' : 'normal', 'size'   : 12}
@@ -84,20 +82,16 @@ class PlottingTool:
 			rect = fig.patch
 			rect.set_facecolor((0.9,0.9,0.9))
 
-			#self.subplot = fig.add_subplot(1, 1, 1)
 			self.subplot = fig.add_axes((0.05, 0.15, 0.92,0.82))
-			#self.subplot = fig.add_subplot(1, 1, 1, adjustable = "box-forced")
 			self.subplot.set_xbound(0,1000)
 			self.subplot.set_ybound(0,1000)			
-			#self.subplot.grid(True, which = "both" , linewidth = 1)
 			self.manageMatplotlibAxe(self.subplot)
-			#return backends.backend_qt4agg.FigureCanvasQTAgg(fig)
-			temp4 = FigureCanvasQTAgg(fig)
+			canvas = FigureCanvasQTAgg(fig)
 			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 			sizePolicy.setHorizontalStretch(0)
 			sizePolicy.setVerticalStretch(0)
-			temp4.setSizePolicy(sizePolicy)
-			return temp4
+			canvas.setSizePolicy(sizePolicy)
+			return canvas
 
 
 	def drawVertLine(self,wdg, pointstoDraw, library):
@@ -124,8 +118,7 @@ class PlottingTool:
 				profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
 				wdg.plotWdg.figure.get_axes()[0].vlines(profileLen, 0, 1000, linewidth = 1)
 			profileLen = 0	
-			#wdg.plotWdg.draw()
-			#pass
+
 
 
 	def attachCurves(self, wdg, profiles, model1, library):
@@ -161,11 +154,8 @@ class PlottingTool:
 				except:
 					pass
 					#self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
-			#wdg.plotWdg.draw()
 			wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 			wdg.plotWdg.draw()
-			
-			pass
 			
 
 	def findMin(self,profiles, nr,scale):
@@ -196,7 +186,6 @@ class PlottingTool:
 					wdg.plotWdg.replot()
 				if library == "Matplotlib":
 					wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
-					#wdg.plotWdg.draw()
 					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					pass
@@ -210,14 +199,12 @@ class PlottingTool:
 				self.profiles[i]["z"] = []
 			temp1 = wdg.plotWdg.itemList()
 			for j in range(len(temp1)):
-				#print str(temp1[j].rtti()) + " ** " + str(QwtPlotItem.Rtti_PlotCurve)
 				if temp1[j].rtti() == QwtPlotItem.Rtti_PlotCurve:
 					temp1[j].detach()
 			#wdg.plotWdg.replot()
 		if library == "Matplotlib":
 			wdg.plotWdg.figure.get_axes()[0].cla()
 			self.manageMatplotlibAxe(wdg.plotWdg.figure.get_axes()[0])					
-			#wdg.plotWdg.draw()
 			#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 			#wdg.plotWdg.draw()	
 
@@ -237,7 +224,6 @@ class PlottingTool:
 			for i in range(len(temp1)):
 				if name == str(temp1[i].get_gid()):
 					temp1[i].set_color((color1.red() / 255 , color1.green() / 255 , color1.blue() / 255 ,  color1.alpha() / 255 ))
-					#wdg.plotWdg.draw()
 					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break
@@ -258,7 +244,6 @@ class PlottingTool:
 					wdg.plotWdg.replot()
 					break				
 		if library == "Matplotlib":
-			#from matplotlib import *
 			temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
 			for i in range(len(temp1)):
 				#print temp1[i]
@@ -267,21 +252,82 @@ class PlottingTool:
 						temp1[i].set_visible(True)
 					else:
 						temp1[i].set_visible(False)
-					#wdg.plotWdg.draw()
 					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break	
 
 			
 	def manageMatplotlibAxe(self, axe1):
-		#axe1.grid( which = "major" , linewidth = 0.05, linestyle = ":")
-		#axe1.grid(True, which = "major" , linestyle = ".")
 		axe1.grid()
-		#axe1.tick_params(axis = "both", which = "major", direction= "out", pad = 0, length=10, width=1, bottom = True, top = False, left = True, right = False)
 		axe1.tick_params(axis = "both", which = "major", direction= "out", length=10, width=1, bottom = True, top = False, left = True, right = False)
 		axe1.minorticks_on()
 		axe1.tick_params(axis = "both", which = "minor", direction= "out", length=5, width=1, bottom = True, top = False, left = True, right = False)
-		#axe1.tick(
-		#axe1.set_ticks_position("left", "bottom")
-		
 
+
+
+	def outPrint(self, iface, wdg, mdl, library): # Postscript file rendering doesn't work properly yet.
+		for i in range (0,mdl.rowCount()):
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
+				#return
+		fileName = "Profile of " + name + ".ps"
+		if not fileName.isEmpty():
+			if library == "Qwt5":		
+				printer = QPrinter()
+				printer.setCreator("QGIS Profile Plugin")
+				printer.setDocName("QGIS Profile")
+				printer.setOutputFileName(fileName)
+				printer.setColorMode(QPrinter.Color)
+				printer.setOrientation(QPrinter.Portrait)
+				dialog = QPrintDialog(printer)
+				if dialog.exec_():
+					wdg.plotWdg.print_(printer)
+			if library == "Matplotlib":
+				wdg.plotWdg.figure.savefig(str(fileName))
+
+
+	def outPDF(self, iface, wdg, mdl, library):
+		for i in range (0,mdl.rowCount()):
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
+				break
+		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".pdf","Portable Document Format (*.pdf)")
+		if not fileName.isEmpty():
+			if library == "Qwt5":
+				printer = QPrinter()
+				printer.setCreator('QGIS Profile Plugin')
+				printer.setOutputFileName(fileName)
+				printer.setOutputFormat(QPrinter.PdfFormat)
+				printer.setOrientation(QPrinter.Landscape)
+				wdg.plotWdg.print_(printer)
+			if library == "Matplotlib":
+				wdg.plotWdg.figure.savefig(str(fileName))
+
+
+
+	def outSVG(self, iface, wdg, mdl, library):
+		for i in range (0,mdl.rowCount()):
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
+				#return
+		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
+		if not fileName.isEmpty():
+			if library == "Qwt5":
+				printer = QSvgGenerator()
+				printer.setFileName(fileName)
+				printer.setSize(QSize(800, 400))
+				wdg.plotWdg.print_(printer)
+			if library == "Matplotlib":
+				wdg.plotWdg.figure.savefig(str(fileName))
+				
+	def outPNG(self, iface, wdg, mdl, library):
+		for i in range (0,mdl.rowCount()):
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
+				#return
+		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".png","Portable Network Graphics (*.png)")
+		if not fileName.isEmpty():
+			if library == "Qwt5":
+				QPixmap.grabWidget(wdg.plotWdg).save(str(fileName), "PNG")
+			if library == "Matplotlib":
+				wdg.plotWdg.figure.savefig(str(fileName))	

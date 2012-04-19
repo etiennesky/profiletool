@@ -36,6 +36,7 @@ from tools.doprofile import DoProfile
 from tools.ptmaptool import ProfiletoolMapTool
 from tools.tableviewtool import TableViewTool
 from tools.selectlinetool import SelectLineTool
+from tools.plottingtool import PlottingTool
 
 class ProfilePlugin:
 
@@ -89,7 +90,6 @@ class ProfilePlugin:
 			self.wdg = Ui_PTDockWidget(self.iface.mainWindow(), self.iface, self.mdl)
 			self.wdg.showIt()
 			self.doprofile = DoProfile(self.iface,self.wdg,self.tool)
-			#self.wdg.showIt()
 			QObject.connect(self.wdg, SIGNAL( "closed(PyQt_PyObject)" ), self.cleaning2)
 			QObject.connect(self.wdg.butPrint, SIGNAL("clicked()"), self.outPrint)
 			QObject.connect(self.wdg.butPDF, SIGNAL("clicked()"), self.outPDF)
@@ -298,47 +298,15 @@ class ProfilePlugin:
 
 	#******************************** Button of Dock for printing ****************************************
 
+
 	def outPrint(self): # Postscript file rendering doesn't work properly yet.
-		for i in range (0,self.mdl.rowCount()):
-			if  self.mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				name = str(self.mdl.item(i,2).data(Qt.EditRole).toPyObject())
-				#return
-		fileName = "Profile of " + name + ".ps"
-		printer = QPrinter()
-		printer.setCreator("QGIS Profile Plugin")
-		printer.setDocName("QGIS Profile")
-		printer.setOutputFileName(fileName)
-		printer.setColorMode(QPrinter.Color)
-		printer.setOrientation(QPrinter.Portrait)
-		dialog = QPrintDialog(printer)
-		if dialog.exec_():
-			self.wdg.qwtPlot.print_(printer)
-
-
+		PlottingTool().outPrint(self.iface, self.wdg, self.mdl, self.plotlibrary)
+		
 	def outPDF(self):
-		for i in range (0,self.mdl.rowCount()):
-			if  self.mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				name = str(self.mdl.item(i,2).data(Qt.EditRole).toPyObject())
-				break
-		fileName = QFileDialog.getSaveFileName(self.iface.mainWindow(), "Save As","Profile of " + name + ".pdf","Portable Document Format (*.pdf)")
-		if not fileName.isEmpty():
-			printer = QPrinter()
-			printer.setCreator('QGIS Profile Plugin')
-			printer.setOutputFileName(fileName)
-			printer.setOutputFormat(QPrinter.PdfFormat)
-			printer.setOrientation(QPrinter.Landscape)
-			self.wdg.qwtPlot.print_(printer)
+		PlottingTool().outPDF(self.iface, self.wdg, self.mdl, self.plotlibrary)
 
 	def outSVG(self):
-		for i in range (0,self.mdl.rowCount()):
-			if  self.mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
-				name = str(self.mdl.item(i,2).data(Qt.EditRole).toPyObject())
-				#return
-		fileName = QFileDialog.getSaveFileName(self.iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
-		if not fileName.isEmpty():
-			printer = QSvgGenerator()
-			printer.setFileName(fileName)
-			printer.setSize(QSize(800, 400))
-			self.wdg.qwtPlot.print_(printer)
+		PlottingTool().outSVG(self.iface, self.wdg, self.mdl, self.plotlibrary)		
 
-
+	def outPNG(self):
+		PlottingTool().outPNG(self.iface, self.wdg, self.mdl, self.plotlibrary)		

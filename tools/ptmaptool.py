@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+#-----------------------------------------------------------
+# 
+# Profile
+# Copyright (C) 2008  Borys Jurgiel
+# Copyright (C) 2012  Patrice Verchere
 #-----------------------------------------------------------
 # 
 # licensed under the terms of GNU GPL 2

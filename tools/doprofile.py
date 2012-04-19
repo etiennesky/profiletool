@@ -54,8 +54,6 @@ class DoProfile(QWidget):
 		self.dockwidget.scaleSlider.setMinimum(0)
 		self.dockwidget.scaleSlider.setMaximum(100)
 		self.dockwidget.scaleSlider.setValue(100)
-		#init the readertool
-		#self.datardrtl = DataReaderTool()
 
 
 	#**************************** function part *************************************************
@@ -78,7 +76,6 @@ class DoProfile(QWidget):
 		for i in range(0 , model1.rowCount()):
 			self.profiles.append( {"layer": model1.item(i,4).data(Qt.EditRole).toPyObject() } )
 			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole).toPyObject() - 1
-			#self.profiles[i] = self.datardrtl.dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw)
 			self.profiles[i] = DataReaderTool().dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw, self.dockwidget.checkBox.isChecked())			
 		PlottingTool().attachCurves(self.dockwidget, self.profiles, model1, library)
 		PlottingTool().reScalePlot(self.dockwidget.scaleSlider.value(), self.dockwidget, self.profiles, library)
