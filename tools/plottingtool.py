@@ -270,7 +270,7 @@ class PlottingTool:
 			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
 				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
 				#return
-		fileName = "Profile of " + name + ".ps"
+		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".ps","PostScript Format (*.ps)")
 		if not fileName.isEmpty():
 			if library == "Qwt5":		
 				printer = QPrinter()

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/profiletool.ui'
+# Form implementation generated from reading ui file 'profiletool.ui'
 #
-# Created: Sat Apr  7 10:05:10 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Sat Apr 28 11:18:46 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,7 +18,6 @@ class Ui_ProfileTool(object):
     def setupUi(self, ProfileTool):
         ProfileTool.setObjectName(_fromUtf8("ProfileTool"))
         ProfileTool.resize(561, 332)
-        ProfileTool.setWindowTitle(QtGui.QApplication.translate("ProfileTool", "Profile Tool", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetContents = QtGui.QWidget()
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -57,41 +56,6 @@ class Ui_ProfileTool(object):
         self.scaleSlider.setOrientation(QtCore.Qt.Vertical)
         self.scaleSlider.setObjectName(_fromUtf8("scaleSlider"))
         self.gridLayout.addWidget(self.scaleSlider, 0, 0, 1, 1)
-        self._26 = QtGui.QHBoxLayout()
-        self._26.setObjectName(_fromUtf8("_26"))
-        self.butPrint = QtGui.QPushButton(self.tab_1)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.butPrint.sizePolicy().hasHeightForWidth())
-        self.butPrint.setSizePolicy(sizePolicy)
-        self.butPrint.setMinimumSize(QtCore.QSize(10, 20))
-        self.butPrint.setText(QtGui.QApplication.translate("ProfileTool", "Print", None, QtGui.QApplication.UnicodeUTF8))
-        self.butPrint.setObjectName(_fromUtf8("butPrint"))
-        self._26.addWidget(self.butPrint)
-        self.butPDF = QtGui.QPushButton(self.tab_1)
-        self.butPDF.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.butPDF.sizePolicy().hasHeightForWidth())
-        self.butPDF.setSizePolicy(sizePolicy)
-        self.butPDF.setMinimumSize(QtCore.QSize(10, 20))
-        self.butPDF.setText(QtGui.QApplication.translate("ProfileTool", "Save as PDF", None, QtGui.QApplication.UnicodeUTF8))
-        self.butPDF.setObjectName(_fromUtf8("butPDF"))
-        self._26.addWidget(self.butPDF)
-        self.butSVG = QtGui.QPushButton(self.tab_1)
-        self.butSVG.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.butSVG.sizePolicy().hasHeightForWidth())
-        self.butSVG.setSizePolicy(sizePolicy)
-        self.butSVG.setMinimumSize(QtCore.QSize(10, 20))
-        self.butSVG.setText(QtGui.QApplication.translate("ProfileTool", "Save as SVG", None, QtGui.QApplication.UnicodeUTF8))
-        self.butSVG.setObjectName(_fromUtf8("butSVG"))
-        self._26.addWidget(self.butSVG)
-        self.gridLayout.addLayout(self._26, 1, 1, 1, 1)
         self.frame_for_plot = QtGui.QFrame(self.tab_1)
         self.frame_for_plot.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_for_plot.setFrameShadow(QtGui.QFrame.Raised)
@@ -113,7 +77,6 @@ class Ui_ProfileTool(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.pushButton_2 = QtGui.QPushButton(self.tab_1)
         self.pushButton_2.setMinimumSize(QtCore.QSize(10, 20))
-        self.pushButton_2.setText(QtGui.QApplication.translate("ProfileTool", "Add Raster", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_2.setAutoRepeat(False)
         self.pushButton_2.setAutoDefault(False)
         self.pushButton_2.setDefault(False)
@@ -122,7 +85,6 @@ class Ui_ProfileTool(object):
         self.horizontalLayout.addWidget(self.pushButton_2)
         self.pushButton = QtGui.QPushButton(self.tab_1)
         self.pushButton.setMinimumSize(QtCore.QSize(10, 20))
-        self.pushButton.setText(QtGui.QApplication.translate("ProfileTool", "Remove raster", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -137,7 +99,7 @@ class Ui_ProfileTool(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 96, 26))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 517, 244))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_2.addWidget(self.scrollArea)
@@ -157,7 +119,6 @@ class Ui_ProfileTool(object):
         self.gridLayout_2.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.groupBox_4 = QtGui.QGroupBox(self.frame)
-        self.groupBox_4.setTitle(QtGui.QApplication.translate("ProfileTool", "Selection type", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.groupBox_4)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
@@ -171,7 +132,6 @@ class Ui_ProfileTool(object):
         self.verticalLayout_5.addWidget(self.comboBox)
         self.gridLayout_2.addWidget(self.groupBox_4, 0, 0, 1, 1)
         self.groupBox_2 = QtGui.QGroupBox(self.frame)
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("ProfileTool", "Full Resolution", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.verticalLayout_7 = QtGui.QVBoxLayout(self.groupBox_2)
         self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
@@ -181,12 +141,10 @@ class Ui_ProfileTool(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBox.sizePolicy().hasHeightForWidth())
         self.checkBox.setSizePolicy(sizePolicy)
-        self.checkBox.setText(QtGui.QApplication.translate("ProfileTool", "Full resolution enabled", None, QtGui.QApplication.UnicodeUTF8))
         self.checkBox.setObjectName(_fromUtf8("checkBox"))
         self.verticalLayout_7.addWidget(self.checkBox)
         self.gridLayout_2.addWidget(self.groupBox_2, 2, 0, 1, 1)
         self.groupBox_3 = QtGui.QGroupBox(self.frame)
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("ProfileTool", "Plot library", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.verticalLayout_8 = QtGui.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_8.setObjectName(_fromUtf8("verticalLayout_8"))
@@ -204,7 +162,14 @@ class Ui_ProfileTool(object):
         QtCore.QMetaObject.connectSlotsByName(ProfileTool)
 
     def retranslateUi(self, ProfileTool):
+        ProfileTool.setWindowTitle(QtGui.QApplication.translate("ProfileTool", "Profile Tool", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_2.setText(QtGui.QApplication.translate("ProfileTool", "Add Raster", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("ProfileTool", "Remove raster", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), QtGui.QApplication.translate("ProfileTool", "&Profile", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("ProfileTool", "Table", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_4.setTitle(QtGui.QApplication.translate("ProfileTool", "Selection type", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_2.setTitle(QtGui.QApplication.translate("ProfileTool", "Full Resolution", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkBox.setText(QtGui.QApplication.translate("ProfileTool", "Full resolution enabled", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_3.setTitle(QtGui.QApplication.translate("ProfileTool", "Plot library", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("ProfileTool", "Settings", None, QtGui.QApplication.UnicodeUTF8))
 
