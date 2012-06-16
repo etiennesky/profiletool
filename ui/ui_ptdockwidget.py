@@ -205,8 +205,11 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 		if library == "Matplotlib":
 			self.plotWdg = PlottingTool().changePlotWidget("Matplotlib", self.frame_for_plot)
 			self.verticalLayout_plot.addWidget(self.plotWdg)
-			self.verticalLayout_plot.addWidget( matplotlib.backends.backend_qt4agg.NavigationToolbar2QTAgg(self.plotWdg, self.frame_for_plot) )
-
+			mpltoolbar = matplotlib.backends.backend_qt4agg.NavigationToolbar2QTAgg(self.plotWdg, self.frame_for_plot)
+			self.verticalLayout_plot.addWidget( mpltoolbar )
+			lstActions = mpltoolbar.actions()
+			mpltoolbar.removeAction( lstActions[ 7 ] )
+			mpltoolbar.removeAction( lstActions[ 8 ] )
 
 
 	def outPrint(self): # Postscript file rendering doesn't work properly yet.

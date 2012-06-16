@@ -32,12 +32,12 @@ import platform
 from math import sqrt
 try:
 	from PyQt4.Qwt5 import *
-	#print "Qwt5 imported"
+	print "Qwt5 imported"
 except:
 	pass
 try:
 	from matplotlib import *
-	#print "matplotlib imported"	
+	print "matplotlib imported"	
 except:
 	pass	
 
@@ -117,7 +117,7 @@ class PlottingTool:
 				y2 = float(pointstoDraw[i+1][1])
 				profileLen = sqrt (((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1))) + profileLen
 				wdg.plotWdg.figure.get_axes()[0].vlines(profileLen, 0, 1000, linewidth = 1)
-			profileLen = 0	
+			profileLen = 0
 
 
 
@@ -224,7 +224,7 @@ class PlottingTool:
 			for i in range(len(temp1)):
 				if name == str(temp1[i].get_gid()):
 					temp1[i].set_color((color1.red() / 255 , color1.green() / 255 , color1.blue() / 255 ,  color1.alpha() / 255 ))
-					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
+					#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break
 			
