@@ -92,6 +92,11 @@ class TableViewTool:
 		
 		
 	def removeLayer(self, iface, mdl):
+                if mdl.rowCount() < 2:
+                        if mdl.rowCount() == 1:
+                                mdl.removeRow(0)
+                        return
+
 		list1 = []
 		for i in range(0,mdl.rowCount()):
 			list1.append(str(i +1) + " : " + mdl.item(i,2).data(Qt.EditRole).toPyObject())
