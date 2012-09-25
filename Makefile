@@ -39,7 +39,7 @@ resources: $(RC_FILES)
 
 $(UI_FILES): %.py: %.ui
 	pyuic4 -o $@ $<
-	
+
 $(RC_FILES): %.py: %.qrc
 	pyrcc4 -o $@ $<
 
@@ -53,7 +53,7 @@ compile: $(UI_FILES) $(RESOURCE_FILES)
 # The deploy  target only works on unix like operating system where
 # the Python plugin directory is located at:
 # $HOME/.qgis/python/plugins
-deploy:
+deploy: all
 	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
 	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)/tools
 	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)/icons

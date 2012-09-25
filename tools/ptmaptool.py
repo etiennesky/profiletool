@@ -59,7 +59,7 @@ class ProfiletoolMapTool(QgsMapTool):
 
 	def deactivate(self):
 		self.emit( SIGNAL("deactivate") )
-		self.button.setCheckable(False)
+		#self.button.setCheckable(False)
 		#QgsMapTool.deactivate(self)
 
 

@@ -43,6 +43,8 @@ class ProfilePlugin:
 	def __init__(self, iface):
 		self.iface = iface
 		self.canvas = iface.mapCanvas()
+                self.wdg = None
+                self.tool = None
 
 
 	def initGui(self):
@@ -74,6 +76,8 @@ class ProfilePlugin:
 
 
 	def unload(self):
+                if not self.wdg is None:
+                        self.wdg.close()
 		self.iface.removeToolBarIcon(self.action)
 		self.iface.removePluginMenu("&Profile Tool", self.action)
 		self.iface.removePluginMenu("&Profile Tool", self.aboutAction)
