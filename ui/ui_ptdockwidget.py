@@ -95,8 +95,8 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 		
 		
 	def addOptionComboboxItems(self):
-		self.comboBox.addItem("Temporary polyline")
-		self.comboBox.addItem("Selected polyline")
+		#self.comboBox.addItem("Temporary polyline")
+		#self.comboBox.addItem("Selected polyline")
 		if Qwt5_loaded:
 			self.comboBox_2.addItem("Qwt5")
 		if matplotlib_loaded:
@@ -117,8 +117,14 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 		while layout.count():
                         child = layout.takeAt(0)
                         child.widget().deleteLater()
+
 		if library == "Qwt5":
-                        self.widget_save_buttons.setVisible( True )
+                        self.stackedWidget.setCurrentIndex(0)
+                        widget1 = self.stackedWidget.widget(1)
+                        if widget1:
+                                self.stackedWidget.removeWidget( widget1 )
+                                widget1 = None
+                        #self.widget_save_buttons.setVisible( True )
 			self.plotWdg = PlottingTool().changePlotWidget("Qwt5", self.frame_for_plot)
 			layout.addWidget(self.plotWdg)
 						
@@ -132,11 +138,14 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
                         QObject.connect(self.butSVG, SIGNAL("clicked()"), self.outSVG)
                                 
 		elif library == "Matplotlib":
-                        self.widget_save_buttons.setVisible( False )
+                        self.stackedWidget.setCurrentIndex(0)
+                        #self.widget_save_buttons.setVisible( False )
 			self.plotWdg = PlottingTool().changePlotWidget("Matplotlib", self.frame_for_plot)
 			layout.addWidget(self.plotWdg)
 			mpltoolbar = matplotlib.backends.backend_qt4agg.NavigationToolbar2QTAgg(self.plotWdg, self.frame_for_plot)
-			layout.addWidget( mpltoolbar )
+			#layout.addWidget( mpltoolbar )
+                        self.stackedWidget.insertWidget(1, mpltoolbar)
+                        self.stackedWidget.setCurrentIndex(1)
 			lstActions = mpltoolbar.actions()
 			mpltoolbar.removeAction( lstActions[ 7 ] )
 			mpltoolbar.removeAction( lstActions[ 8 ] )
