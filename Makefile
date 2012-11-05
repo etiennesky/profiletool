@@ -65,3 +65,13 @@ deploy: all
 	cp -rvf $(TOOL_DIR) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
 	cp -rvf $(ICONS_DIR) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
 
+# The dclean target removes compiled python files from plugin directory
+# also delets any .svn entry
+dclean:
+	find $(HOME)/.qgis/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
+
+# The zip target deploys the plugin and creates a zip file with the deployed
+# content. You can then upload the zip file on http://plugins.qgis.org
+zip: deploy dclean 
+	rm -f $(PLUGINNAME).zip
+	cd $(HOME)/.qgis/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
