@@ -30,14 +30,19 @@ from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
 import platform
 from math import sqrt
+
+has_qwt = False
+has_mpl = False
 try:
 	from PyQt4.Qwt5 import *
-	print "Qwt5 imported"
+	#print "Qwt5 imported"
+        has_qwt = True
 except:
 	pass
 try:
 	from matplotlib import *
-	print "matplotlib imported"	
+	#print "matplotlib imported"	
+        has_mpl = True
 except:
 	pass	
 
@@ -47,7 +52,7 @@ class PlottingTool:
 
 
 	def changePlotWidget(self, library, frame_for_plot):
-		if library == "Qwt5":
+		if library == "Qwt5" and has_qwt:
 			plotWdg = QwtPlot(frame_for_plot)
 			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 			sizePolicy.setHorizontalStretch(0)
@@ -70,7 +75,7 @@ class PlottingTool:
 			grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
 			grid.attach(plotWdg)
 			return plotWdg
-		if library == "Matplotlib":
+		elif library == "Matplotlib" and has_mpl:
 			from matplotlib.figure import Figure
 			from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 
@@ -95,7 +100,7 @@ class PlottingTool:
 
 
 	def drawVertLine(self,wdg, pointstoDraw, library):
-		if library == "Qwt5":
+		if library == "Qwt5" and has_qwt:
 			profileLen = 0
 			for i in range(0, len(pointstoDraw)-1):
 				x1 = float(pointstoDraw[i][0])
@@ -108,7 +113,7 @@ class PlottingTool:
 				vertLine.setXValue(profileLen)
 				vertLine.attach(wdg.plotWdg)
 			profileLen = 0	
-		if library == "Matplotlib":
+		elif library == "Matplotlib" and has_mpl:
 			profileLen = 0
 			for i in range(0, len(pointstoDraw)-1):
 				x1 = float(pointstoDraw[i][0])
@@ -122,7 +127,7 @@ class PlottingTool:
 
 
 	def attachCurves(self, wdg, profiles, model1, library):
-		if library == "Qwt5":
+		if library == "Qwt5" and has_qwt:
 			for i in range(0 , model1.rowCount()):
 				curve = QwtPlotCurve(profiles[i]["layer"].name())
 				curve.setData(profiles[i]["l"], profiles[i]["z"])
@@ -140,7 +145,7 @@ class PlottingTool:
 					pass
 					#self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
 			wdg.plotWdg.replot()		
-		if library == "Matplotlib":
+		elif library == "Matplotlib" and has_mpl:
 			for i in range(0 , model1.rowCount()):
 
 				if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
@@ -181,10 +186,10 @@ class PlottingTool:
 					if self.findMax(profiles, i,scale) > maximumValue: 
 						maximumValue = self.findMax(profiles, i,scale)
 			if minimumValue < maximumValue:
-				if library == "Qwt5":
+				if library == "Qwt5" and has_qwt:
 					wdg.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)
 					wdg.plotWdg.replot()
-				if library == "Matplotlib":
+				elif library == "Matplotlib" and has_mpl:
 					wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
 					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
@@ -192,7 +197,7 @@ class PlottingTool:
 
 
 	def clearData(self, wdg, profiles, library): 							# erase one of profiles
-		if library == "Qwt5":
+		if library == "Qwt5" and has_qwt:
 			wdg.plotWdg.clear()
 			for i in range(0,len(self.profiles)):
 				self.profiles[i]["l"] = []
@@ -202,7 +207,7 @@ class PlottingTool:
 				if temp1[j].rtti() == QwtPlotItem.Rtti_PlotCurve:
 					temp1[j].detach()
 			#wdg.plotWdg.replot()
-		if library == "Matplotlib":
+		elif library == "Matplotlib" and has_mpl:
 			wdg.plotWdg.figure.get_axes()[0].cla()
 			self.manageMatplotlibAxe(wdg.plotWdg.figure.get_axes()[0])					
 			#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
@@ -272,7 +277,7 @@ class PlottingTool:
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".ps","PostScript Format (*.ps)")
 		if not fileName.isEmpty():
-			if library == "Qwt5":		
+			if library == "Qwt5" and has_qwt:		
 				printer = QPrinter()
 				printer.setCreator("QGIS Profile Plugin")
 				printer.setDocName("QGIS Profile")
@@ -282,7 +287,7 @@ class PlottingTool:
 				dialog = QPrintDialog(printer)
 				if dialog.exec_():
 					wdg.plotWdg.print_(printer)
-			if library == "Matplotlib":
+			elif library == "Matplotlib" and has_mpl:
 				wdg.plotWdg.figure.savefig(str(fileName))
 
 
@@ -293,14 +298,14 @@ class PlottingTool:
 				break
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".pdf","Portable Document Format (*.pdf)")
 		if not fileName.isEmpty():
-			if library == "Qwt5":
+			if library == "Qwt5" and has_qwt:
 				printer = QPrinter()
 				printer.setCreator('QGIS Profile Plugin')
 				printer.setOutputFileName(fileName)
 				printer.setOutputFormat(QPrinter.PdfFormat)
 				printer.setOrientation(QPrinter.Landscape)
 				wdg.plotWdg.print_(printer)
-			if library == "Matplotlib":
+			elif library == "Matplotlib" and has_mpl:
 				wdg.plotWdg.figure.savefig(str(fileName))
 
 
@@ -312,12 +317,12 @@ class PlottingTool:
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
 		if not fileName.isEmpty():
-			if library == "Qwt5":
+			if library == "Qwt5" and has_qwt:
 				printer = QSvgGenerator()
 				printer.setFileName(fileName)
 				printer.setSize(QSize(800, 400))
 				wdg.plotWdg.print_(printer)
-			if library == "Matplotlib":
+			elif library == "Matplotlib" and has_mpl:
 				wdg.plotWdg.figure.savefig(str(fileName))
 				
 	def outPNG(self, iface, wdg, mdl, library):
@@ -327,7 +332,7 @@ class PlottingTool:
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".png","Portable Network Graphics (*.png)")
 		if not fileName.isEmpty():
-			if library == "Qwt5":
+			if library == "Qwt5" and has_qwt:
 				QPixmap.grabWidget(wdg.plotWdg).save(str(fileName), "PNG")
-			if library == "Matplotlib":
+			elif library == "Matplotlib" and has_mpl:
 				wdg.plotWdg.figure.savefig(str(fileName))	

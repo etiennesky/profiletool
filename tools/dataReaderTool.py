@@ -27,12 +27,10 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qt import *
-from PyQt4.Qwt5 import *
 from qgis.core import *
 
-from math import sqrt
-
 import platform
+from math import sqrt
 
 
 class DataReaderTool:
@@ -45,8 +43,7 @@ class DataReaderTool:
 		Return a dictionnary : {"layer" : layer read, 
 								"band" : band read, 
 								"l" : array of computed lenght, 
-								"z" : array of computed z ,
-								"curve" : qwtplot curve } 
+								"z" : array of computed z 
 		"""
 		#init
 		self.tool = tool1						#needed to transform point coordinates

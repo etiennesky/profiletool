@@ -27,7 +27,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qt import *
-from PyQt4.Qwt5 import *
 from PyQt4.QtSvg import * # required in some distros
 from qgis.core import *
 from plottingtool import PlottingTool
