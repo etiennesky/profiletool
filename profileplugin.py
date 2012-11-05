@@ -95,9 +95,6 @@ class ProfilePlugin:
 			self.wdg.showIt()
 			self.doprofile = DoProfile(self.iface,self.wdg,self.tool)
 			QObject.connect(self.wdg, SIGNAL( "closed(PyQt_PyObject)" ), self.cleaning2)
-			"""QObject.connect(self.wdg.butPrint, SIGNAL("clicked()"), self.outPrint)
-			QObject.connect(self.wdg.butPDF, SIGNAL("clicked()"), self.outPDF)
-			QObject.connect(self.wdg.butSVG, SIGNAL("clicked()"), self.outSVG)"""
 			QObject.connect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
 			QObject.connect(self.wdg.pushButton_2, SIGNAL("clicked()"), self.addLayer)
 			QObject.connect(self.wdg.pushButton, SIGNAL("clicked()"), self.removeLayer)
@@ -250,9 +247,6 @@ class ProfilePlugin:
 		self.iface.mainWindow().statusBar().showMessage( "" )
 
 	def cleaning2(self):		#used when Dock dialog is closed
-		"""QObject.disconnect(self.wdg.butPrint, SIGNAL("clicked()"), self.outPrint)
-		QObject.disconnect(self.wdg.butPDF, SIGNAL("clicked()"), self.outPDF)
-		QObject.disconnect(self.wdg.butSVG, SIGNAL("clicked()"), self.outSVG)"""
 		QObject.disconnect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
 		QObject.disconnect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
 		self.mdl = None

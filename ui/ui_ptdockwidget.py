@@ -67,6 +67,8 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 		self.mdl = mdl1
 		#self.showed = False
 
+                QObject.connect(self.butSaveAs, SIGNAL("clicked()"), self.saveAs)
+
 	def showIt(self):
 		#self.setLocation( Qt.BottomDockWidgetArea )
 		self.location = Qt.BottomDockWidgetArea
@@ -106,9 +108,7 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 
 	def closeEvent(self, event):
 		self.emit( SIGNAL( "closed(PyQt_PyObject)" ), self )
-                QObject.disconnect(self.butPrint, SIGNAL("clicked()"), self.outPrint)
-                QObject.disconnect(self.butPDF, SIGNAL("clicked()"), self.outPDF)
-                QObject.disconnect(self.butSVG, SIGNAL("clicked()"), self.outSVG)
+                QObject.disconnect(self.butSaveAs, SIGNAL("clicked()"), self.saveAs)
 		return QDockWidget.closeEvent(self, event)
 
 
@@ -127,15 +127,15 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
                         #self.widget_save_buttons.setVisible( True )
 			self.plotWdg = PlottingTool().changePlotWidget("Qwt5", self.frame_for_plot)
 			layout.addWidget(self.plotWdg)
-						
-			if QT_VERSION >= 0X040100:
-				self.butPDF.setEnabled(True)
-			if QT_VERSION >= 0X040300:
-				self.butSVG.setEnabled(True)
-
-			QObject.connect(self.butPrint, SIGNAL("clicked()"), self.outPrint)
-                        QObject.connect(self.butPDF, SIGNAL("clicked()"), self.outPDF)
-                        QObject.connect(self.butSVG, SIGNAL("clicked()"), self.outSVG)
+                        		
+			if QT_VERSION < 0X040100:
+                                idx = self.cbxSaveAs.model().index(0, 0)
+                                self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
+                                self.cbxSaveAs.setCurrentIndex(1)
+			if QT_VERSION < 0X040300:
+                                idx = self.cbxSaveAs.model().index(1, 0)
+                                self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
+                                self.cbxSaveAs.setCurrentIndex(2)
                                 
 		elif library == "Matplotlib":
                         self.stackedWidget.setCurrentIndex(0)
@@ -150,7 +150,20 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 			mpltoolbar.removeAction( lstActions[ 7 ] )
 			mpltoolbar.removeAction( lstActions[ 8 ] )
 
-
+        # generic save as button
+        def saveAs(self):
+                idx = self.cbxSaveAs.currentIndex()
+                if idx == 0:
+                        self.outPDF()
+                elif idx == 1:
+                        self.outPNG()
+                elif idx == 2:
+                        self.outSVG()
+                elif idx == 3:
+                        self.outPrint()
+                else:
+                        print('plottingtool: invalid index '+str(idx))
+		
 	def outPrint(self): # Postscript file rendering doesn't work properly yet.
 		PlottingTool().outPrint(self.iface, self, self.mdl, self.comboBox_2.currentText ())
 		
