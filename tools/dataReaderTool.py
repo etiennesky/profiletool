@@ -111,12 +111,21 @@ class DataReaderTool:
 				l += [dlD * n + lbefore]
 				xC = x1C + dxC * n
 				yC = y1C + dyC * n
-				ident = layer.identify(QgsPoint(xC,yC))
-				try:
-					attr = float(ident[1].values()[choosenBand])
-				except:
-					attr = 0
-				#print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
+                                attr = 0
+                                if QGis.QGIS_VERSION_INT >= 10900: # for QGIS >= 1.9
+                                        # this code adapted from valuetool plugin
+                                        ident = layer.dataProvider().identify(QgsPoint(xC,yC), QgsRasterDataProvider.IdentifyFormatValue )
+                                        if ident is not None and ident.has_key(choosenBand+1):
+                                                attr = ident[choosenBand+1].toDouble()[0]
+                                                if layer.dataProvider().isNoDataValue ( choosenBand+1, attr ): 
+                                                        attr = 0
+                                else:
+                                        ident = layer.identify(QgsPoint(xC,yC))
+                                        try:
+                                                attr = float(ident[1].values()[choosenBand])
+                                        except:
+                                                pass
+                                                #print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
 				z += [attr]
 				temp = n
 				if n % stepp == 0:
