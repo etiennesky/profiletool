@@ -30,13 +30,20 @@ def description():
  return "Plots terrain profile"
 
 def version():
- return "Version 3.4.0"
+ return "Version 3.5.0"
 
 def qgisMinimumVersion():
   return '1.6'
 
+def icon():
+    return "icons/profileIcon.png"
+
 def authorName():
-  return 'Borys Jurgiel - Patrice Verchere'
+  return 'Borys Jurgiel - Patrice Verchere - Etienne Tourigny'
+def author():
+  return 'Borys Jurgiel - Patrice Verchere - Etienne Tourigny'
+def email():
+  return 'etourigny.dev@gmail.com'
 
 def homepage():
   return 'http://hub.qgis.org/projects/profiletool/wiki'
