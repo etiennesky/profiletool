@@ -35,13 +35,14 @@ has_qwt = False
 has_mpl = False
 try:
 	from PyQt4.Qwt5 import *
-	#print "Qwt5 imported"
+	#print("profiletool : Qwt5 imported")
         has_qwt = True
 except:
 	pass
 try:
 	from matplotlib import *
-	#print "matplotlib imported"	
+        import matplotlib
+	#print("profiletool : matplotlib %s imported" % matplotlib.__version__)
         has_mpl = True
 except:
 	pass	
@@ -52,6 +53,7 @@ class PlottingTool:
 
 
 	def changePlotWidget(self, library, frame_for_plot):
+                #print("profiletool : changePlotWidget( %s )" % library )
 		if library == "Qwt5" and has_qwt:
 			plotWdg = QwtPlot(frame_for_plot)
 			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -79,7 +81,7 @@ class PlottingTool:
 			from matplotlib.figure import Figure
 			from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 
-			fig = Figure( (1.0, 1.0), linewidth=0.0, subplotpars = figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)				
+			fig = Figure( (1.0, 1.0), linewidth=0.0, subplotpars = matplotlib.figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)				
 					
 			font = {'family' : 'arial', 'weight' : 'normal', 'size'   : 12}
 			rc('font', **font)
