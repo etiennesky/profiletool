@@ -122,4 +122,7 @@ class SelectLineTool:
 			point2 = tool.toMapCoordinates(layer, closestFeature.geometry().vertexAt(k) )
 			pointstoDraw += [[point2.x(),point2.y()]]
 			k += 1
+                # replicate last point (bug #6680)
+                if k > 0 :
+                        pointstoDraw += [[point2.x(),point2.y()]]
 		return [pointstoDraw, layerindex, previousLayer]
