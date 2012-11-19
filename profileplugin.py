@@ -247,11 +247,12 @@ class ProfilePlugin:
 		self.iface.mainWindow().statusBar().showMessage( "" )
 
 	def cleaning2(self):		#used when Dock dialog is closed
-		QObject.disconnect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
-		QObject.disconnect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
-		self.mdl = None
-		self.dockOpened = False
-		self.cleaning()
+                QObject.disconnect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
+                QObject.disconnect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
+                self.mdl = None
+                self.dockOpened = False
+                self.cleaning()
+                self.wdg = None
 
 	#***************************** Options *******************************************
 
