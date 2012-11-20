@@ -38,7 +38,7 @@ repository=http://hub.qgis.org/projects/profiletool/repository
 icon=icons/profileIcon.png
 
 ; experimental flag
-experimental=True
+experimental=False
 
 ; deprecated flag (applies to the whole plugin and not only to the uploaded version)
 deprecated=False
