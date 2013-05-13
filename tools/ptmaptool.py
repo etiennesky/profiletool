@@ -59,8 +59,8 @@ class ProfiletoolMapTool(QgsMapTool):
 
 	def deactivate(self):
 		self.emit( SIGNAL("deactivate") )
-		self.button.setChecked(False)
-		QgsMapTool.deactivate(self)
+		#self.button.setCheckable(False)
+		#QgsMapTool.deactivate(self)
 
 
 	def isZoomTool(self):

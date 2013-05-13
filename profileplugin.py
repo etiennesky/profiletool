@@ -110,6 +110,8 @@ class ProfilePlugin:
 		#init the temp layer where the polyline is draw
 		self.polygon = False
 		self.rubberband = QgsRubberBand(self.canvas, self.polygon)
+		self.rubberband.setWidth(2)
+		self.rubberband.setColor(QColor(Qt.red))
 		#init the table where is saved the poyline
 		self.pointstoDraw = []
 		self.pointstoCal = []
@@ -130,7 +132,10 @@ class ProfilePlugin:
 				#Get mouse coords
 				mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
 				#Draw on temp layer
-				self.rubberband.reset(self.polygon)
+				if QGis.QGIS_VERSION_INT >= 10900:
+					self.rubberband.reset(QGis.Line)
+				else:
+					self.rubberband.reset(self.polygon)
 				for i in range(0,len(self.pointstoDraw)):
 	 				self.rubberband.addPoint(QgsPoint(self.pointstoDraw[i][0],self.pointstoDraw[i][1]))
 				self.rubberband.addPoint(QgsPoint(mapPos.x(),mapPos.y()))

@@ -43,32 +43,51 @@ class SelectLineTool:
 		# get the point coordinates in the layer's CRS
 		point = tool.toLayerCoordinates(layer, QgsPoint(newPoints[0][0],newPoints[0][1]))
 
-		# retrieve all the layer's features
-		layer.select([])
 
-		if layerindex == None or layer != previousLayer:
-			# there's no previously created index or it's not the same layer,
-			# then create the index
-			layerindex = QgsSpatialIndex()
-			f = QgsFeature()
-			while layer.nextFeature(f):
-				layerindex.insertFeature(f)
-
-		# get the feature which has the closest bounding box using the spatial index
-		nearest = layerindex.nearestNeighbor( point, 1 )
-		featureId = nearest[0] if len(nearest) > 0 else None
-
-		closestFeature = QgsFeature()
-		if featureId == None or layer.featureAtId(featureId, closestFeature, True, False) == False:
-			closestFeature = None
-
+		if QGis.QGIS_VERSION_INT >= 10900:
+			if layerindex == None or layer != previousLayer:
+				# there's no previously created index or it's not the same layer,
+				# then create the index
+				layerindex = QgsSpatialIndex()
+				#rajout
+				f = QgsFeature()
+				#
+				iter = layer.getFeatures()
+				while iter.nextFeature(f):
+					layerindex.insertFeature(f)
+				# get the feature which has the closest bounding box using the spatial index
+			nearest = layerindex.nearestNeighbor( point, 1 )
+			featureId = nearest[0] if len(nearest) > 0 else None					
+			closestFeature = QgsFeature()					
+			if featureId == None or layer.getFeatures(QgsFeatureRequest(featureId)).next() == False:
+				closestFeature = None					
+		else:
+			layer.select([])
+			if layerindex == None or layer != previousLayer:
+				# there's no previously created index or it's not the same layer,
+				# then create the index
+				layerindex = QgsSpatialIndex()
+				#rajout
+				f = QgsFeature()
+				while layer.nextFeature(f):
+					layerindex.insertFeature(f)
+			# get the feature which has the closest bounding box using the spatial index
+			nearest = layerindex.nearestNeighbor( point, 1 )
+			featureId = nearest[0] if len(nearest) > 0 else None					
+			closestFeature = QgsFeature()					
+			if featureId == None or layer.featureAtId(featureId, closestFeature, True, False) == False:			
+				closestFeature = None			
+		
 
 		if layer.geometryType() != QGis.Line and closestFeature != None:
 			QMessageBox.warning( iface.mainWindow(), "Closest Feature Finder", "No vector layers selected" )
 
-
+		
 		if layer.geometryType() != QGis.Point and closestFeature != None:
 			# find the furthest bounding box borders
+			if QGis.QGIS_VERSION_INT >= 10900:
+				closestFeature = layer.getFeatures(QgsFeatureRequest(featureId)).next()
+			#
 			rect = closestFeature.geometry().boundingBox()
 
 			dist_pX_rXmax = abs( point.x() - rect.xMaximum() )
@@ -92,30 +111,52 @@ class SelectLineTool:
 			rect.setYMinimum( point.y() - height )
 			rect.setYMaximum( point.y() + height )
 
-			# retrieve all geometries into the search rectangle			
-			layer.select([], rect, True, True)
-
-			# find the nearest feature
-			minDist = -1
-			featureId = None
-			point = QgsGeometry.fromPoint(point)
-
-			f = QgsFeature()
-			while layer.nextFeature(f):
-				geom = f.geometry()
-				distance = geom.distance(point)
-				if minDist < 0 or distance < minDist:
-					minDist = distance
-					featureId = f.id()
-			# get the closest feature
-			closestFeature = QgsFeature()
-			if featureId == None or layer.featureAtId(featureId, closestFeature, True, False) == False:
-				closestFeature = None
-
-		previousLayer = layer
-
-		iface.mainWindow().statusBar().showMessage(QString("selectline"))
-		layer.removeSelection( False )
+			# retrieve all geometries into the search rectangle		
+			if QGis.QGIS_VERSION_INT >= 10900:
+				iter2 = layer.getFeatures(QgsFeatureRequest(rect))
+				# find the nearest feature
+				minDist = -1
+				featureId = None
+				point = QgsGeometry.fromPoint(point)
+				f = QgsFeature()	
+				while iter2.nextFeature(f):
+					geom = f.geometry()
+					distance = geom.distance(point)
+					if minDist < 0 or distance < minDist:
+						minDist = distance
+						featureId = f.id()
+				# get the closest feature
+				closestFeature = layer.getFeatures(QgsFeatureRequest(featureId)).next()
+				if featureId == None or layer.getFeatures(QgsFeatureRequest(featureId)).next() == False:
+					closestFeature = None
+			else:
+				layer.select([], rect, True, True)
+				# find the nearest feature
+				minDist = -1
+				featureId = None
+				point = QgsGeometry.fromPoint(point)
+				f = QgsFeature()	
+				while layer.nextFeature(f):
+					geom = f.geometry()
+					distance = geom.distance(point)
+					if minDist < 0 or distance < minDist:
+						minDist = distance
+						featureId = f.id()
+				# get the closest feature				
+				closestFeature = QgsFeature()
+				if featureId == None or layer.featureAtId(featureId, closestFeature, True, False) == False:
+					closestFeature = None
+		
+		if QGis.QGIS_VERSION_INT >= 10900:
+			previousLayer = layer
+			iface.mainWindow().statusBar().showMessage(QString("selectline"))
+			layer.removeSelection()
+		else:
+			previousLayer = layer
+			iface.mainWindow().statusBar().showMessage(QString("selectline"))
+			layer.removeSelection( False )		
+		#closest
+		#closestFeature = layer.getFeatures(QgsFeatureRequest(featureId)).next()
 		layer.select( closestFeature.id() )
 		k = 0
 		while not closestFeature.geometry().vertexAt(k) == QgsPoint(0,0):
