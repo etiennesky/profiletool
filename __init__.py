@@ -30,7 +30,7 @@ def description():
  return "Plots terrain profile"
 
 def version():
- return "Version 3.5.3"
+ return "Version 3.5.4"
 
 def qgisMinimumVersion():
   return '1.6'
