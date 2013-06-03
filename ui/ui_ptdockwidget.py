@@ -130,11 +130,11 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
                         		
 			if QT_VERSION < 0X040100:
                                 idx = self.cbxSaveAs.model().index(0, 0)
-                                self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
+                                self.cbxSaveAs.model().setData(idx, 0, Qt.UserRole - 1)
                                 self.cbxSaveAs.setCurrentIndex(1)
 			if QT_VERSION < 0X040300:
                                 idx = self.cbxSaveAs.model().index(1, 0)
-                                self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
+                                self.cbxSaveAs.model().setData(idx, 0, Qt.UserRole - 1)
                                 self.cbxSaveAs.setCurrentIndex(2)
                                 
 		elif library == "Matplotlib":

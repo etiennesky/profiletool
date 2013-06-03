@@ -1,16 +1,17 @@
 ; the next section is mandatory
 [general]
 name=Profile tool
-qgisMinimumVersion=1.0
+qgisMinimumVersion=1.9
 description=Plots terrain profile
 category=Raster
-version=version 3.5.4
+version=version 3.6.0
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+    3.6.0 : sip api v2
     3.5.4 : fix color bugs #6870
     3.5.3 : fix bugs with new api 2.0
     3.5.2 : fix bugs #6679 and #6680

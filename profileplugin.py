@@ -118,9 +118,9 @@ class ProfilePlugin:
 		self.lastClicked = [[-9999999999.9,9999999999.9]]
 		#Help about what doing
 		if self.selectionmethod == 0:
-			self.iface.mainWindow().statusBar().showMessage(QString(self.textquit0))
+			self.iface.mainWindow().statusBar().showMessage(self.textquit0)
 		elif self.selectionmethod == 1:
-			self.iface.mainWindow().statusBar().showMessage(QString(self.textquit1))
+			self.iface.mainWindow().statusBar().showMessage(self.textquit1)
 
 
 
@@ -182,7 +182,7 @@ class ProfilePlugin:
 			self.previousLayer = result[2]
 			self.doprofile.calculateProfil(self.pointstoDraw, self.mdl,self.plotlibrary, False)
 			self.pointstoDraw = []
-			self.iface.mainWindow().statusBar().showMessage(QString(self.textquit1))
+			self.iface.mainWindow().statusBar().showMessage(self.textquit1)
 
 	def doubleClicked(self,position):
 		if self.selectionmethod == 0:		
@@ -197,7 +197,7 @@ class ProfilePlugin:
 			self.pointstoDraw = []
 			#temp point to distinct leftclick and dbleclick
 			self.dblclktemp = newPoints
-			self.iface.mainWindow().statusBar().showMessage(QString(self.textquit0))
+			self.iface.mainWindow().statusBar().showMessage(self.textquit0)
 		if self.selectionmethod == 1:
 			return
 
@@ -237,7 +237,7 @@ class ProfilePlugin:
 		QObject.disconnect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
 		QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
 		self.rubberband.reset(self.polygon)
-		self.iface.mainWindow().statusBar().showMessage(QString(""))
+		self.iface.mainWindow().statusBar().showMessage("")
 
 	def cleaning(self):			#used on right click
 		try:
@@ -275,9 +275,9 @@ class ProfilePlugin:
 			self.canvas.setMapTool(self.tool)
 			self.connectTool()
 			if self.selectionmethod == 0:
-				self.iface.mainWindow().statusBar().showMessage(QString(self.textquit0))
+				self.iface.mainWindow().statusBar().showMessage(self.textquit0)
 			elif self.selectionmethod == 1:
-				self.iface.mainWindow().statusBar().showMessage(QString(self.textquit1))
+				self.iface.mainWindow().statusBar().showMessage(self.textquit1)
 				
 	def changePlotLibrary(self, item):
 		self.plotlibrary = self.wdg.comboBox_2.itemText(item)
