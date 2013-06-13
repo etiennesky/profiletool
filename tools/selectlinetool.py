@@ -149,11 +149,11 @@ class SelectLineTool:
 		
 		if QGis.QGIS_VERSION_INT >= 10900:
 			previousLayer = layer
-			iface.mainWindow().statusBar().showMessage(QString("selectline"))
+			iface.mainWindow().statusBar().showMessage("selectline")
 			layer.removeSelection()
 		else:
 			previousLayer = layer
-			iface.mainWindow().statusBar().showMessage(QString("selectline"))
+			iface.mainWindow().statusBar().showMessage("selectline")
 			layer.removeSelection( False )		
 		#closest
 		#closestFeature = layer.getFeatures(QgsFeatureRequest(featureId)).next()

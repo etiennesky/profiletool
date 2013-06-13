@@ -52,26 +52,26 @@ compile: $(UI_FILES) $(RESOURCE_FILES)
 
 # The deploy  target only works on unix like operating system where
 # the Python plugin directory is located at:
-# $HOME/.qgis/python/plugins
+# $HOME/.qgis2/python/plugins
 deploy: all
-	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)/tools
-	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)/icons
-	cp -vf $(PY_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(UI_FILES1) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)/tools
-	cp -vf $(RESOURCE_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-#	cp -vf $(RC_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(EXTRAS) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -rvf $(TOOL_DIR) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -rvf $(ICONS_DIR) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
+	mkdir -p $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	mkdir -p $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)/tools
+	mkdir -p $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)/icons
+	cp -vf $(PY_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	cp -vf $(UI_FILES1) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)/tools
+	cp -vf $(RESOURCE_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+#	cp -vf $(RC_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	cp -vf $(EXTRAS) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	cp -rvf $(TOOL_DIR) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	cp -rvf $(ICONS_DIR) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
 
 # The dclean target removes compiled python files from plugin directory
 # also delets any .svn entry
 dclean:
-	find $(HOME)/.qgis/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
+	find $(HOME)/.qgis2/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
 
 # The zip target deploys the plugin and creates a zip file with the deployed
 # content. You can then upload the zip file on http://plugins.qgis.org
 zip: deploy dclean 
 	rm -f $(PLUGINNAME).zip
-	cd $(HOME)/.qgis/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
+	cd $(HOME)/.qgis2/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
