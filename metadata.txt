@@ -29,7 +29,7 @@ tags=raster,profile
 
 homepage=http://hub.qgis.org/projects/profiletool
 tracker=http://hub.qgis.org/projects/profiletool/issues
-repository=http://hub.qgis.org/projects/profiletool/repository
+repository=https://github.com/etiennesky/profiletool
 icon=icons/profileIcon.png
 
 experimental=False
