@@ -1,17 +1,16 @@
-; the next section is mandatory
 [general]
 name=Profile tool
 qgisMinimumVersion=2.0
 description=Plots terrain profile
 category=Raster
-version=version 3.6.0
+version=version 3.6.1
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
-; end of mandatory metadata
 
-; start of optional metadata
 changelog=
+    3.6.1 : support for plugin layers for QGIS API 2 (by Peter Wells)
     3.6.0 : update to sip api v2 (and qgis 2.0)
+    3.5.5 : support for plugin layers for QGIS API 1 (by Peter Wells)
     3.5.4 : fix color bugs #6870
     3.5.3 : fix bugs with new api 2.0
     3.5.2 : fix bugs #6679 and #6680

@@ -37,14 +37,16 @@ from tools.ptmaptool import ProfiletoolMapTool
 from tools.tableviewtool import TableViewTool
 from tools.selectlinetool import SelectLineTool
 from tools.plottingtool import PlottingTool
+from tools.utils import isProfilable
 
 class ProfilePlugin:
 
 	def __init__(self, iface):
 		self.iface = iface
 		self.canvas = iface.mapCanvas()
-                self.wdg = None
-                self.tool = None
+		self.wdg = None
+		self.tool = None
+		self.lastFreeHandPoints = []
 
 
 	def initGui(self):
@@ -94,12 +96,14 @@ class ProfilePlugin:
 			self.wdg = Ui_PTDockWidget(self.iface.mainWindow(), self.iface, self.mdl)
 			self.wdg.showIt()
 			self.doprofile = DoProfile(self.iface,self.wdg,self.tool)
+			self.tableViewTool = TableViewTool()
 			QObject.connect(self.wdg, SIGNAL( "closed(PyQt_PyObject)" ), self.cleaning2)
 			QObject.connect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
 			QObject.connect(self.wdg.pushButton_2, SIGNAL("clicked()"), self.addLayer)
 			QObject.connect(self.wdg.pushButton, SIGNAL("clicked()"), self.removeLayer)
 			QObject.connect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
 			QObject.connect(self.wdg.comboBox_2, SIGNAL("currentIndexChanged(int)"), self.changePlotLibrary)
+			self.tableViewTool.layerAddedOrRemoved.connect(self.refreshPlot)
 			self.wdg.addOptionComboboxItems()
 			self.addLayer(self.iface.activeLayer())	
 			self.dockOpened = True
@@ -116,6 +120,8 @@ class ProfilePlugin:
 		self.pointstoDraw = []
 		self.pointstoCal = []
 		self.lastClicked = [[-9999999999.9,9999999999.9]]
+		# The last valid line we drew to create a free-hand profile
+		self.lastFreeHandPoints = []
 		#Help about what doing
 		if self.selectionmethod == 0:
 			self.iface.mainWindow().statusBar().showMessage(self.textquit0)
@@ -185,7 +191,7 @@ class ProfilePlugin:
 			self.iface.mainWindow().statusBar().showMessage(self.textquit1)
 
 	def doubleClicked(self,position):
-		if self.selectionmethod == 0:		
+		if self.selectionmethod == 0:
 			#Validation of line
 			mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
 			newPoints = [[mapPos.x(), mapPos.y()]]
@@ -194,6 +200,7 @@ class ProfilePlugin:
 			self.iface.mainWindow().statusBar().showMessage(str(self.pointstoDraw))
 			self.doprofile.calculateProfil(self.pointstoDraw,self.mdl, self.plotlibrary)
 			#Reset
+			self.lastFreeHandPoints = self.pointstoDraw
 			self.pointstoDraw = []
 			#temp point to distinct leftclick and dbleclick
 			self.dblclktemp = newPoints
@@ -214,13 +221,13 @@ class ProfilePlugin:
 
 		layer = self.iface.activeLayer()
 		
-		if layer == None or layer.type() != layer.RasterLayer :	#Check if a raster layer is opened and selectionned
+		if layer == None or not isProfilable(layer) :	#Check if a raster layer is opened and selectionned
 			if self.mdl == None:
 				QMessageBox.warning(self.iface.mainWindow(), "Profile Tool", "Please select one raster layer")
 				return False
 			if self.mdl.rowCount() == 0:
 				QMessageBox.warning(self.iface.mainWindow(), "Profile Tool", "Please select one raster layer")
-				return  False
+				return False
 				
 		return True
 	
@@ -254,6 +261,7 @@ class ProfilePlugin:
 	def cleaning2(self):		#used when Dock dialog is closed
                 QObject.disconnect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
                 QObject.disconnect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
+                self.tableViewTool.layerAddedOrRemoved.disconnect(self.refreshPlot)
                 self.mdl = None
                 self.dockOpened = False
                 self.cleaning()
@@ -288,17 +296,24 @@ class ProfilePlugin:
 	#************************* tableview function ******************************************
 
 	def addLayer(self , layer1 = None):
-		TableViewTool().addLayer(self.iface, self.mdl, layer1)
+		self.tableViewTool.addLayer(self.iface, self.mdl, layer1)
 
 
 	def _onClick(self,index1):					#action when clicking the tableview
-		TableViewTool().onClick(self.iface, self.wdg, self.mdl, self.plotlibrary, index1)
+		self.tableViewTool.onClick(self.iface, self.wdg, self.mdl, self.plotlibrary, index1)
 
 	def removeLayer(self):
-		TableViewTool().removeLayer(self.iface, self.mdl)
+		self.tableViewTool.removeLayer(self.iface, self.mdl)
 
 	def about(self):
 		from ui.ui_dlgabout import DlgAbout
 		DlgAbout(self.iface.mainWindow()).exec_()
 
-
+	def refreshPlot(self):
+		"""
+			Refreshes/updates the plot without requiring the user to 
+			redraw the plot line (rubberband)
+		"""
+		if self.selectionmethod == 0:
+			if len(self.lastFreeHandPoints) > 1:
+				self.doprofile.calculateProfil(self.lastFreeHandPoints, self.mdl, self.plotlibrary)

@@ -40,17 +40,17 @@ class DataReaderTool:
 
 	def dataReaderTool(self, iface1,tool1, profile1, pointstoDraw1, fullresolution1):
 		"""
-		Return a dictionnary : {"layer" : layer read, 
-								"band" : band read, 
-								"l" : array of computed lenght, 
-								"z" : array of computed z 
+		Return a dictionnary : {"layer" : layer read,
+								"band" : band read,
+								"l" : array of computed lenght,
+								"z" : array of computed z
 		"""
 		#init
 		self.tool = tool1						#needed to transform point coordinates
 		self.profiles = profile1				#profile with layer and band to compute
 		self.pointstoDraw = pointstoDraw1		#the polyline to compute
 		self.iface = iface1						#QGis interface to show messages in status bar
-		
+
 		layer = self.profiles["layer"]
 		choosenBand = self.profiles["band"]
 
@@ -83,7 +83,7 @@ class DataReaderTool:
 				try:
 					res = self.profiles["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
 				except ZeroDivisionError:
-					res = layer.rasterUnitsPerPixel() * 1.2			
+					res = layer.rasterUnitsPerPixel() * 1.2
 			#enventually use bigger step, wether full res is selected or not
 			steps = 1000  # max graph width in pixels
 			if fullresolution1:
@@ -92,7 +92,7 @@ class DataReaderTool:
 				if res != 0 and tlC/res < steps:
 					steps = int(tlC/res)
 				else:
-					steps = 1000		
+					steps = 1000
 
 			if steps < 1:
 				steps = 1
@@ -118,21 +118,20 @@ class DataReaderTool:
 				xC = x1C + dxC * n
 				yC = y1C + dyC * n
 				attr = 0
-				if QGis.QGIS_VERSION_INT >= 10900: # for QGIS >= 1.9
-					# this code adapted from valuetool plugin
-					ident = layer.dataProvider().identify(QgsPoint(xC,yC), QgsRaster.IdentifyFormatValue )
-					#if ident is not None and ident.has_key(choosenBand+1):
-					if ident is not None and (choosenBand+1 in ident.results()):
-						#attr = ident[choosenBand+1].toDouble()[0]
-						attr = ident.results()[choosenBand+1]
-						#if layer.dataProvider().isNoDataValue ( choosenBand+1, attr ): 
-							#attr = 0
-				else:
+				if layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer':
 					ident = layer.identify(QgsPoint(xC,yC))
 					try:
 						attr = float(ident[1].values()[choosenBand])
 					except:
 						pass
+				else: #RASTER LAYERS
+					# this code adapted from valuetool plugin
+					ident = layer.dataProvider().identify(QgsPoint(xC,yC), QgsRaster.IdentifyFormatValue )
+					#if ident is not None and ident.has_key(choosenBand+1):
+					if ident is not None and (choosenBand+1 in ident.results()):
+						attr = ident.results()[choosenBand+1]
+						#if layer.dataProvider().isNoDataValue ( choosenBand+1, attr ):
+							#attr = 0
 				#print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
 				z += [attr]
 				temp = n

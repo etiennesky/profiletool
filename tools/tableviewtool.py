@@ -28,10 +28,13 @@ from qgis.gui import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from plottingtool import *
+from utils import isProfilable
 
 
-class TableViewTool:
+class TableViewTool(QObject):
 	
+	layerAddedOrRemoved = pyqtSignal() # Emitted when a new layer is added
+
 	def addLayer(self , iface, mdl, layer1 = None):
 		if layer1 == None:
 			templist=[]
@@ -40,7 +43,7 @@ class TableViewTool:
 			for i in range(0, iface.mapCanvas().layerCount()):
 				donothing = False
 				layer = iface.mapCanvas().layer(i)
-				if layer.type() == layer.RasterLayer:
+				if isProfilable(layer):
 					for j in range(0, mdl.rowCount()):
 						if str(mdl.item(j,2).data(Qt.EditRole)) == str(layer.name()):
 							donothing = True
@@ -59,7 +62,8 @@ class TableViewTool:
 					for i in range (0,len(templist)):
 						if templist[i][1] == testqt:
 							layer2 = templist[i][0]
-				else: return
+				else:
+					return
 		else : 
 			layer2 = layer1
 
@@ -81,14 +85,18 @@ class TableViewTool:
 		mdl.insertRow(row)
 		mdl.setData( mdl.index(row, 0, QModelIndex())  ,True, Qt.CheckStateRole)
 		mdl.item(row,0).setFlags(Qt.ItemIsSelectable) 
-		mdl.setData( mdl.index(row, 1, QModelIndex())  ,QColor(Qt.red) , Qt.BackgroundRole)
+		lineColour = Qt.red
+		if layer2.type() == layer2.PluginLayer and layer2.LAYER_TYPE == 'crayfish_viewer':
+			lineColour = Qt.blue
+		mdl.setData( mdl.index(row, 1, QModelIndex())  ,QColor(lineColour) , Qt.BackgroundRole)
 		mdl.item(row,1).setFlags(Qt.NoItemFlags) 
 		mdl.setData( mdl.index(row, 2, QModelIndex())  ,layer2.name())
 		mdl.item(row,2).setFlags(Qt.NoItemFlags) 
 		mdl.setData( mdl.index(row, 3, QModelIndex())  ,choosenBand + 1)
 		mdl.item(row,3).setFlags(Qt.NoItemFlags) 
 		mdl.setData( mdl.index(row, 4, QModelIndex())  ,layer2)
-		mdl.item(row,4).setFlags(Qt.NoItemFlags) 
+		mdl.item(row,4).setFlags(Qt.NoItemFlags)
+		self.layerAddedOrRemoved.emit()
 		
 		
 	def removeLayer(self, iface, mdl):
@@ -106,6 +114,7 @@ class TableViewTool:
 				if testqt == (str(i+1) + " : " + mdl.item(i,2).data(Qt.EditRole)):
 					mdl.removeRow(i)
 					break
+		self.layerAddedOrRemoved.emit()
 		
 	def onClick(self, iface, wdg, mdl, plotlibrary, index1):					#action when clicking the tableview
 		temp = mdl.itemFromIndex(index1)
