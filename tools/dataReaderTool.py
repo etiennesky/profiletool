@@ -124,7 +124,7 @@ class DataReaderTool:
 					#if ident is not None and ident.has_key(choosenBand+1):
 					if ident is not None and (choosenBand+1 in ident.results()):
 						#attr = ident[choosenBand+1].toDouble()[0]
-						attr = ident.results()[choosenBand+1]
+						attr = ident.results()[choosenBand+1].toDouble()[0]
 						#if layer.dataProvider().isNoDataValue ( choosenBand+1, attr ): 
 							#attr = 0
 				else:
@@ -138,13 +138,13 @@ class DataReaderTool:
 				temp = n
 				if n % stepp == 0:
 					progress += "|"
-					self.iface.mainWindow().statusBar().showMessage(progress)
+					self.iface.mainWindow().statusBar().showMessage(QString(progress))
 			lbefore = l[len(l)-1]
 		#End of polyline analysis
 		#filling the main data dictionary "profiles"
 		self.profiles["l"] = l
 		self.profiles["z"] = z
-		self.iface.mainWindow().statusBar().showMessage("")
+		self.iface.mainWindow().statusBar().showMessage(QString(""))
 
 		return self.profiles
 

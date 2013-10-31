@@ -133,9 +133,9 @@ class PlottingTool:
 			for i in range(0 , model1.rowCount()):
 				curve = QwtPlotCurve(profiles[i]["layer"].name())
 				curve.setData(profiles[i]["l"], profiles[i]["z"])
-				curve.setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole), 3))
+				curve.setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), 3))
 				curve.attach(wdg.plotWdg)
-				if model1.item(i,0).data(Qt.CheckStateRole):
+				if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
 					curve.setVisible(True)
 				else:
 					curve.setVisible(False)					
@@ -150,11 +150,11 @@ class PlottingTool:
 		elif library == "Matplotlib" and has_mpl:
 			for i in range(0 , model1.rowCount()):
 
-				if model1.item(i,0).data(Qt.CheckStateRole):
+				if model1.item(i,0).data(Qt.CheckStateRole).toPyObject():
 					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = True)
 				else:
 					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = False)				
-				self.changeColor(wdg, "Matplotlib", model1.item(i,1).data(Qt.BackgroundRole), profiles[i]["layer"].name())
+				self.changeColor(wdg, "Matplotlib", model1.item(i,1).data(Qt.BackgroundRole).toPyObject(), profiles[i]["layer"].name())
 				try:
 					self.reScalePlot(self.dockwidget.scaleSlider.value())
 					wdg.plotWdg.figure.get_axes()[0].set_xbound( 0, max(self.profiles[len(self.profiles) - 1]["l"]) )
@@ -274,8 +274,8 @@ class PlottingTool:
 
 	def outPrint(self, iface, wdg, mdl, library): # Postscript file rendering doesn't work properly yet.
 		for i in range (0,mdl.rowCount()):
-			if  mdl.item(i,0).data(Qt.CheckStateRole):
-				name = str(mdl.item(i,2).data(Qt.EditRole))
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".ps","PostScript Format (*.ps)")
 		if not fileName.isEmpty():
@@ -295,8 +295,8 @@ class PlottingTool:
 
 	def outPDF(self, iface, wdg, mdl, library):
 		for i in range (0,mdl.rowCount()):
-			if  mdl.item(i,0).data(Qt.CheckStateRole):
-				name = str(mdl.item(i,2).data(Qt.EditRole))
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
 				break
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".pdf","Portable Document Format (*.pdf)")
 		if not fileName.isEmpty():
@@ -314,8 +314,8 @@ class PlottingTool:
 
 	def outSVG(self, iface, wdg, mdl, library):
 		for i in range (0,mdl.rowCount()):
-			if  mdl.item(i,0).data(Qt.CheckStateRole):
-				name = str(mdl.item(i,2).data(Qt.EditRole))
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
 		if not fileName.isEmpty():
@@ -329,8 +329,8 @@ class PlottingTool:
 				
 	def outPNG(self, iface, wdg, mdl, library):
 		for i in range (0,mdl.rowCount()):
-			if  mdl.item(i,0).data(Qt.CheckStateRole):
-				name = str(mdl.item(i,2).data(Qt.EditRole))
+			if  mdl.item(i,0).data(Qt.CheckStateRole).toPyObject():
+				name = str(mdl.item(i,2).data(Qt.EditRole).toPyObject())
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".png","Portable Network Graphics (*.png)")
 		if not fileName.isEmpty():

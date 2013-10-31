@@ -73,8 +73,8 @@ class DoProfile(QWidget):
 
 		#creating the plots of profiles
 		for i in range(0 , model1.rowCount()):
-			self.profiles.append( {"layer": model1.item(i,4).data(Qt.EditRole) } )
-			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole) - 1
+			self.profiles.append( {"layer": model1.item(i,4).data(Qt.EditRole).toPyObject() } )
+			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole).toPyObject() - 1
 			self.profiles[i] = DataReaderTool().dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw, self.dockwidget.checkBox.isChecked())			
 		PlottingTool().attachCurves(self.dockwidget, self.profiles, model1, library)
 		PlottingTool().reScalePlot(self.dockwidget.scaleSlider.value(), self.dockwidget, self.profiles, library)
@@ -105,20 +105,20 @@ class DoProfile(QWidget):
 			self.groupBox[i].setMinimumSize(QSize(0, 150))
 			self.groupBox[i].setMaximumSize(QSize(16777215, 150))
 			self.groupBox[i].setTitle(QApplication.translate("GroupBox" + str(i), self.profiles[i]["layer"].name(), None, QApplication.UnicodeUTF8))
-			self.groupBox[i].setObjectName("groupBox" + str(i))
+			self.groupBox[i].setObjectName(QString.fromUtf8("groupBox" + str(i)))
 
 			self.verticalLayout.append( QVBoxLayout(self.groupBox[i]) )
-			self.verticalLayout[i].setObjectName("verticalLayout")
+			self.verticalLayout[i].setObjectName(QString.fromUtf8("verticalLayout"))
 			#The table
 			self.tableView.append( QTableView(self.groupBox[i]) )
-			self.tableView[i].setObjectName("tableView" + str(i))
+			self.tableView[i].setObjectName(QString.fromUtf8("tableView" + str(i)))
 			font = QFont("Arial", 8)
 			column = len(self.profiles[i]["l"])
 			self.mdl = QStandardItemModel(2, column)
 			for j in range(len(self.profiles[i]["l"])):
-				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,self.profiles[i]["l"][j])
+				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,QVariant(self.profiles[i]["l"][j]))
 				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,font ,Qt.FontRole)				
-				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,self.profiles[i]["z"][j])
+				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,QVariant(self.profiles[i]["z"][j]))
 				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,font ,Qt.FontRole)	
 			self.tableView[i].verticalHeader().setDefaultSectionSize(18)	
 			self.tableView[i].horizontalHeader().setDefaultSectionSize(60)	
@@ -132,7 +132,7 @@ class DoProfile(QWidget):
 			sizePolicy.setHeightForWidth(self.pushButton[i].sizePolicy().hasHeightForWidth())
 			self.pushButton[i].setSizePolicy(sizePolicy)
 			self.pushButton[i].setText(QApplication.translate("GroupBox", "Copy to clipboard", None, QApplication.UnicodeUTF8))
-			self.pushButton[i].setObjectName(str(i))
+			self.pushButton[i].setObjectName(QString.fromUtf8( str(i)) )
 			self.verticalLayout[i].addWidget(self.pushButton[i])
 			self.VLayout.addWidget(self.groupBox[i])
 			QObject.connect(self.pushButton[i], SIGNAL("clicked()"), self.copyTable)

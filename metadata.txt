@@ -1,17 +1,14 @@
-; the next section is mandatory
 [general]
 name=Profile tool
-qgisMinimumVersion=1.9
+qgisMinimumVersion=1.0
 description=Plots terrain profile
 category=Raster
-version=version 3.6.0
+version=version 3.5.5
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
-; end of mandatory metadata
 
-; start of optional metadata
 changelog=
-    3.6.0 : sip api v2
+    3.5.5 : support for plugin layers (by Peter Wells)
     3.5.4 : fix color bugs #6870
     3.5.3 : fix bugs with new api 2.0
     3.5.2 : fix bugs #6679 and #6680
@@ -28,20 +25,13 @@ changelog=
     3.0   : -Enable profile along polyline
             -Enable "on the fly" working with raster
 
-; tags are in comma separated value format, spaces are allowed
 tags=raster,profile
 
-; these metadata can be empty
-; in a future version of the web application it will
-; be probably possible to create a project on redmine
-; if they are not filled
 homepage=http://hub.qgis.org/projects/profiletool
 tracker=http://hub.qgis.org/projects/profiletool/issues
 repository=http://hub.qgis.org/projects/profiletool/repository
 icon=icons/profileIcon.png
 
-; experimental flag
-experimental=True
+experimental=False
 
-; deprecated flag (applies to the whole plugin and not only to the uploaded version)
 deprecated=False
