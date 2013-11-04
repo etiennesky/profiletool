@@ -105,7 +105,7 @@ class ProfilePlugin:
 			QObject.connect(self.wdg.comboBox_2, SIGNAL("currentIndexChanged(int)"), self.changePlotLibrary)
 			self.tableViewTool.layerAddedOrRemoved.connect(self.refreshPlot)
 			self.wdg.addOptionComboboxItems()
-			self.addLayer(self.iface.activeLayer())	
+			self.addLayer()	
 			self.dockOpened = True
 		#Listeners of mouse
 		self.connectTool()
@@ -295,7 +295,9 @@ class ProfilePlugin:
 
 	#************************* tableview function ******************************************
 
-	def addLayer(self , layer1 = None):
+	def addLayer(self, layer1 = None):
+		if layer1 is None:
+			layer1 = self.iface.activeLayer()
 		self.tableViewTool.addLayer(self.iface, self.mdl, layer1)
 
 
