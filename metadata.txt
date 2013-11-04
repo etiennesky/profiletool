@@ -8,7 +8,7 @@ author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
 
 changelog=
-    3.5.6 : fix bugs #8890, #8945 and again #6679
+	3.5.6 : fix bugs #8890, #8945 and again #6679
     3.5.5 : support for plugin layers (by Peter Wells)
     3.5.4 : fix color bugs #6870
     3.5.3 : fix bugs with new api 2.0
