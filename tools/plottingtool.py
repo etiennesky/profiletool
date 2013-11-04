@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 #-----------------------------------------------------------
-# 
+#
 # Profile
 # Copyright (C) 2012  Patrice Verchere
 #-----------------------------------------------------------
-# 
+#
 # licensed under the terms of GNU GPL 2
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along
 # with this progsram; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-# 
+#
 #---------------------------------------------------------------------
 
 from qgis.core import *
@@ -45,9 +45,9 @@ try:
 	#print("profiletool : matplotlib %s imported" % matplotlib.__version__)
         has_mpl = True
 except:
-	pass	
+	pass
 
-	
+
 
 class PlottingTool:
 
@@ -63,7 +63,7 @@ class PlottingTool:
 			plotWdg.setSizePolicy(sizePolicy)
 			plotWdg.setMinimumSize(QSize(0,0))
 			plotWdg.setAutoFillBackground(False)
-			#Decoration					
+			#Decoration
 			plotWdg.setCanvasBackground(Qt.white)
 			plotWdg.plotLayout().setAlignCanvasToScales(True)
 			zoomer = QwtPlotZoomer(QwtPlot.xBottom, QwtPlot.yLeft, QwtPicker.DragSelection, QwtPicker.AlwaysOff, plotWdg.canvas())
@@ -81,17 +81,17 @@ class PlottingTool:
 			from matplotlib.figure import Figure
 			from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 
-			fig = Figure( (1.0, 1.0), linewidth=0.0, subplotpars = matplotlib.figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)				
-					
+			fig = Figure( (1.0, 1.0), linewidth=0.0, subplotpars = matplotlib.figure.SubplotParams(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)	)
+
 			font = {'family' : 'arial', 'weight' : 'normal', 'size'   : 12}
 			rc('font', **font)
-			
+
 			rect = fig.patch
 			rect.set_facecolor((0.9,0.9,0.9))
 
 			self.subplot = fig.add_axes((0.05, 0.15, 0.92,0.82))
 			self.subplot.set_xbound(0,1000)
-			self.subplot.set_ybound(0,1000)			
+			self.subplot.set_ybound(0,1000)
 			self.manageMatplotlibAxe(self.subplot)
 			canvas = FigureCanvasQTAgg(fig)
 			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -114,7 +114,7 @@ class PlottingTool:
 				vertLine.setLineStyle(QwtPlotMarker.VLine)
 				vertLine.setXValue(profileLen)
 				vertLine.attach(wdg.plotWdg)
-			profileLen = 0	
+			profileLen = 0
 		elif library == "Matplotlib" and has_mpl:
 			profileLen = 0
 			for i in range(0, len(pointstoDraw)-1):
@@ -138,7 +138,7 @@ class PlottingTool:
 				if model1.item(i,0).data(Qt.CheckStateRole):
 					curve.setVisible(True)
 				else:
-					curve.setVisible(False)					
+					curve.setVisible(False)
 				#scaling this
 				try:
 					wdg.setAxisScale(2,0,max(self.profiles[len(self.profiles) - 1]["l"]),0)
@@ -146,14 +146,14 @@ class PlottingTool:
 				except:
 					pass
 					#self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
-			wdg.plotWdg.replot()		
+			wdg.plotWdg.replot()
 		elif library == "Matplotlib" and has_mpl:
 			for i in range(0 , model1.rowCount()):
 
 				if model1.item(i,0).data(Qt.CheckStateRole):
 					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = True)
 				else:
-					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = False)				
+					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = False)
 				self.changeColor(wdg, "Matplotlib", model1.item(i,1).data(Qt.BackgroundRole), profiles[i]["layer"].name())
 				try:
 					self.reScalePlot(self.dockwidget.scaleSlider.value())
@@ -163,16 +163,22 @@ class PlottingTool:
 					#self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
 			wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 			wdg.plotWdg.draw()
-			
+
 
 	def findMin(self,profiles, nr,scale):
-		return min(profiles[nr]["z"]) * 97 / (200-scale)
-
+		minVal = min( z for z in profiles[nr]["z"] if z is not None )
+		maxVal = max( profiles[nr]["z"] )
+		d = ( maxVal - minVal ) or 1
+		margin = d * ( 105 - scale ) / 50.0
+		return minVal - margin
 
 
 	def findMax(self,profiles, nr,scale):
-		return max(profiles[nr]["z"]) * (126-scale) / 25
-
+		minVal = min( z for z in profiles[nr]["z"] if z is not None )
+		maxVal = max( profiles[nr]["z"] )
+		d = ( maxVal - minVal ) or 1
+		margin = d * ( 105 - scale ) / 50.0
+		return maxVal + margin
 
 
 	def reScalePlot(self,scale, wdg, profiles, library): 						# called when scale slider moved
@@ -183,9 +189,9 @@ class PlottingTool:
 			maximumValue = -1000000000
 			for i in range(0,len(profiles)):
 				if profiles[i]["layer"] != None and len(profiles[i]["z"]) > 0:
-					if self.findMin(profiles, i,scale) < minimumValue: 
+					if self.findMin(profiles, i,scale) < minimumValue:
 						minimumValue = self.findMin(profiles, i,scale)
-					if self.findMax(profiles, i,scale) > maximumValue: 
+					if self.findMax(profiles, i,scale) > maximumValue:
 						maximumValue = self.findMax(profiles, i,scale)
 			if minimumValue < maximumValue:
 				if library == "Qwt5" and has_qwt:
@@ -211,12 +217,12 @@ class PlottingTool:
 			#wdg.plotWdg.replot()
 		elif library == "Matplotlib" and has_mpl:
 			wdg.plotWdg.figure.get_axes()[0].cla()
-			self.manageMatplotlibAxe(wdg.plotWdg.figure.get_axes()[0])					
+			self.manageMatplotlibAxe(wdg.plotWdg.figure.get_axes()[0])
 			#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
-			#wdg.plotWdg.draw()	
+			#wdg.plotWdg.draw()
 
 
-	
+
 	def changeColor(self,wdg, library, color1 , name):					#Action when clicking the tableview - color
 		if library == "Qwt5":
 			temp1 = wdg.plotWdg.itemList()
@@ -234,7 +240,7 @@ class PlottingTool:
 					#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break
-			
+
 			pass
 
 
@@ -249,7 +255,7 @@ class PlottingTool:
 					else:
 						curve.setVisible(False)
 					wdg.plotWdg.replot()
-					break				
+					break
 		if library == "Matplotlib":
 			temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
 			for i in range(len(temp1)):
@@ -261,9 +267,9 @@ class PlottingTool:
 						temp1[i].set_visible(False)
 					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
-					break	
+					break
 
-			
+
 	def manageMatplotlibAxe(self, axe1):
 		axe1.grid()
 		axe1.tick_params(axis = "both", which = "major", direction= "out", length=10, width=1, bottom = True, top = False, left = True, right = False)
@@ -279,7 +285,7 @@ class PlottingTool:
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".ps","PostScript Format (*.ps)")
 		if not fileName.isEmpty():
-			if library == "Qwt5" and has_qwt:		
+			if library == "Qwt5" and has_qwt:
 				printer = QPrinter()
 				printer.setCreator("QGIS Profile Plugin")
 				printer.setDocName("QGIS Profile")
@@ -326,7 +332,7 @@ class PlottingTool:
 				wdg.plotWdg.print_(printer)
 			elif library == "Matplotlib" and has_mpl:
 				wdg.plotWdg.figure.savefig(str(fileName))
-				
+
 	def outPNG(self, iface, wdg, mdl, library):
 		for i in range (0,mdl.rowCount()):
 			if  mdl.item(i,0).data(Qt.CheckStateRole):
@@ -337,4 +343,4 @@ class PlottingTool:
 			if library == "Qwt5" and has_qwt:
 				QPixmap.grabWidget(wdg.plotWdg).save(str(fileName), "PNG")
 			elif library == "Matplotlib" and has_mpl:
-				wdg.plotWdg.figure.savefig(str(fileName))	
+				wdg.plotWdg.figure.savefig(str(fileName))
