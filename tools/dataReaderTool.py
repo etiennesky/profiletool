@@ -130,9 +130,13 @@ class DataReaderTool:
 					#if ident is not None and ident.has_key(choosenBand+1):
 					if ident is not None and (choosenBand+1 in ident.results()):
 						attr = ident.results()[choosenBand+1]
+						#if attr is None:
+						#	attr=float("nan")
+						#print(attr)
 						#if layer.dataProvider().isNoDataValue ( choosenBand+1, attr ):
 							#attr = 0
 				#print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
+
 				z += [attr]
 				temp = n
 				if n % stepp == 0:

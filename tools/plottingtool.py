@@ -133,6 +133,11 @@ class PlottingTool:
 			for i in range(0 , model1.rowCount()):
 				tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"]+1)
 				curve = QwtPlotCurve(tmp_name)
+				# stupid fix for #9002 - qwt setData() does not accept any values as None and using NaN does not work either.
+				# so simple solution is to set all None as 0
+				for j in range(0, len(profiles[i]["z"])):
+					if profiles[i]["z"][j] is None:
+						profiles[i]["z"][j] = 0
 				curve.setData(profiles[i]["l"], profiles[i]["z"])
 				curve.setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole), 3))
 				curve.attach(wdg.plotWdg)
@@ -261,7 +266,6 @@ class PlottingTool:
 		if library == "Matplotlib":
 			temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
 			for i in range(len(temp1)):
-				#print temp1[i]
 				if name == str(temp1[i].get_gid()):
 					if bool:
 						temp1[i].set_visible(True)
