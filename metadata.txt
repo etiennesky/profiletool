@@ -11,6 +11,8 @@ changelog=
     3.6.2 : fix bugs #8890, #8945 and again #6679
     3.6.1 : support for plugin layers for QGIS API 2 (by Peter Wells)
     3.6.0 : update to sip api v2 (and qgis 2.0)
+    -----------------------------------------------------------------
+    3.5.6 : fix bugs #8890, #8945 and again #6679
     3.5.5 : support for plugin layers for QGIS API 1 (by Peter Wells)
     3.5.4 : fix color bugs #6870
     3.5.3 : fix bugs with new api 2.0
