@@ -238,7 +238,7 @@ class PlottingTool:
 			temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
 			for i in range(len(temp1)):
 				if name == str(temp1[i].get_gid()):
-					temp1[i].set_color((color1.red() / 255 , color1.green() / 255.0 , color1.blue() / 255.0 ,  color1.alpha() / 255.0 ))
+					temp1[i].set_color((color1.red() / 255.0 , color1.green() / 255.0 , color1.blue() / 255.0 ,  color1.alpha() / 255.0 ))
 					#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break
