@@ -119,7 +119,7 @@ class TableViewTool(QObject):
 	def onClick(self, iface, wdg, mdl, plotlibrary, index1):					#action when clicking the tableview
 		temp = mdl.itemFromIndex(index1)
 		if index1.column() == 1:				#modifying color
-			name = mdl.item(index1.row(),2).data(Qt.EditRole)
+			name = ("%s#%d") % (mdl.item(index1.row(),2).data(Qt.EditRole), mdl.item(index1.row(),3).data(Qt.EditRole))
 			color = QColorDialog().getColor(temp.data(Qt.BackgroundRole))
 			mdl.setData( mdl.index(temp.row(), 1, QModelIndex())  ,color , Qt.BackgroundRole)
 			PlottingTool().changeColor(wdg, plotlibrary, color, name)

@@ -131,7 +131,8 @@ class PlottingTool:
 	def attachCurves(self, wdg, profiles, model1, library):
 		if library == "Qwt5" and has_qwt:
 			for i in range(0 , model1.rowCount()):
-				curve = QwtPlotCurve(profiles[i]["layer"].name())
+				tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"]+1)
+				curve = QwtPlotCurve(tmp_name)
 				curve.setData(profiles[i]["l"], profiles[i]["z"])
 				curve.setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole), 3))
 				curve.attach(wdg.plotWdg)
@@ -150,11 +151,12 @@ class PlottingTool:
 		elif library == "Matplotlib" and has_mpl:
 			for i in range(0 , model1.rowCount()):
 
+				tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"]+1)
 				if model1.item(i,0).data(Qt.CheckStateRole):
-					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = True)
+					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = tmp_name, linewidth = 3, visible = True)
 				else:
-					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = profiles[i]["layer"].name(), linewidth = 3, visible = False)
-				self.changeColor(wdg, "Matplotlib", model1.item(i,1).data(Qt.BackgroundRole), profiles[i]["layer"].name())
+					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = tmp_name, linewidth = 3, visible = False)
+				self.changeColor(wdg, "Matplotlib", model1.item(i,1).data(Qt.BackgroundRole), tmp_name)
 				try:
 					self.reScalePlot(self.dockwidget.scaleSlider.value())
 					wdg.plotWdg.figure.get_axes()[0].set_xbound( 0, max(self.profiles[len(self.profiles) - 1]["l"]) )
@@ -223,7 +225,7 @@ class PlottingTool:
 
 
 
-	def changeColor(self,wdg, library, color1 , name):					#Action when clicking the tableview - color
+	def changeColor(self,wdg, library, color1, name):					#Action when clicking the tableview - color
 		if library == "Qwt5":
 			temp1 = wdg.plotWdg.itemList()
 			for i in range(len(temp1)):
@@ -241,7 +243,7 @@ class PlottingTool:
 					wdg.plotWdg.draw()
 					break
 
-			pass
+			pass #why is this here?
 
 
 	def changeAttachCurve(self, wdg, library, bool, name):				#Action when clicking the tableview - checkstate
