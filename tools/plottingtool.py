@@ -283,14 +283,13 @@ class PlottingTool:
 		axe1.tick_params(axis = "both", which = "minor", direction= "out", length=5, width=1, bottom = True, top = False, left = True, right = False)
 
 
-
 	def outPrint(self, iface, wdg, mdl, library): # Postscript file rendering doesn't work properly yet.
 		for i in range (0,mdl.rowCount()):
 			if  mdl.item(i,0).data(Qt.CheckStateRole):
 				name = str(mdl.item(i,2).data(Qt.EditRole))
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".ps","PostScript Format (*.ps)")
-		if not fileName.isEmpty():
+		if fileName:
 			if library == "Qwt5" and has_qwt:
 				printer = QPrinter()
 				printer.setCreator("QGIS Profile Plugin")
@@ -311,7 +310,7 @@ class PlottingTool:
 				name = str(mdl.item(i,2).data(Qt.EditRole))
 				break
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".pdf","Portable Document Format (*.pdf)")
-		if not fileName.isEmpty():
+		if fileName:
 			if library == "Qwt5" and has_qwt:
 				printer = QPrinter()
 				printer.setCreator('QGIS Profile Plugin')
@@ -330,7 +329,7 @@ class PlottingTool:
 				name = str(mdl.item(i,2).data(Qt.EditRole))
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
-		if not fileName.isEmpty():
+		if fileName:
 			if library == "Qwt5" and has_qwt:
 				printer = QSvgGenerator()
 				printer.setFileName(fileName)
@@ -345,8 +344,8 @@ class PlottingTool:
 				name = str(mdl.item(i,2).data(Qt.EditRole))
 				#return
 		fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".png","Portable Network Graphics (*.png)")
-		if not fileName.isEmpty():
+		if fileName:
 			if library == "Qwt5" and has_qwt:
-				QPixmap.grabWidget(wdg.plotWdg).save(str(fileName), "PNG")
+				QPixmap.grabWidget(wdg.plotWdg).save(fileName, "PNG")
 			elif library == "Matplotlib" and has_mpl:
 				wdg.plotWdg.figure.savefig(str(fileName))
