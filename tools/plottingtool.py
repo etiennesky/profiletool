@@ -195,7 +195,7 @@ class PlottingTool:
 			minimumValue = 1000000000
 			maximumValue = -1000000000
 			for i in range(0,len(profiles)):
-				if profiles[i]["layer"] != None and len(profiles[i]["z"]) > 0:
+				if profiles[i]["layer"] != None and len([z for z in profiles[i]["z"] if z is not None]) > 0:
 					if self.findMin(profiles, i,scale) < minimumValue:
 						minimumValue = self.findMin(profiles, i,scale)
 					if self.findMax(profiles, i,scale) > maximumValue:
