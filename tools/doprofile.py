@@ -41,13 +41,14 @@ from PyQt4.QtCore import SIGNAL,SLOT,pyqtSignature
 
 class DoProfile(QWidget):
 
-	def __init__(self, iface, dockwidget1 , tool1 ,parent = None):
+	def __init__(self, iface, dockwidget1 , tool1 , plugin, parent = None):
 		QWidget.__init__(self, parent)
 		self.profiles = None		#dictionary where is saved the plotting data {"l":[l],"z":[z], "layer":layer1, "curve":curve1}
 		self.iface = iface
 		self.tool = tool1
 		self.dockwidget = dockwidget1
 		self.pointstoDraw = None
+		self.plugin = plugin
 		#init slider
 		QObject.connect(self.dockwidget.scaleSlider, SIGNAL("valueChanged(int)"), self.reScalePlot)
 		self.dockwidget.scaleSlider.setMinimum(0)
@@ -57,9 +58,23 @@ class DoProfile(QWidget):
 
 	#**************************** function part *************************************************
 
+  # remove layers which were removed from QGIS
+	def removeClosedLayers(self, model1):
+		qgisLayerNames = []
+		for i in range(0, self.iface.mapCanvas().layerCount()):
+				qgisLayerNames.append(self.iface.mapCanvas().layer(i).name())
+
+		for i in range(0 , model1.rowCount()):
+			layerName = model1.item(i,2).data(Qt.EditRole)
+			if not layerName in qgisLayerNames:
+				self.plugin.removeLayer(i)
+				self.removeClosedLayers(model1)
+				break
+
 	def calculateProfil(self, points1, model1, library, vertline = True):
 		self.pointstoDraw = points1
 
+		self.removeClosedLayers(model1)
 		if self.pointstoDraw == None: 
 			return
 		try:

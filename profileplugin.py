@@ -95,7 +95,7 @@ class ProfilePlugin:
 			self.mdl = QStandardItemModel(0, 5)
 			self.wdg = Ui_PTDockWidget(self.iface.mainWindow(), self.iface, self.mdl)
 			self.wdg.showIt()
-			self.doprofile = DoProfile(self.iface,self.wdg,self.tool)
+			self.doprofile = DoProfile(self.iface,self.wdg,self.tool,self)
 			self.tableViewTool = TableViewTool()
 			QObject.connect(self.wdg, SIGNAL( "closed(PyQt_PyObject)" ), self.cleaning2)
 			QObject.connect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick) 
@@ -304,8 +304,8 @@ class ProfilePlugin:
 	def _onClick(self,index1):					#action when clicking the tableview
 		self.tableViewTool.onClick(self.iface, self.wdg, self.mdl, self.plotlibrary, index1)
 
-	def removeLayer(self):
-		self.tableViewTool.removeLayer(self.iface, self.mdl)
+	def removeLayer(self, index=None):
+		self.tableViewTool.removeLayer(self.iface, self.mdl, index)
 
 	def about(self):
 		from ui.ui_dlgabout import DlgAbout
