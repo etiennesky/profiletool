@@ -99,11 +99,18 @@ class TableViewTool(QObject):
 		self.layerAddedOrRemoved.emit()
 		
 		
-	def removeLayer(self, iface, mdl):
-                if mdl.rowCount() < 2:
-                        if mdl.rowCount() == 1:
-                                mdl.removeRow(0)
-                        return
+	def removeLayer(self, iface, mdl, index):
+		if not index == None :
+			try:
+				mdl.removeRow(index)
+				self.layerAddedOrRemoved.emit()
+				return
+			except:
+				return
+		if mdl.rowCount() < 2:
+			if mdl.rowCount() == 1:
+				mdl.removeRow(0)
+			return
 
 		list1 = []
 		for i in range(0,mdl.rowCount()):
