@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/profiletool.ui'
+# Form implementation generated from reading ui file 'ui\profiletool.ui'
 #
-# Created: Mon Nov  5 14:27:59 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Tue May 27 11:33:47 2014
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,13 +12,21 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_ProfileTool(object):
     def setupUi(self, ProfileTool):
         ProfileTool.setObjectName(_fromUtf8("ProfileTool"))
         ProfileTool.resize(973, 332)
-        ProfileTool.setWindowTitle(QtGui.QApplication.translate("ProfileTool", "Profile Tool", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetContents = QtGui.QWidget()
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -80,29 +88,23 @@ class Ui_ProfileTool(object):
         self.page.setObjectName(_fromUtf8("page"))
         self.horizontalLayout_4 = QtGui.QHBoxLayout(self.page)
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
-        self.butSaveAs = QtGui.QPushButton(self.page)
-        self.butSaveAs.setText(QtGui.QApplication.translate("ProfileTool", "Save as", None, QtGui.QApplication.UnicodeUTF8))
-        self.butSaveAs.setObjectName(_fromUtf8("butSaveAs"))
-        self.horizontalLayout_4.addWidget(self.butSaveAs)
-        self.cbxSaveAs = QtGui.QComboBox(self.page)
-        self.cbxSaveAs.setObjectName(_fromUtf8("cbxSaveAs"))
-        self.cbxSaveAs.addItem(_fromUtf8(""))
-        self.cbxSaveAs.setItemText(0, QtGui.QApplication.translate("ProfileTool", "PDF", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbxSaveAs.addItem(_fromUtf8(""))
-        self.cbxSaveAs.setItemText(1, QtGui.QApplication.translate("ProfileTool", "PNG", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbxSaveAs.addItem(_fromUtf8(""))
-        self.cbxSaveAs.setItemText(2, QtGui.QApplication.translate("ProfileTool", "SVG", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbxSaveAs.addItem(_fromUtf8(""))
-        self.cbxSaveAs.setItemText(3, QtGui.QApplication.translate("ProfileTool", "print (PS)", None, QtGui.QApplication.UnicodeUTF8))
-        self.horizontalLayout_4.addWidget(self.cbxSaveAs)
         spacerItem = QtGui.QSpacerItem(0, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem)
         self.stackedWidget.addWidget(self.page)
         self.horizontalLayout_3.addWidget(self.stackedWidget)
         spacerItem1 = QtGui.QSpacerItem(1, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem1)
+        self.cbxSaveAs = QtGui.QComboBox(self.widget_save_buttons)
+        self.cbxSaveAs.setObjectName(_fromUtf8("cbxSaveAs"))
+        self.cbxSaveAs.addItem(_fromUtf8(""))
+        self.cbxSaveAs.addItem(_fromUtf8(""))
+        self.cbxSaveAs.addItem(_fromUtf8(""))
+        self.cbxSaveAs.addItem(_fromUtf8(""))
+        self.horizontalLayout_3.addWidget(self.cbxSaveAs)
+        self.butSaveAs = QtGui.QPushButton(self.widget_save_buttons)
+        self.butSaveAs.setObjectName(_fromUtf8("butSaveAs"))
+        self.horizontalLayout_3.addWidget(self.butSaveAs)
         self.label = QtGui.QLabel(self.widget_save_buttons)
-        self.label.setText(QtGui.QApplication.translate("ProfileTool", "Selection", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout_3.addWidget(self.label)
         self.comboBox = QtGui.QComboBox(self.widget_save_buttons)
@@ -113,9 +115,7 @@ class Ui_ProfileTool(object):
         self.comboBox.setSizePolicy(sizePolicy)
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.comboBox.addItem(_fromUtf8(""))
-        self.comboBox.setItemText(0, QtGui.QApplication.translate("ProfileTool", "Temporary polyline", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox.addItem(_fromUtf8(""))
-        self.comboBox.setItemText(1, QtGui.QApplication.translate("ProfileTool", "Selected polyline", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout_3.addWidget(self.comboBox)
         self.gridLayout.addWidget(self.widget_save_buttons, 1, 1, 1, 1)
         self._2.addLayout(self.gridLayout)
@@ -134,7 +134,6 @@ class Ui_ProfileTool(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.pushButton_2 = QtGui.QPushButton(self.tab_1)
         self.pushButton_2.setMinimumSize(QtCore.QSize(10, 20))
-        self.pushButton_2.setText(QtGui.QApplication.translate("ProfileTool", "Add Layer", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_2.setAutoRepeat(False)
         self.pushButton_2.setAutoDefault(False)
         self.pushButton_2.setDefault(False)
@@ -143,7 +142,6 @@ class Ui_ProfileTool(object):
         self.horizontalLayout.addWidget(self.pushButton_2)
         self.pushButton = QtGui.QPushButton(self.tab_1)
         self.pushButton.setMinimumSize(QtCore.QSize(10, 20))
-        self.pushButton.setText(QtGui.QApplication.translate("ProfileTool", "Remove Layer", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -158,7 +156,7 @@ class Ui_ProfileTool(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 929, 247))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 80, 16))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_2.addWidget(self.scrollArea)
@@ -168,7 +166,6 @@ class Ui_ProfileTool(object):
         self.gridLayout_2 = QtGui.QGridLayout(self.tab)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.groupBox_3 = QtGui.QGroupBox(self.tab)
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("ProfileTool", "Plot library", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.verticalLayout_8 = QtGui.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_8.setObjectName(_fromUtf8("verticalLayout_8"))
@@ -177,7 +174,6 @@ class Ui_ProfileTool(object):
         self.verticalLayout_8.addWidget(self.comboBox_2)
         self.gridLayout_2.addWidget(self.groupBox_3, 0, 1, 1, 1)
         self.groupBox_2 = QtGui.QGroupBox(self.tab)
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("ProfileTool", "Full Resolution", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.verticalLayout_7 = QtGui.QVBoxLayout(self.groupBox_2)
         self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
@@ -187,7 +183,6 @@ class Ui_ProfileTool(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBox.sizePolicy().hasHeightForWidth())
         self.checkBox.setSizePolicy(sizePolicy)
-        self.checkBox.setText(QtGui.QApplication.translate("ProfileTool", "Full resolution enabled", None, QtGui.QApplication.UnicodeUTF8))
         self.checkBox.setObjectName(_fromUtf8("checkBox"))
         self.verticalLayout_7.addWidget(self.checkBox)
         self.gridLayout_2.addWidget(self.groupBox_2, 0, 0, 1, 1)
@@ -203,7 +198,21 @@ class Ui_ProfileTool(object):
         QtCore.QMetaObject.connectSlotsByName(ProfileTool)
 
     def retranslateUi(self, ProfileTool):
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), QtGui.QApplication.translate("ProfileTool", "&Profile", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("ProfileTool", "Table", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("ProfileTool", "Settings", None, QtGui.QApplication.UnicodeUTF8))
+        ProfileTool.setWindowTitle(_translate("ProfileTool", "Profile Tool", None))
+        self.cbxSaveAs.setItemText(0, _translate("ProfileTool", "PDF", None))
+        self.cbxSaveAs.setItemText(1, _translate("ProfileTool", "PNG", None))
+        self.cbxSaveAs.setItemText(2, _translate("ProfileTool", "SVG", None))
+        self.cbxSaveAs.setItemText(3, _translate("ProfileTool", "print (PS)", None))
+        self.butSaveAs.setText(_translate("ProfileTool", "Save as", None))
+        self.label.setText(_translate("ProfileTool", "Selection", None))
+        self.comboBox.setItemText(0, _translate("ProfileTool", "Temporary polyline", None))
+        self.comboBox.setItemText(1, _translate("ProfileTool", "Selected polyline", None))
+        self.pushButton_2.setText(_translate("ProfileTool", "Add Layer", None))
+        self.pushButton.setText(_translate("ProfileTool", "Remove Layer", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), _translate("ProfileTool", "&Profile", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("ProfileTool", "Table", None))
+        self.groupBox_3.setTitle(_translate("ProfileTool", "Plot library", None))
+        self.groupBox_2.setTitle(_translate("ProfileTool", "Full Resolution", None))
+        self.checkBox.setText(_translate("ProfileTool", "Full resolution enabled", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("ProfileTool", "Settings", None))
 
