@@ -299,13 +299,19 @@ class ProfilePlugin:
 		if layer1 is None:
 			layer1 = self.iface.activeLayer()
 		self.tableViewTool.addLayer(self.iface, self.mdl, layer1)
-
+		layer1.dataChanged.connect(self.refreshPlot)
 
 	def _onClick(self,index1):					#action when clicking the tableview
 		self.tableViewTool.onClick(self.iface, self.wdg, self.mdl, self.plotlibrary, index1)
 
 	def removeLayer(self, index=None):
-		self.tableViewTool.removeLayer(self.iface, self.mdl, index)
+		if index is None:
+			index = self.tableViewTool.chooseLayerForRemoval(self.iface, self.mdl)
+
+		if index is not None:
+			layer = self.mdl.index(index, 4).data()
+			layer.dataChanged.disconnect(self.refreshPlot)
+			self.tableViewTool.removeLayer(self.mdl, index)
 
 	def about(self):
 		from ui.ui_dlgabout import DlgAbout

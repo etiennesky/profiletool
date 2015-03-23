@@ -99,18 +99,18 @@ class TableViewTool(QObject):
 		self.layerAddedOrRemoved.emit()
 		
 		
-	def removeLayer(self, iface, mdl, index):
-		if not index == None :
+	def removeLayer(self, mdl, index):
 			try:
 				mdl.removeRow(index)
 				self.layerAddedOrRemoved.emit()
-				return
 			except:
 				return
+
+	def chooseLayerForRemoval(self, iface, mdl):
 		if mdl.rowCount() < 2:
 			if mdl.rowCount() == 1:
-				mdl.removeRow(0)
-			return
+				return 0
+			return None
 
 		list1 = []
 		for i in range(0,mdl.rowCount()):
@@ -119,9 +119,8 @@ class TableViewTool(QObject):
 		if ok:
 			for i in range(0,mdl.rowCount()):
 				if testqt == (str(i+1) + " : " + mdl.item(i,2).data(Qt.EditRole)):
-					mdl.removeRow(i)
-					break
-		self.layerAddedOrRemoved.emit()
+					return i
+		return None
 		
 	def onClick(self, iface, wdg, mdl, plotlibrary, index1):					#action when clicking the tableview
 		temp = mdl.itemFromIndex(index1)
