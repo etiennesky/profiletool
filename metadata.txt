@@ -3,11 +3,12 @@ name=Profile tool
 qgisMinimumVersion=2.0
 description=Plots terrain profile
 category=Raster
-version=version 3.6.4
+version=version 3.6.5
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
 
 changelog=
+    3.6.5 : Refresh the plot when layer's dataChanged signal is emitted (by Martin Dobias)
     3.6.4 : bugfixes from radosuav
     3.6.3 : fix bugs #6870, #9002 and #9111
     3.6.2 : fix bugs #8890, #8945 and again #6679
