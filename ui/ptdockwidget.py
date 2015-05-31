@@ -23,13 +23,13 @@
 #
 #---------------------------------------------------------------------
 
+from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from qgis.core import *
 from qgis.gui import *
 
-from profiletool import Ui_ProfileTool
 from ..tools.plottingtool import *
 #from ..profileplugin import ProfilePlugin
 
@@ -37,28 +37,28 @@ try:
 	from PyQt4.Qwt5 import *
 	Qwt5_loaded = True
 except ImportError:
-	Qwt5_loaded = False 
+	Qwt5_loaded = False
 try:
 	from matplotlib import *
 	import matplotlib
 	matplotlib_loaded = True
 except ImportError:
-	matplotlib_loaded = False 
+	matplotlib_loaded = False
 
 import platform
+import os
 
+uiFilePath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'profiletool.ui'))
+FormClass = uic.loadUiType(uiFilePath)[0]
 
-class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
+class PTDockWidget(QDockWidget, FormClass):
 
-
-
-	TITLE = "MirrorMap"
+	TITLE = "ProfileTool"
 
 	def __init__(self, parent, iface1, mdl1):
 		QDockWidget.__init__(self, parent)
 		self.setAttribute(Qt.WA_DeleteOnClose)
 
-		#self.mainWidget = MirrorMap(self, iface)
 		self.location = Qt.RightDockWidgetArea
 		self.iface = iface1
 
@@ -88,21 +88,21 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
 		self.tableView.setColumnHidden(4 , True)
 		self.mdl.setHorizontalHeaderLabels(["","","Layer","Band"])
 		#self.checkBox.setEnabled(False)
-		
+
 		#The ploting area
 		self.plotWdg = None
 		#Draw the widget
 		self.iface.addDockWidget(self.location, self)
 		self.iface.mapCanvas().setRenderFlag(True)
-		
-		
+
+
 	def addOptionComboboxItems(self):
 		#self.comboBox.addItem("Temporary polyline")
 		#self.comboBox.addItem("Selected polyline")
 		if Qwt5_loaded:
 			self.comboBox_2.addItem("Qwt5")
 		if matplotlib_loaded:
-			self.comboBox_2.addItem("Matplotlib")						
+			self.comboBox_2.addItem("Matplotlib")
 
 
 
@@ -127,7 +127,7 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
                         #self.widget_save_buttons.setVisible( True )
 			self.plotWdg = PlottingTool().changePlotWidget("Qwt5", self.frame_for_plot)
 			layout.addWidget(self.plotWdg)
-                        		
+
 			if QT_VERSION < 0X040100:
                                 idx = self.cbxSaveAs.model().index(0, 0)
                                 self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
@@ -136,7 +136,7 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
                                 idx = self.cbxSaveAs.model().index(1, 0)
                                 self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
                                 self.cbxSaveAs.setCurrentIndex(2)
-                                
+
 		elif library == "Matplotlib":
                         self.stackedWidget.setCurrentIndex(0)
                         #self.widget_save_buttons.setVisible( False )
@@ -163,16 +163,16 @@ class Ui_PTDockWidget(QDockWidget,Ui_ProfileTool):
                         self.outPrint()
                 else:
                         print('plottingtool: invalid index '+str(idx))
-		
+
 	def outPrint(self): # Postscript file rendering doesn't work properly yet.
 		PlottingTool().outPrint(self.iface, self, self.mdl, self.comboBox_2.currentText ())
-		
+
 	def outPDF(self):
 		PlottingTool().outPDF(self.iface, self, self.mdl, self.comboBox_2.currentText ())
 
 	def outSVG(self):
-		PlottingTool().outSVG(self.iface, self, self.mdl, self.comboBox_2.currentText ())		
+		PlottingTool().outSVG(self.iface, self, self.mdl, self.comboBox_2.currentText ())
 
 	def outPNG(self):
-		PlottingTool().outPNG(self.iface, self, self.mdl, self.comboBox_2.currentText ())		
+		PlottingTool().outPNG(self.iface, self, self.mdl, self.comboBox_2.currentText ())
 
