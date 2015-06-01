@@ -36,14 +36,15 @@ has_mpl = False
 try:
 	from PyQt4.Qwt5 import *
 	#print("profiletool : Qwt5 imported")
-        has_qwt = True
+	has_qwt = True
+	import itertools # only needed for Qwt plot
 except:
 	pass
 try:
 	from matplotlib import *
-        import matplotlib
+	import matplotlib
 	#print("profiletool : matplotlib %s imported" % matplotlib.__version__)
-        has_mpl = True
+	has_mpl = True
 except:
 	pass
 
@@ -53,7 +54,7 @@ class PlottingTool:
 
 
 	def changePlotWidget(self, library, frame_for_plot):
-                #print("profiletool : changePlotWidget( %s )" % library )
+		#print("profiletool : changePlotWidget( %s )" % library )
 		if library == "Qwt5" and has_qwt:
 			plotWdg = QwtPlot(frame_for_plot)
 			sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -132,19 +133,31 @@ class PlottingTool:
 		if library == "Qwt5" and has_qwt:
 			for i in range(0 , model1.rowCount()):
 				tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"]+1)
-				curve = QwtPlotCurve(tmp_name)
-				# stupid fix for #9002 - qwt setData() does not accept any values as None and using NaN does not work either.
-				# so simple solution is to set all None as 0
-				for j in range(0, len(profiles[i]["z"])):
-					if profiles[i]["z"][j] is None:
-						profiles[i]["z"][j] = 0
-				curve.setData(profiles[i]["l"], profiles[i]["z"])
-				curve.setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole), 3))
-				curve.attach(wdg.plotWdg)
-				if model1.item(i,0).data(Qt.CheckStateRole):
-					curve.setVisible(True)
-				else:
-					curve.setVisible(False)
+
+				# As QwtPlotCurve doesn't support nodata, split the data into single lines
+				# with breaks wherever data is None.
+				# Prepare two lists of coordinates (xx and yy). Make x=None whenever y==None.
+				xx = profiles[i]["l"]
+				yy = profiles[i]["z"]
+				for j in range(len(yy)):
+					if yy[j] is None:
+						xx[j] = None
+
+				# Split xx and yy into single lines at None values
+				xx = [list(g) for k,g in itertools.groupby(xx, lambda x:x is None) if not k]
+				yy = [list(g) for k,g in itertools.groupby(yy, lambda x:x is None) if not k]
+
+				# Create & attach one QwtPlotCurve per one single line
+				for j in range(len(xx)):
+					curve = QwtPlotCurve(tmp_name)
+					curve.setData(xx[j], yy[j])
+					curve.setPen(QPen(model1.item(i,1).data(Qt.BackgroundRole), 3))
+					curve.attach(wdg.plotWdg)
+					if model1.item(i,0).data(Qt.CheckStateRole):
+						curve.setVisible(True)
+					else:
+						curve.setVisible(False)
+
 				#scaling this
 				try:
 					wdg.setAxisScale(2,0,max(profiles[len(profiles) - 1]["l"]),0)
@@ -248,7 +261,7 @@ class PlottingTool:
 					curve = temp1[i]
 					curve.setPen(QPen(color1, 3))
 					wdg.plotWdg.replot()
-					break
+					# break  # Don't break as there may be multiple curves with a common name (segments separated with None values)
 		if library == "Matplotlib":
 			temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
 			for i in range(len(temp1)):
@@ -257,8 +270,6 @@ class PlottingTool:
 					#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 					wdg.plotWdg.draw()
 					break
-
-			pass #why is this here?
 
 
 	def changeAttachCurve(self, wdg, library, bool, name):				#Action when clicking the tableview - checkstate
