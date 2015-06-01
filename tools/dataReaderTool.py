@@ -74,16 +74,10 @@ class DataReaderTool:
 			#lenght between (x1,y1) and (x2,y2)
 			tlC = sqrt (((x2C-x1C)*(x2C-x1C)) + ((y2C-y1C)*(y2C-y1C)))
 			#Set the res of calcul
-			if QGis.QGIS_VERSION_INT >= 10900:
-				try:
-					res = min(self.profiles["layer"].rasterUnitsPerPixelX(),self.profiles["layer"].rasterUnitsPerPixelY()) * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
-				except ZeroDivisionError:
-					res = min(self.profiles["layer"].rasterUnitsPerPixelX(),self.profiles["layer"].rasterUnitsPerPixelY()) * 1.2
-			else:
-				try:
-					res = self.profiles["layer"].rasterUnitsPerPixel() * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
-				except ZeroDivisionError:
-					res = layer.rasterUnitsPerPixel() * 1.2
+			try:
+				res = min(self.profiles["layer"].rasterUnitsPerPixelX(),self.profiles["layer"].rasterUnitsPerPixelY()) * tlC / max(abs(x2C-x1C), abs(y2C-y1C))    # res depend on the angle of ligne with normal
+			except ZeroDivisionError:
+				res = min(self.profiles["layer"].rasterUnitsPerPixelX(),self.profiles["layer"].rasterUnitsPerPixelY()) * 1.2
 			#enventually use bigger step, wether full res is selected or not
 			steps = 1000  # max graph width in pixels
 			if fullresolution1:

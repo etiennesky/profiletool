@@ -147,8 +147,8 @@ class PlottingTool:
 					curve.setVisible(False)
 				#scaling this
 				try:
-					wdg.setAxisScale(2,0,max(self.profiles[len(self.profiles) - 1]["l"]),0)
-					self.reScalePlot(self.dockwidget.scaleSlider.value())
+					wdg.setAxisScale(2,0,max(profiles[len(profiles) - 1]["l"]),0)
+					self.reScalePlot(wdg, profiles, library)
 				except:
 					pass
 					#self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
@@ -163,8 +163,8 @@ class PlottingTool:
 					wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = tmp_name, linewidth = 3, visible = False)
 				self.changeColor(wdg, "Matplotlib", model1.item(i,1).data(Qt.BackgroundRole), tmp_name)
 				try:
-					self.reScalePlot(self.dockwidget.scaleSlider.value())
-					wdg.plotWdg.figure.get_axes()[0].set_xbound( 0, max(self.profiles[len(self.profiles) - 1]["l"]) )
+					self.reScalePlot(wdg, profiles, library)
+					wdg.plotWdg.figure.get_axes()[0].set_xbound( 0, max(profiles[len(profiles) - 1]["l"]) )
 				except:
 					pass
 					#self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
@@ -172,51 +172,58 @@ class PlottingTool:
 			wdg.plotWdg.draw()
 
 
-	def findMin(self,profiles, nr,scale):
+	def findMin(self,profiles, nr):
 		minVal = min( z for z in profiles[nr]["z"] if z is not None )
 		maxVal = max( profiles[nr]["z"] )
 		d = ( maxVal - minVal ) or 1
-		margin = d * ( 105 - scale ) / 50.0
-		return minVal - margin
+		return minVal
 
 
-	def findMax(self,profiles, nr,scale):
+	def findMax(self,profiles, nr):
 		minVal = min( z for z in profiles[nr]["z"] if z is not None )
 		maxVal = max( profiles[nr]["z"] )
 		d = ( maxVal - minVal ) or 1
-		margin = d * ( 105 - scale ) / 50.0
-		return maxVal + margin
+		return maxVal
 
 
-	def reScalePlot(self,scale, wdg, profiles, library): 						# called when scale slider moved
+	def reScalePlot(self, wdg, profiles, library): 						# called when spinbox value changed
 		if profiles == None:
 			return
-		else:
+		minimumValue = wdg.sbMinVal.value()
+		maximumValue = wdg.sbMaxVal.value()
+		if minimumValue == maximumValue:
+			# Automatic mode
 			minimumValue = 1000000000
 			maximumValue = -1000000000
 			for i in range(0,len(profiles)):
 				if profiles[i]["layer"] != None and len([z for z in profiles[i]["z"] if z is not None]) > 0:
-					if self.findMin(profiles, i,scale) < minimumValue:
-						minimumValue = self.findMin(profiles, i,scale)
-					if self.findMax(profiles, i,scale) > maximumValue:
-						maximumValue = self.findMax(profiles, i,scale)
-			if minimumValue < maximumValue:
-				if library == "Qwt5" and has_qwt:
-					wdg.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)
-					wdg.plotWdg.replot()
-				elif library == "Matplotlib" and has_mpl:
-					wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
-					wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
-					wdg.plotWdg.draw()
-					pass
+					if self.findMin(profiles, i) < minimumValue:
+						minimumValue = self.findMin(profiles, i)
+					if self.findMax(profiles, i) > maximumValue:
+						maximumValue = self.findMax(profiles, i)
+					wdg.sbMaxVal.setValue(maximumValue)
+					wdg.sbMinVal.setValue(minimumValue)
+					wdg.sbMaxVal.setEnabled(True)
+					wdg.sbMinVal.setEnabled(True)
+
+		if minimumValue < maximumValue:
+			if library == "Qwt5" and has_qwt:
+				wdg.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)
+				wdg.plotWdg.replot()
+			elif library == "Matplotlib" and has_mpl:
+				wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
+				wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
+				wdg.plotWdg.draw()
 
 
 	def clearData(self, wdg, profiles, library): 							# erase one of profiles
+		if not profiles:
+			return
 		if library == "Qwt5" and has_qwt:
 			wdg.plotWdg.clear()
-			for i in range(0,len(self.profiles)):
-				self.profiles[i]["l"] = []
-				self.profiles[i]["z"] = []
+			for i in range(0,len(profiles)):
+				profiles[i]["l"] = []
+				profiles[i]["z"] = []
 			temp1 = wdg.plotWdg.itemList()
 			for j in range(len(temp1)):
 				if temp1[j].rtti() == QwtPlotItem.Rtti_PlotCurve:
@@ -227,7 +234,10 @@ class PlottingTool:
 			self.manageMatplotlibAxe(wdg.plotWdg.figure.get_axes()[0])
 			#wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
 			#wdg.plotWdg.draw()
-
+		wdg.sbMaxVal.setEnabled(False)
+		wdg.sbMinVal.setEnabled(False)
+		wdg.sbMaxVal.setValue(0)
+		wdg.sbMinVal.setValue(0)
 
 
 	def changeColor(self,wdg, library, color1, name):					#Action when clicking the tableview - color

@@ -49,11 +49,13 @@ class DoProfile(QWidget):
 		self.dockwidget = dockwidget1
 		self.pointstoDraw = None
 		self.plugin = plugin
-		#init slider
-		QObject.connect(self.dockwidget.scaleSlider, SIGNAL("valueChanged(int)"), self.reScalePlot)
-		self.dockwidget.scaleSlider.setMinimum(0)
-		self.dockwidget.scaleSlider.setMaximum(100)
-		self.dockwidget.scaleSlider.setValue(100)
+		#init scale widgets
+		self.dockwidget.sbMaxVal.setValue(0)
+		self.dockwidget.sbMinVal.setValue(0)
+		self.dockwidget.sbMaxVal.setEnabled(False)
+		self.dockwidget.sbMinVal.setEnabled(False)
+		self.dockwidget.sbMinVal.valueChanged.connect(self.reScalePlot)
+		self.dockwidget.sbMaxVal.valueChanged.connect(self.reScalePlot)
 
 
 	#**************************** function part *************************************************
@@ -75,13 +77,9 @@ class DoProfile(QWidget):
 		self.pointstoDraw = points1
 
 		self.removeClosedLayers(model1)
-		if self.pointstoDraw == None: 
+		if self.pointstoDraw == None:
 			return
-		try:
-			PlottingTool().clearData(self.dockwidget, self.profiles, library) 
-			PlottingTool().reScalePlot(self.wdg.scaleSlider.value(), self.dockwidget, self.profiles, library)
-		except:
-			pass
+		PlottingTool().clearData(self.dockwidget, self.profiles, library)
 		self.profiles = []
 		if vertline:						#Plotting vertical lines at the node of polyline draw
 			PlottingTool().drawVertLine(self.dockwidget, self.pointstoDraw, library)
@@ -90,10 +88,10 @@ class DoProfile(QWidget):
 		for i in range(0 , model1.rowCount()):
 			self.profiles.append( {"layer": model1.item(i,4).data(Qt.EditRole) } )
 			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole) - 1
-			self.profiles[i] = DataReaderTool().dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw, self.dockwidget.checkBox.isChecked())			
+			self.profiles[i] = DataReaderTool().dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw, self.dockwidget.checkBox.isChecked())
 		PlottingTool().attachCurves(self.dockwidget, self.profiles, model1, library)
-		PlottingTool().reScalePlot(self.dockwidget.scaleSlider.value(), self.dockwidget, self.profiles, library)
-			
+		PlottingTool().reScalePlot(self.dockwidget, self.profiles, library)
+
 		#*********************** TAble tab *************************************************
 		try:																	#Reinitializing the table tab
 			self.VLayout = self.dockwidget.scrollAreaWidgetContents.layout()
@@ -132,11 +130,11 @@ class DoProfile(QWidget):
 			self.mdl = QStandardItemModel(2, column)
 			for j in range(len(self.profiles[i]["l"])):
 				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,self.profiles[i]["l"][j])
-				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,font ,Qt.FontRole)				
+				self.mdl.setData(self.mdl.index(0, j, QModelIndex())  ,font ,Qt.FontRole)
 				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,self.profiles[i]["z"][j])
-				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,font ,Qt.FontRole)	
-			self.tableView[i].verticalHeader().setDefaultSectionSize(18)	
-			self.tableView[i].horizontalHeader().setDefaultSectionSize(60)	
+				self.mdl.setData(self.mdl.index(1, j, QModelIndex())  ,font ,Qt.FontRole)
+			self.tableView[i].verticalHeader().setDefaultSectionSize(18)
+			self.tableView[i].horizontalHeader().setDefaultSectionSize(60)
 			self.tableView[i].setModel(self.mdl)
 			self.verticalLayout[i].addWidget(self.tableView[i])
 			#the copy to clipboard button
@@ -162,8 +160,14 @@ class DoProfile(QWidget):
 		self.clipboard.setText(text)
 
 
-	def reScalePlot(self,scale): 						# called when scale slider moved
-		PlottingTool().reScalePlot(self.dockwidget.scaleSlider.value(), self.dockwidget, self.profiles, self.dockwidget.comboBox_2.currentText () )
+	def reScalePlot(self, param): 						# called when a spinbox value changed
+		if type(param) != int:
+			# don't execute it twice, for both valueChanged(int) and valueChanged(str) signals
+			return
+		if self.dockwidget.sbMinVal.value() == self.dockwidget.sbMaxVal.value() == 0:
+			# don't execute it on init
+			return
+		PlottingTool().reScalePlot(self.dockwidget, self.profiles, self.dockwidget.cboLibrary.currentText () )
 
 
 	def getProfileCurve(self,nr):

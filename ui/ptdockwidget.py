@@ -100,9 +100,9 @@ class PTDockWidget(QDockWidget, FormClass):
 		#self.comboBox.addItem("Temporary polyline")
 		#self.comboBox.addItem("Selected polyline")
 		if Qwt5_loaded:
-			self.comboBox_2.addItem("Qwt5")
+			self.cboLibrary.addItem("Qwt5")
 		if matplotlib_loaded:
-			self.comboBox_2.addItem("Matplotlib")
+			self.cboLibrary.addItem("Matplotlib")
 
 
 
@@ -165,14 +165,14 @@ class PTDockWidget(QDockWidget, FormClass):
                         print('plottingtool: invalid index '+str(idx))
 
 	def outPrint(self): # Postscript file rendering doesn't work properly yet.
-		PlottingTool().outPrint(self.iface, self, self.mdl, self.comboBox_2.currentText ())
+		PlottingTool().outPrint(self.iface, self, self.mdl, self.cboLibrary.currentText ())
 
 	def outPDF(self):
-		PlottingTool().outPDF(self.iface, self, self.mdl, self.comboBox_2.currentText ())
+		PlottingTool().outPDF(self.iface, self, self.mdl, self.cboLibrary.currentText ())
 
 	def outSVG(self):
-		PlottingTool().outSVG(self.iface, self, self.mdl, self.comboBox_2.currentText ())
+		PlottingTool().outSVG(self.iface, self, self.mdl, self.cboLibrary.currentText ())
 
 	def outPNG(self):
-		PlottingTool().outPNG(self.iface, self, self.mdl, self.comboBox_2.currentText ())
+		PlottingTool().outPNG(self.iface, self, self.mdl, self.cboLibrary.currentText ())
 

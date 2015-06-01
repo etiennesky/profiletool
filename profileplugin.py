@@ -102,7 +102,7 @@ class ProfilePlugin:
 			QObject.connect(self.wdg.pushButton_2, SIGNAL("clicked()"), self.addLayer)
 			QObject.connect(self.wdg.pushButton, SIGNAL("clicked()"), self.removeLayer)
 			QObject.connect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
-			QObject.connect(self.wdg.comboBox_2, SIGNAL("currentIndexChanged(int)"), self.changePlotLibrary)
+			QObject.connect(self.wdg.cboLibrary, SIGNAL("currentIndexChanged(int)"), self.changePlotLibrary)
 			self.tableViewTool.layerAddedOrRemoved.connect(self.refreshPlot)
 			self.wdg.addOptionComboboxItems()
 			self.addLayer()
@@ -288,7 +288,7 @@ class ProfilePlugin:
 				self.iface.mainWindow().statusBar().showMessage(self.textquit1)
 
 	def changePlotLibrary(self, item):
-		self.plotlibrary = self.wdg.comboBox_2.itemText(item)
+		self.plotlibrary = self.wdg.cboLibrary.itemText(item)
 		self.wdg.addPlotWidget(self.plotlibrary)
 
 
