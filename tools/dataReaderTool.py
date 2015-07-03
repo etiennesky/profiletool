@@ -57,6 +57,8 @@ class DataReaderTool:
 		#Get the values on the lines
 		l = []
 		z = []
+		x = []
+		y = []
 		lbefore = 0
 		for i in range(0,len(self.pointstoDraw)-2):  # work for each segment of polyline
 
@@ -132,6 +134,8 @@ class DataReaderTool:
 				#print "Null cell value catched as zero!"  # For none values, profile height = 0. It's not elegant...
 
 				z += [attr]
+				x += [xC]
+				y += [yC]
 				temp = n
 				if n % stepp == 0:
 					progress += "|"
@@ -141,6 +145,8 @@ class DataReaderTool:
 		#filling the main data dictionary "profiles"
 		self.profiles["l"] = l
 		self.profiles["z"] = z
+		self.profiles["x"] = x
+		self.profiles["y"] = y
 		self.iface.mainWindow().statusBar().showMessage("")
 
 		return self.profiles

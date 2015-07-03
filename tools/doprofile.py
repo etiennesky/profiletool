@@ -149,6 +149,19 @@ class DoProfile(QWidget):
 			self.verticalLayout[i].addWidget(self.pushButton[i])
 			self.VLayout.addWidget(self.groupBox[i])
 			QObject.connect(self.pushButton[i], SIGNAL("clicked()"), self.copyTable)
+# add another button
+			#the copy to clipboard button
+			self.pushButton.append( QPushButton(self.groupBox[i]) )
+			sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+			sizePolicy.setHorizontalStretch(0)
+			sizePolicy.setVerticalStretch(0)
+			sizePolicy.setHeightForWidth(self.pushButton[i+1].sizePolicy().hasHeightForWidth())
+			self.pushButton[i+1].setSizePolicy(sizePolicy)
+			self.pushButton[i+1].setText(QApplication.translate("GroupBox", "Copy coords to clipboard", None, QApplication.UnicodeUTF8))
+			self.pushButton[i+1].setObjectName(str(i))
+			self.verticalLayout[i].addWidget(self.pushButton[i+1])
+			self.VLayout.addWidget(self.groupBox[i])
+			QObject.connect(self.pushButton[i+1], SIGNAL("clicked()"), self.copyCoords)
 
 
 	def copyTable(self):							#Writing the table to clipboard in excel form
@@ -157,6 +170,14 @@ class DoProfile(QWidget):
 		text = ""
 		for i in range( len(self.profiles[nr]["l"]) ):
 			text += str(self.profiles[nr]["l"][i]) + "\t" + str(self.profiles[nr]["z"][i]) + "\n"
+		self.clipboard.setText(text)
+
+	def copyCoords(self):							#Writing the table to clipboard in excel form
+		nr = int( self.sender().objectName() )
+		self.clipboard = QApplication.clipboard()
+		text = ""
+		for i in range( len(self.profiles[nr]["l"]) ):
+			text += str(self.profiles[nr]["l"][i]) + "\t" + str(self.profiles[nr]["x"][i]) + "\t" + str(self.profiles[nr]["y"][i]) + "\n"
 		self.clipboard.setText(text)
 
 
