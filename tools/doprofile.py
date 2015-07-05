@@ -60,7 +60,7 @@ class DoProfile(QWidget):
 
 	#**************************** function part *************************************************
 
-  # remove layers which were removed from QGIS
+	# remove layers which were removed from QGIS
 	def removeClosedLayers(self, model1):
 		qgisLayerNames = []
 		for i in range(0, self.iface.mapCanvas().layerCount()):
@@ -95,11 +95,11 @@ class DoProfile(QWidget):
 		#*********************** TAble tab *************************************************
 		try:																	#Reinitializing the table tab
 			self.VLayout = self.dockwidget.scrollAreaWidgetContents.layout()
- 			while 1:
+			while 1:
 				child = self.VLayout.takeAt(0)
 				if not child:
 					break
- 				child.widget().deleteLater()
+				child.widget().deleteLater()
 		except:
 			self.VLayout = QVBoxLayout(self.dockwidget.scrollAreaWidgetContents)
 			self.VLayout.setContentsMargins(9, -1, -1, -1)
@@ -150,8 +150,8 @@ class DoProfile(QWidget):
 			self.VLayout.addWidget(self.groupBox[i])
 			QObject.connect(self.pushButton[i], SIGNAL("clicked()"), self.copyTable)
 
-        # add coordinate button after all layers shown
-        self.pushButton.append(QPushButton(self.groupBox[i]))
+		# add coordinate button after all layers shown
+		self.pushButton.append(QPushButton(self.groupBox[i]))
 		sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 		sizePolicy.setHorizontalStretch(0)
 		sizePolicy.setVerticalStretch(0)
