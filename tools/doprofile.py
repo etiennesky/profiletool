@@ -105,7 +105,8 @@ class DoProfile(QWidget):
 			self.VLayout.setContentsMargins(9, -1, -1, -1)
 		#Setup the table tab
 		self.groupBox = []
-		self.pushButton = []
+		self.profilePushButton = []
+		self.coordsPushButton = []
 		self.tableView = []
 		self.verticalLayout = []
 		for i in range(0 , model1.rowCount()):
@@ -137,31 +138,38 @@ class DoProfile(QWidget):
 			self.tableView[i].horizontalHeader().setDefaultSectionSize(60)
 			self.tableView[i].setModel(self.mdl)
 			self.verticalLayout[i].addWidget(self.tableView[i])
+
+			self.horizontalLayout = QHBoxLayout()
+
 			#the copy to clipboard button
-			self.pushButton.append( QPushButton(self.groupBox[i]) )
+			self.profilePushButton.append( QPushButton(self.groupBox[i]) )
 			sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 			sizePolicy.setHorizontalStretch(0)
 			sizePolicy.setVerticalStretch(0)
-			sizePolicy.setHeightForWidth(self.pushButton[i].sizePolicy().hasHeightForWidth())
-			self.pushButton[i].setSizePolicy(sizePolicy)
-			self.pushButton[i].setText(QApplication.translate("GroupBox", "Copy to clipboard", None, QApplication.UnicodeUTF8))
-			self.pushButton[i].setObjectName(str(i))
-			self.verticalLayout[i].addWidget(self.pushButton[i])
-			self.VLayout.addWidget(self.groupBox[i])
-			QObject.connect(self.pushButton[i], SIGNAL("clicked()"), self.copyTable)
+			sizePolicy.setHeightForWidth(self.profilePushButton[i].sizePolicy().hasHeightForWidth())
+			self.profilePushButton[i].setSizePolicy(sizePolicy)
+			self.profilePushButton[i].setText(QApplication.translate("GroupBox", "Copy to clipboard", None, QApplication.UnicodeUTF8))
+			self.profilePushButton[i].setObjectName(str(i))
+			self.horizontalLayout.addWidget(self.profilePushButton[i])
 
-		# add coordinate button after all layers shown
-		self.pushButton.append(QPushButton(self.groupBox[i]))
-		sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-		sizePolicy.setHorizontalStretch(0)
-		sizePolicy.setVerticalStretch(0)
-		sizePolicy.setHeightForWidth(self.pushButton[i+1].sizePolicy().hasHeightForWidth())
-		self.pushButton[i+1].setSizePolicy(sizePolicy)
-		self.pushButton[i+1].setText(QApplication.translate("GroupBox", "Copy coords to clipboard", None, QApplication.UnicodeUTF8))
-		self.pushButton[i+1].setObjectName(str(i))
-		self.verticalLayout[i].addWidget(self.pushButton[i+1])
-		self.VLayout.addWidget(self.groupBox[i])
-		QObject.connect(self.pushButton[i+1], SIGNAL("clicked()"), self.copyCoords)
+			#button to copy to clipboard with coordinates
+			self.coordsPushButton.append(QPushButton(self.groupBox[i]))
+			sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+			sizePolicy.setHorizontalStretch(0)
+			sizePolicy.setVerticalStretch(0)
+			sizePolicy.setHeightForWidth(self.coordsPushButton[i].sizePolicy().hasHeightForWidth())
+			self.coordsPushButton[i].setSizePolicy(sizePolicy)
+			self.coordsPushButton[i].setText(QApplication.translate("GroupBox", "Copy to clipboard (with coordinates)", None, QApplication.UnicodeUTF8))
+			self.coordsPushButton[i].setObjectName(str(i))
+			self.horizontalLayout.addWidget(self.coordsPushButton[i])
+
+			self.horizontalLayout.addStretch(0)
+			self.verticalLayout[i].addLayout(self.horizontalLayout)
+
+			self.VLayout.addWidget(self.groupBox[i])
+			QObject.connect(self.profilePushButton[i], SIGNAL("clicked()"), self.copyTable)
+			QObject.connect(self.coordsPushButton[i], SIGNAL("clicked()"), self.copyTableAndCoords)
+
 
 
 	def copyTable(self):							#Writing the table to clipboard in excel form
@@ -172,12 +180,13 @@ class DoProfile(QWidget):
 			text += str(self.profiles[nr]["l"][i]) + "\t" + str(self.profiles[nr]["z"][i]) + "\n"
 		self.clipboard.setText(text)
 
-	def copyCoords(self):							#Writing the table to clipboard in excel form
+	def copyTableAndCoords(self):					#Writing the table with coordinates to clipboard in excel form
 		nr = int( self.sender().objectName() )
 		self.clipboard = QApplication.clipboard()
 		text = ""
 		for i in range( len(self.profiles[nr]["l"]) ):
-			text += str(self.profiles[nr]["l"][i]) + "\t" + str(self.profiles[nr]["x"][i]) + "\t" + str(self.profiles[nr]["y"][i]) + "\n"
+			text += str(self.profiles[nr]["l"][i]) + "\t" + str(self.profiles[nr]["x"][i]) + "\t"\
+                 + str(self.profiles[nr]["y"][i]) + "\t" + str(self.profiles[nr]["z"][i]) + "\n"
 		self.clipboard.setText(text)
 
 
