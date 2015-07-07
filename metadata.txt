@@ -2,6 +2,7 @@
 name=Profile tool
 qgisMinimumVersion=2.0
 description=Plots terrain profile
+about=This tool plots profile lines from raster layers. Supports multiple lines as well as export to svg, pdf, png or csv file. Works with both Qwt5 and Matplotlib plotting libraries.
 category=Raster
 version=3.6.7
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
@@ -35,20 +36,12 @@ changelog=
     3.0   : -Enable profile along polyline
             -Enable "on the fly" working with raster
 
-; tags are in comma separated value format, spaces are allowed
 tags=raster,profile
 
-; these metadata can be empty
-; in a future version of the web application it will
-; be probably possible to create a project on redmine
-; if they are not filled
 homepage=http://hub.qgis.org/projects/profiletool
 tracker=http://hub.qgis.org/projects/profiletool/issues
 repository=https://github.com/etiennesky/profiletool
 icon=icons/profileIcon.png
 
-; experimental flag
 experimental=False
-
-; deprecated flag (applies to the whole plugin and not only to the uploaded version)
 deprecated=False
