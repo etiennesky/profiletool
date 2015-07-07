@@ -3,11 +3,12 @@ name=Profile tool
 qgisMinimumVersion=2.0
 description=Plots terrain profile
 category=Raster
-version=3.6.6
+version=3.6.7
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
 
 changelog=
+    3.6.7 : Add option to include coordinates to the csv output (by martst)
     3.6.6 : Adjustable Y scale, proprer representation of nodata values in Qwt5 plots
     3.6.5 : Refresh the plot when layer's dataChanged signal is emitted (by Martin Dobias)
     3.6.4 : bugfixes from radosuav
