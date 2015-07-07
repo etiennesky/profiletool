@@ -187,14 +187,14 @@ class PlottingTool:
 
 	def findMin(self,profiles, nr):
 		minVal = min( z for z in profiles[nr]["z"] if z is not None )
-		maxVal = max( profiles[nr]["z"] )
+		maxVal = max( profiles[nr]["z"] ) + 1
 		d = ( maxVal - minVal ) or 1
 		return minVal
 
 
 	def findMax(self,profiles, nr):
 		minVal = min( z for z in profiles[nr]["z"] if z is not None )
-		maxVal = max( profiles[nr]["z"] )
+		maxVal = max( profiles[nr]["z"] ) + 1
 		d = ( maxVal - minVal ) or 1
 		return maxVal
 
