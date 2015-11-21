@@ -125,8 +125,8 @@ class DataReaderTool:
 					# this code adapted from valuetool plugin
 					ident = layer.dataProvider().identify(QgsPoint(xC,yC), QgsRaster.IdentifyFormatValue )
 					#if ident is not None and ident.has_key(choosenBand+1):
-					if ident is not None and (choosenBand+1 in ident.results()):
-						attr = ident.results()[choosenBand+1]
+					if ident is not None and (choosenBand in ident.results()):
+						attr = ident.results()[choosenBand]
 						#if attr is None:
 						#	attr=float("nan")
 						#print(attr)

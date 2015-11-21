@@ -96,7 +96,7 @@ class DoProfile(QWidget):
 		#creating the plots of profiles
 		for i in range(0 , model1.rowCount()):
 			self.profiles.append( {"layer": model1.item(i,4).data(Qt.EditRole) } )
-			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole) - 1
+			self.profiles[i]["band"] = model1.item(i,3).data(Qt.EditRole)
 			self.profiles[i] = DataReaderTool().dataReaderTool(self.iface, self.tool, self.profiles[i], self.pointstoDraw, self.dockwidget.checkBox.isChecked())
 		PlottingTool().attachCurves(self.dockwidget, self.profiles, model1, library)
 		PlottingTool().reScalePlot(self.dockwidget, self.profiles, library)

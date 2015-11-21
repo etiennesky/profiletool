@@ -68,13 +68,20 @@ class TableViewTool(QObject):
 			layer2 = layer1
 
 		# Ask the Band by a input dialog
+		#First, if isProfilable, considerate the real band number (instead of band + 1 for raster)
+		if layer2.type() == layer2.PluginLayer and  isProfilable(layer2):
+			self.bandoffset = 0
+			typename = 'parameter'
+		else:
+			self.bandoffset = 1
+			typename = 'band'
 		if layer2.bandCount() != 1:
 			listband = []
 			for i in range(0,layer2.bandCount()):
-				listband.append(str(i+1))
-			testqt, ok = QInputDialog.getItem(iface.mainWindow(), "Band selector", "Choose the band", listband, False)
+				listband.append(str(i+self.bandoffset))
+			testqt, ok = QInputDialog.getItem(iface.mainWindow(), typename + " selector", "Choose the " + typename, listband, False)
 			if ok :
-				choosenBand = int(testqt) - 1
+				choosenBand = int(testqt) - self.bandoffset
 			else:
 				return 2
 		else:
@@ -92,7 +99,7 @@ class TableViewTool(QObject):
 		mdl.item(row,1).setFlags(Qt.NoItemFlags) 
 		mdl.setData( mdl.index(row, 2, QModelIndex())  ,layer2.name())
 		mdl.item(row,2).setFlags(Qt.NoItemFlags) 
-		mdl.setData( mdl.index(row, 3, QModelIndex())  ,choosenBand + 1)
+		mdl.setData( mdl.index(row, 3, QModelIndex())  ,choosenBand + self.bandoffset)
 		mdl.item(row,3).setFlags(Qt.NoItemFlags) 
 		mdl.setData( mdl.index(row, 4, QModelIndex())  ,layer2)
 		mdl.item(row,4).setFlags(Qt.NoItemFlags)
