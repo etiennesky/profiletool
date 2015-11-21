@@ -29,6 +29,7 @@ from PyQt4.QtGui import *
 from PyQt4.Qt import *
 from PyQt4.QtSvg import * # required in some distros
 from qgis.core import *
+from qgis.gui import *
 from plottingtool import PlottingTool
 
 from math import sqrt
@@ -49,6 +50,9 @@ class DoProfile(QWidget):
 		self.dockwidget = dockwidget1
 		self.pointstoDraw = None
 		self.plugin = plugin
+		#matplotlib canvas signal
+		self.cid = None
+		self.vline = None
 		#init scale widgets
 		self.dockwidget.sbMaxVal.setValue(0)
 		self.dockwidget.sbMinVal.setValue(0)
@@ -56,6 +60,9 @@ class DoProfile(QWidget):
 		self.dockwidget.sbMinVal.setEnabled(False)
 		self.dockwidget.sbMinVal.valueChanged.connect(self.reScalePlot)
 		self.dockwidget.sbMaxVal.valueChanged.connect(self.reScalePlot)
+		#mouse tracking
+		self.doTracking = False
+		self.rubberband = None
 
 
 	#**************************** function part *************************************************
@@ -75,7 +82,9 @@ class DoProfile(QWidget):
 
 	def calculateProfil(self, points1, model1, library, vertline = True):
 		self.pointstoDraw = points1
-
+		#Mouse tracking
+		self.prepar_points(self.pointstoDraw)
+		
 		self.removeClosedLayers(model1)
 		if self.pointstoDraw == None:
 			return
@@ -169,8 +178,9 @@ class DoProfile(QWidget):
 			self.VLayout.addWidget(self.groupBox[i])
 			QObject.connect(self.profilePushButton[i], SIGNAL("clicked()"), self.copyTable)
 			QObject.connect(self.coordsPushButton[i], SIGNAL("clicked()"), self.copyTableAndCoords)
-
-
+			#Mouse tracking
+			if self.doTracking:
+				self.rubberband.show()
 
 	def copyTable(self):							#Writing the table to clipboard in excel form
 		nr = int( self.sender().objectName() )
@@ -205,5 +215,61 @@ class DoProfile(QWidget):
 			return self.profiles[nr]["curve"]
 		except:
 			return None
+            
+            
+	def activateMouseTracking(self,int1):
+		if int1 == 2 :
+			self.doTracking = True
+			self.loadRubber()
+			self.cid = self.dockwidget.plotWdg.mpl_connect('motion_notify_event', self.mouseevent_mpl)
+		elif int1 == 0 :
+			self.doTracking = False
+			self.dockwidget.plotWdg.mpl_disconnect(self.cid)
+			if self.rubberband:
+				self.iface.mapCanvas().scene().removeItem(self.rubberband)
+			try:
+				if self.vline:
+					self.dockwidget.plotWdg.figure.get_axes()[0].lines.remove(self.vline)
+					self.dockwidget.plotWdg.draw()
+			except Exception, e:
+				print str(e)
+        
 
-
+	def mouseevent_mpl(self,event):
+		if event.xdata:
+			try:
+				if self.vline:
+					self.dockwidget.plotWdg.figure.get_axes()[0].lines.remove(self.vline)
+			except Exception, e:
+				pass
+			xdata = float(event.xdata)
+			self.vline = self.dockwidget.plotWdg.figure.get_axes()[0].axvline(xdata,linewidth=2, color = 'k')
+			self.dockwidget.plotWdg.draw()
+			i=1
+			while  i < len(self.tabmouseevent) and xdata > self.tabmouseevent[i][0] :
+				i=i+1
+			i=i-1
+			x = self.tabmouseevent[i][1] +(self.tabmouseevent[i+1][1] - self.tabmouseevent[i][1] )/ ( self.tabmouseevent[i+1][0] - self.tabmouseevent[i][0]  )  *   (xdata - self.tabmouseevent[i][0])
+			y = self.tabmouseevent[i][2] +(self.tabmouseevent[i+1][2] - self.tabmouseevent[i][2] )/ ( self.tabmouseevent[i+1][0] - self.tabmouseevent[i][0]  )  *   (xdata - self.tabmouseevent[i][0]) 
+			self.rubberband.show() 
+			point = QgsPoint( x,y    )
+			point = QgsPoint( x,y    )
+			self.rubberband.setCenter(point)
+        
+	def loadRubber(self):
+		self.rubberband = QgsVertexMarker(self.iface.mapCanvas())
+		self.rubberband.setIconSize(5)
+		self.rubberband.setIconType(QgsVertexMarker.ICON_BOX) # or ICON_CROSS, ICON_X
+		self.rubberband.setPenWidth(3)
+            
+            
+	def prepar_points(self,points1):
+		self.tabmouseevent=[]
+		len = 0
+		for i,point in enumerate(points1):
+			if i==0:
+				self.tabmouseevent.append([0,point[0],point[1]])
+			else:
+				len = len + ( (points1[i][0] - points1[i-1][0] )**2 + (points1[i][1] - points1[i-1][1])**2 )**(0.5)
+				self.tabmouseevent.append([float(len) ,float(point[0]),float(point[1])])
+		self.tabmouseevent = self.tabmouseevent[:-1]

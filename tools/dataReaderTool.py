@@ -31,6 +31,7 @@ from qgis.core import *
 
 import platform
 from math import sqrt
+from utils import isProfilable
 
 
 class DataReaderTool:
@@ -114,7 +115,7 @@ class DataReaderTool:
 				xC = x1C + dxC * n
 				yC = y1C + dyC * n
 				attr = 0
-				if layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer':
+				if layer.type() == layer.PluginLayer and isProfilable(layer):
 					ident = layer.identify(QgsPoint(xC,yC))
 					try:
 						attr = float(ident[1].values()[choosenBand])

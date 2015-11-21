@@ -99,10 +99,12 @@ class PTDockWidget(QDockWidget, FormClass):
 	def addOptionComboboxItems(self):
 		#self.comboBox.addItem("Temporary polyline")
 		#self.comboBox.addItem("Selected polyline")
-		if Qwt5_loaded:
-			self.cboLibrary.addItem("Qwt5")
+        
 		if matplotlib_loaded:
 			self.cboLibrary.addItem("Matplotlib")
+		if Qwt5_loaded:
+			self.cboLibrary.addItem("Qwt5")
+
 
 
 

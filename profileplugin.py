@@ -173,6 +173,8 @@ class ProfilePlugin:
 	def leftClicked(self,position):		#Add point to analyse
 		mapPos = self.canvas.getCoordinateTransform().toMapCoordinates(position["x"],position["y"])
 		newPoints = [[mapPos.x(), mapPos.y()]]
+		if self.doprofile.doTracking:
+			self.doprofile.rubberband.hide()
 		if self.selectionmethod == 0:
 			if newPoints == self.dblclktemp:
 				self.dblclktemp = None
@@ -253,6 +255,9 @@ class ProfilePlugin:
 			#self.previousLayer.select(None)
 		except:
 			pass
+		if self.doprofile.doTracking:
+			self.iface.mapCanvas().scene().removeItem(self.doprofile.rubberband)
+			self.wdg.checkBox_mpl_tracking.setCheckState(0)
 		self.canvas.unsetMapTool(self.tool)
 		self.canvas.setMapTool(self.saveTool)
 		#self.rubberband.reset(self.polygon)
@@ -289,6 +294,12 @@ class ProfilePlugin:
 
 	def changePlotLibrary(self, item):
 		self.plotlibrary = self.wdg.cboLibrary.itemText(item)
+		if self.plotlibrary == 'Matplotlib':
+			self.wdg.checkBox_mpl_tracking.setEnabled(True)
+			self.wdg.checkBox_mpl_tracking.stateChanged.connect(self.doprofile.activateMouseTracking) 
+		else:
+			self.wdg.checkBox_mpl_tracking.setCheckState(0)
+			self.wdg.checkBox_mpl_tracking.setEnabled(False)
 		self.wdg.addPlotWidget(self.plotlibrary)
 
 

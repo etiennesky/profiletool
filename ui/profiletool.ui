@@ -257,7 +257,7 @@
           <item row="1" column="5">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <property name="spacing">
-             <number>-1</number>
+             <number>6</number>
             </property>
             <property name="leftMargin">
              <number>0</number>
@@ -347,8 +347,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>993</width>
-             <height>311</height>
+             <width>985</width>
+             <height>302</height>
             </rect>
            </property>
           </widget>
@@ -369,6 +369,16 @@
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
             <widget class="QComboBox" name="cboLibrary"/>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_mpl_tracking">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Link mouse position on graph with canvas</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

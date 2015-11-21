@@ -30,4 +30,6 @@ def isProfilable(layer):
 	"""
 
 	return	(layer.type() == layer.RasterLayer) or \
-			(layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer')
+			(layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer') or \
+			(layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'selafin_viewer')
+
