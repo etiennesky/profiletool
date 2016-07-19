@@ -213,10 +213,6 @@ class ProfilePlugin:
 #***************************** open and quit options *******************************************
 
 	def checkIfOpening(self):
-		ver = str(QGis.QGIS_VERSION)
-		if ver[0] == "0" and ((ver[2] != "1") or (ver[3] != "1")):		#Check qgis version
-			QMessageBox.warning(self.iface.mainWindow(), "Profile tool", "Quantum GIS version detected: "+ver+"\nProfile plugin requires version at least 0.11")
-			return False
 		if self.iface.mapCanvas().layerCount() == 0:					#Check a layer is opened
 			QMessageBox.warning(self.iface.mainWindow(), "Profile", "First open any raster layer, please")
 			return False
@@ -296,7 +292,7 @@ class ProfilePlugin:
 		self.plotlibrary = self.wdg.cboLibrary.itemText(item)
 		if self.plotlibrary == 'Matplotlib':
 			self.wdg.checkBox_mpl_tracking.setEnabled(True)
-			self.wdg.checkBox_mpl_tracking.stateChanged.connect(self.doprofile.activateMouseTracking) 
+			self.wdg.checkBox_mpl_tracking.stateChanged.connect(self.doprofile.activateMouseTracking)
 		else:
 			self.wdg.checkBox_mpl_tracking.setCheckState(0)
 			self.wdg.checkBox_mpl_tracking.setEnabled(False)
