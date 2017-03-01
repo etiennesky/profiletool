@@ -239,6 +239,7 @@ class ProfilePlugin:
 
 #***************************** open and quit options *******************************************
 
+<<<<<<< HEAD
     def checkIfOpening(self):
         try:    #qgis2
             ver = str(QGis.QGIS_VERSION)
@@ -389,3 +390,125 @@ class ProfilePlugin:
         if self.selectionmethod == 0:
             if len(self.lastFreeHandPoints) > 1:
                 self.doprofile.calculateProfil(self.lastFreeHandPoints, self.mdl, self.plotlibrary)
+=======
+	def checkIfOpening(self):
+		if self.iface.mapCanvas().layerCount() == 0:					#Check a layer is opened
+			QMessageBox.warning(self.iface.mainWindow(), "Profile", "First open any raster layer, please")
+			return False
+
+		layer = self.iface.activeLayer()
+
+		if layer == None or not isProfilable(layer) :	#Check if a raster layer is opened and selectionned
+			if self.mdl == None:
+				QMessageBox.warning(self.iface.mainWindow(), "Profile Tool", "Please select one raster layer")
+				return False
+			if self.mdl.rowCount() == 0:
+				QMessageBox.warning(self.iface.mainWindow(), "Profile Tool", "Please select one raster layer")
+				return False
+
+		return True
+
+	def connectTool(self):
+		QObject.connect(self.tool, SIGNAL("moved"), self.moved)
+		QObject.connect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
+		QObject.connect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
+		QObject.connect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+		QObject.connect(self.tool, SIGNAL("deactivate"), self.deactivate)
+
+	def deactivate(self):		#enable clean exit of the plugin
+		QObject.disconnect(self.tool, SIGNAL("moved"), self.moved)
+		QObject.disconnect(self.tool, SIGNAL("leftClicked"), self.leftClicked)
+		QObject.disconnect(self.tool, SIGNAL("rightClicked"), self.rightClicked)
+		QObject.disconnect(self.tool, SIGNAL("doubleClicked"), self.doubleClicked)
+		self.rubberband.reset(self.polygon)
+		self.iface.mainWindow().statusBar().showMessage("")
+
+	def cleaning(self):			#used on right click
+		try:
+			#print str(self.previousLayer)
+			self.previousLayer.removeSelection(False)
+			#self.previousLayer.select(None)
+		except:
+			pass
+		if self.doprofile.doTracking:
+			self.iface.mapCanvas().scene().removeItem(self.doprofile.rubberband)
+			self.wdg.checkBox_mpl_tracking.setCheckState(0)
+		self.canvas.unsetMapTool(self.tool)
+		self.canvas.setMapTool(self.saveTool)
+		#self.rubberband.reset(self.polygon)
+		self.iface.mainWindow().statusBar().showMessage( "" )
+
+	def cleaning2(self):		#used when Dock dialog is closed
+                QObject.disconnect(self.wdg.tableView,SIGNAL("clicked(QModelIndex)"), self._onClick)
+                QObject.disconnect(self.wdg.comboBox, SIGNAL("currentIndexChanged(int)"), self.selectionMethod)
+                self.tableViewTool.layerAddedOrRemoved.disconnect(self.refreshPlot)
+                self.mdl = None
+                self.dockOpened = False
+                self.cleaning()
+                self.wdg = None
+
+	#***************************** Options *******************************************
+
+	def selectionMethod(self,item):
+		if item == 0:
+			self.selectionmethod = 0
+			self.tool.setCursor(Qt.CrossCursor)
+		elif item == 1:
+			self.selectionmethod = 1
+			self.tool.setCursor(Qt.PointingHandCursor)
+			self.pointstoDraw = []
+			self.pointstoCal = []
+			self.rubberband.reset(self.polygon)
+		if self.canvas.mapTool() == self.tool:
+			self.canvas.setMapTool(self.tool)
+			self.connectTool()
+			if self.selectionmethod == 0:
+				self.iface.mainWindow().statusBar().showMessage(self.textquit0)
+			elif self.selectionmethod == 1:
+				self.iface.mainWindow().statusBar().showMessage(self.textquit1)
+
+	def changePlotLibrary(self, item):
+		self.plotlibrary = self.wdg.cboLibrary.itemText(item)
+		if self.plotlibrary == 'Matplotlib':
+			self.wdg.checkBox_mpl_tracking.setEnabled(True)
+			self.wdg.checkBox_mpl_tracking.stateChanged.connect(self.doprofile.activateMouseTracking)
+		else:
+			self.wdg.checkBox_mpl_tracking.setCheckState(0)
+			self.wdg.checkBox_mpl_tracking.setEnabled(False)
+		self.wdg.addPlotWidget(self.plotlibrary)
+
+
+
+	#************************* tableview function ******************************************
+
+	def addLayer(self, layer1 = None):
+		if layer1 is None:
+			layer1 = self.iface.activeLayer()
+		self.tableViewTool.addLayer(self.iface, self.mdl, layer1)
+		layer1.dataChanged.connect(self.refreshPlot)
+
+	def _onClick(self,index1):					#action when clicking the tableview
+		self.tableViewTool.onClick(self.iface, self.wdg, self.mdl, self.plotlibrary, index1)
+
+	def removeLayer(self, index=None):
+		if index is None:
+			index = self.tableViewTool.chooseLayerForRemoval(self.iface, self.mdl)
+
+		if index is not None:
+			layer = self.mdl.index(index, 4).data()
+			layer.dataChanged.disconnect(self.refreshPlot)
+			self.tableViewTool.removeLayer(self.mdl, index)
+
+	def about(self):
+		from ui.dlgabout import DlgAbout
+		DlgAbout(self.iface.mainWindow()).exec_()
+
+	def refreshPlot(self):
+		"""
+			Refreshes/updates the plot without requiring the user to
+			redraw the plot line (rubberband)
+		"""
+		if self.selectionmethod == 0:
+			if len(self.lastFreeHandPoints) > 1:
+				self.doprofile.calculateProfil(self.lastFreeHandPoints, self.mdl, self.plotlibrary)
+>>>>>>> origin/master
