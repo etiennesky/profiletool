@@ -24,5 +24,5 @@
 #---------------------------------------------------------------------
 
 def classFactory(iface):
- from profileplugin import ProfilePlugin
+ from .profileplugin import ProfilePlugin
  return ProfilePlugin(iface)

@@ -23,48 +23,64 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 #---------------------------------------------------------------------
-
+"""
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+"""
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+
 from qgis.core import *
 from qgis.gui import *
 
 class ProfiletoolMapTool(QgsMapTool):
 
-	def __init__(self, canvas,button):
-		QgsMapTool.__init__(self,canvas)
-		self.canvas = canvas
-		self.cursor = QCursor(Qt.CrossCursor)
-		self.button = button
+    moved = QtCore.pyqtSignal(dict)
+    rightClicked = QtCore.pyqtSignal(dict)
+    leftClicked = QtCore.pyqtSignal(dict)
+    doubleClicked = QtCore.pyqtSignal(dict)
+    desactivate = QtCore.pyqtSignal()
 
-	def canvasMoveEvent(self,event):
-		self.emit( SIGNAL("moved"), {'x': event.pos().x(), 'y': event.pos().y()} )
+    def __init__(self, canvas,button):
+        QgsMapTool.__init__(self,canvas)
+        self.canvas = canvas
+        self.cursor = QCursor(Qt.CrossCursor)
+        self.button = button
 
-
-	def canvasReleaseEvent(self,event):
-		if event.button() == Qt.RightButton:
-			self.emit( SIGNAL("rightClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
-		else:
-			self.emit( SIGNAL("leftClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
-
-	def canvasDoubleClickEvent(self,event):
-		self.emit( SIGNAL("doubleClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
-
-	def activate(self):
-		QgsMapTool.activate(self)
-		self.canvas.setCursor(self.cursor)
-		self.button.setCheckable(True)
-		self.button.setChecked(True)
+    def canvasMoveEvent(self,event):
+        #self.emit( SIGNAL("moved"), {'x': event.pos().x(), 'y': event.pos().y()} )
+        self.moved.emit({'x': event.pos().x(), 'y': event.pos().y()})
 
 
-	def deactivate(self):
-		self.emit( SIGNAL("deactivate") )
-		self.button.setCheckable(False)
-		QgsMapTool.deactivate(self)
+    def canvasReleaseEvent(self,event):
+        if event.button() == Qt.RightButton:
+            #self.emit( SIGNAL("rightClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
+            self.rightClicked.emit({'x': event.pos().x(), 'y': event.pos().y()})
+        else:
+            #self.emit( SIGNAL("leftClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
+            self.leftClicked.emit( {'x': event.pos().x(), 'y': event.pos().y()} )
+
+    def canvasDoubleClickEvent(self,event):
+        #self.emit( SIGNAL("doubleClicked"), {'x': event.pos().x(), 'y': event.pos().y()} )
+        self.doubleClicked.emit( {'x': event.pos().x(), 'y': event.pos().y()} )
+
+    def activate(self):
+        QgsMapTool.activate(self)
+        self.canvas.setCursor(self.cursor)
+        self.button.setCheckable(True)
+        self.button.setChecked(True)
 
 
-	def isZoomTool(self):
-		return False
+    def deactivate(self):
+        #self.emit( SIGNAL("deactivate") )
+        self.desactivate.emit()
+        
+        self.button.setCheckable(False)
+        QgsMapTool.deactivate(self)
 
-	def setCursor(self,cursor):
-		self.cursor = QCursor(cursor)
+
+    def isZoomTool(self):
+        return False
+
+    def setCursor(self,cursor):
+        self.cursor = QCursor(cursor)
