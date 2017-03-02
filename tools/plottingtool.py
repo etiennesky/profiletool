@@ -42,6 +42,9 @@ except:
 import platform
 from math import sqrt
 
+from .. import pyqtgraph as pg
+pg.setConfigOption('background', 'w')
+
 has_qwt = False
 has_mpl = False
 try:
@@ -51,6 +54,8 @@ try:
     import itertools # only needed for Qwt plot
 except:
     pass
+    
+    
 try:
     from matplotlib import *
     import matplotlib
@@ -66,7 +71,23 @@ class PlottingTool:
 
     def changePlotWidget(self, library, frame_for_plot):
         #print("profiletool : changePlotWidget( %s )" % library )
-        if library == "Qwt5" and has_qwt:
+        
+        if library == "PyQtGraph":
+            #Tools tab - temporal graph
+            plotWdg = pg.PlotWidget()
+            layout = QVBoxLayout()
+            layout.addWidget(plotWdg)
+            plotWdg.showGrid(True,True,0.5)
+            #self.vb = plotWdg.getViewBox()
+                 
+            frame_for_plot.setLayout(layout)
+            
+            self.plotitem = []
+            
+            return plotWdg
+        
+        
+        elif library == "Qwt5" and has_qwt:
             plotWdg = QwtPlot(frame_for_plot)
             sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             sizePolicy.setHorizontalStretch(0)
@@ -119,7 +140,10 @@ class PlottingTool:
 
 
     def drawVertLine(self,wdg, pointstoDraw, library):
-        if library == "Qwt5" and has_qwt:
+        if library == "PyQtGraph":
+            pass
+        
+        elif library == "Qwt5" and has_qwt:
             profileLen = 0
             for i in range(0, len(pointstoDraw)-1):
                 x1 = float(pointstoDraw[i][0])
@@ -146,7 +170,27 @@ class PlottingTool:
 
 
     def attachCurves(self, wdg, profiles, model1, library):
-        if library == "Qwt5" and has_qwt:
+    
+        if library == "PyQtGraph":
+            for i in range(0 , model1.rowCount()):
+
+                tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"])
+                
+                if model1.item(i,0).data(Qt.CheckStateRole):
+                    wdg.plotWdg.plot(profiles[i]["l"], profiles[i]["z"], pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
+                else:
+                    wdg.plotWdg.plot(profiles[i]["l"], profiles[i]["z"], pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
+                    wdg.plotWdg.getPlotItem().listDataItems()[-1].setVisible(False)
+                    
+                    
+                
+            #wdg.plotWdg.scene().sigMouseMoved.connect(self.mouseMoved)
+            #self.pyqtgraphwdg.scene().sigMouseClicked.connect(self.mouseClicked)
+            
+
+                
+    
+        elif library == "Qwt5" and has_qwt:
             for i in range(0 , model1.rowCount()):
                 tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"]+1)
 
@@ -236,6 +280,9 @@ class PlottingTool:
                     wdg.sbMinVal.setEnabled(True)
 
         if minimumValue < maximumValue:
+            if library == "PyQtGraph":
+                wdg.plotWdg.setYRange(minimumValue,maximumValue)
+        
             if library == "Qwt5" and has_qwt:
                 wdg.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)
                 wdg.plotWdg.replot()
@@ -248,7 +295,11 @@ class PlottingTool:
     def clearData(self, wdg, profiles, library):                             # erase one of profiles
         if not profiles:
             return
-        if library == "Qwt5" and has_qwt:
+            
+        if library == "PyQtGraph":
+            wdg.plotWdg.clear()
+            
+        elif library == "Qwt5" and has_qwt:
             wdg.plotWdg.clear()
             for i in range(0,len(profiles)):
                 profiles[i]["l"] = []
@@ -270,6 +321,16 @@ class PlottingTool:
 
 
     def changeColor(self,wdg, library, color1, name):                    #Action when clicking the tableview - color
+    
+        if library == "PyQtGraph":
+            pitems = wdg.plotWdg.getPlotItem()
+            
+            if True:
+                for i, item in enumerate(pitems.listDataItems()):
+                    if item.name() == name:
+                        item.setPen( color1,  width=2)
+                    
+    
         if library == "Qwt5":
             temp1 = wdg.plotWdg.itemList()
             for i in range(len(temp1)):
@@ -289,7 +350,19 @@ class PlottingTool:
 
 
     def changeAttachCurve(self, wdg, library, bool, name):                #Action when clicking the tableview - checkstate
-        if library == "Qwt5":
+    
+    
+        if library == "PyQtGraph":
+            pitems = wdg.plotWdg.getPlotItem()
+            if True:
+                for i, item in enumerate(pitems.listDataItems()):
+                    if item.name() == name:
+                        if bool:
+                            item.setVisible(True)
+                        else:
+                            item.setVisible(False)
+                        
+        elif library == "Qwt5":
             temp1 = wdg.plotWdg.itemList()
             for i in range(len(temp1)):
                 if name == str(temp1[i].title().text()):

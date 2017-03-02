@@ -113,7 +113,7 @@ class PTDockWidget(QDockWidget, FormClass):
     def addOptionComboboxItems(self):
         #self.comboBox.addItem("Temporary polyline")
         #self.comboBox.addItem("Selected polyline")
-        
+        self.cboLibrary.addItem("PyQtGraph")
         if matplotlib_loaded:
             self.cboLibrary.addItem("Matplotlib")
         if Qwt5_loaded:
@@ -137,8 +137,15 @@ class PTDockWidget(QDockWidget, FormClass):
         while layout.count():
                         child = layout.takeAt(0)
                         child.widget().deleteLater()
+                        
+                        
+        if library == "PyQtGraph":
+            self.stackedWidget.setCurrentIndex(0)
+            self.plotWdg = PlottingTool().changePlotWidget("PyQtGraph", self.frame_for_plot)
+            layout.addWidget(self.plotWdg)
+            
 
-        if library == "Qwt5":
+        elif library == "Qwt5":
             self.stackedWidget.setCurrentIndex(0)
             widget1 = self.stackedWidget.widget(1)
             if widget1:

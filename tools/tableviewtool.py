@@ -142,7 +142,8 @@ class TableViewTool(QObject):
             mdl.setData( mdl.index(temp.row(), 1, QModelIndex())  ,color , Qt.BackgroundRole)
             PlottingTool().changeColor(wdg, plotlibrary, color, name)
         elif index1.column() == 0:                #modifying checkbox
-            name = mdl.item(index1.row(),2).data(Qt.EditRole)            
+            #name = mdl.item(index1.row(),2).data(Qt.EditRole)   
+            name = ("%s#%d") % (mdl.item(index1.row(),2).data(Qt.EditRole), mdl.item(index1.row(),3).data(Qt.EditRole))
             booltemp = temp.data(Qt.CheckStateRole)
             if booltemp == True:
                 booltemp = False
