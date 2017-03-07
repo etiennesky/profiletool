@@ -26,11 +26,7 @@
 from qgis.core import *
 from qgis.gui import *
 import qgis
-"""
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtSvg import *
-"""
+
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtSvg import *
@@ -43,13 +39,13 @@ import platform
 from math import sqrt
 
 from .. import pyqtgraph as pg
+from ..pyqtgraph import exporters 
 pg.setConfigOption('background', 'w')
 
 has_qwt = False
 has_mpl = False
 try:
     from PyQt4.Qwt5 import *
-    #print("profiletool : Qwt5 imported")
     has_qwt = True
     import itertools # only needed for Qwt plot
 except:
@@ -70,19 +66,23 @@ class PlottingTool:
 
 
     def changePlotWidget(self, library, frame_for_plot):
-        #print("profiletool : changePlotWidget( %s )" % library )
         
         if library == "PyQtGraph":
-            #Tools tab - temporal graph
             plotWdg = pg.PlotWidget()
-            layout = QVBoxLayout()
-            layout.addWidget(plotWdg)
             plotWdg.showGrid(True,True,0.5)
-            #self.vb = plotWdg.getViewBox()
-                 
-            frame_for_plot.setLayout(layout)
+            datavline = pg.InfiniteLine(0, angle=90 ,pen=pg.mkPen('r',  width=1) , name = 'cross_vertical' )
+            datahline = pg.InfiniteLine(0, angle=0 , pen=pg.mkPen('r',  width=1) , name = 'cross_horizontal')
+            plotWdg.addItem(datavline)
+            plotWdg.addItem(datahline)
+            #cursor
+            xtextitem = pg.TextItem('X : /', color = (0,0,0), border = pg.mkPen(color=(0, 0, 0),  width=1), fill=pg.mkBrush('w'), anchor=(0,1))
+            ytextitem = pg.TextItem('Y : / ', color = (0,0,0) , border = pg.mkPen(color=(0, 0, 0),  width=1), fill=pg.mkBrush('w'), anchor=(0,0))
+            plotWdg.addItem(xtextitem)
+            plotWdg.addItem(ytextitem)
             
-            self.plotitem = []
+            plotWdg.getViewBox().autoRange( items=[])
+            plotWdg.getViewBox().disableAutoRange()
+            plotWdg.getViewBox().border = pg.mkPen(color=(0, 0, 0),  width=1)
             
             return plotWdg
         
@@ -110,6 +110,7 @@ class PlottingTool:
             grid.setPen(QPen(QColor('grey'), 0, Qt.DotLine))
             grid.attach(plotWdg)
             return plotWdg
+            
         elif library == "Matplotlib" and has_mpl:
             from matplotlib.figure import Figure
             if int(qgis.PyQt.QtCore.QT_VERSION_STR[0]) == 4 :
@@ -137,7 +138,7 @@ class PlottingTool:
             return canvas
             
         
-
+        
 
     def drawVertLine(self,wdg, pointstoDraw, library):
         if library == "PyQtGraph":
@@ -172,6 +173,7 @@ class PlottingTool:
     def attachCurves(self, wdg, profiles, model1, library):
     
         if library == "PyQtGraph":
+            
             for i in range(0 , model1.rowCount()):
 
                 tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"])
@@ -182,12 +184,6 @@ class PlottingTool:
                     wdg.plotWdg.plot(profiles[i]["l"], profiles[i]["z"], pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
                     wdg.plotWdg.getPlotItem().listDataItems()[-1].setVisible(False)
                     
-                    
-                
-            #wdg.plotWdg.scene().sigMouseMoved.connect(self.mouseMoved)
-            #self.pyqtgraphwdg.scene().sigMouseClicked.connect(self.mouseClicked)
-            
-
                 
     
         elif library == "Qwt5" and has_qwt:
@@ -226,6 +222,7 @@ class PlottingTool:
                     pass
                     #self.iface.mainWindow().statusBar().showMessage("Problem with setting scale of plotting")
             wdg.plotWdg.replot()
+            
         elif library == "Matplotlib" and has_mpl:
             for i in range(0 , model1.rowCount()):
 
@@ -257,7 +254,17 @@ class PlottingTool:
         maxVal = max( profiles[nr]["z"] ) + 1
         d = ( maxVal - minVal ) or 1
         return maxVal
-
+        
+        
+        
+    def plotRangechanged(self, wdg, library):
+        if library == "PyQtGraph":
+            range = wdg.plotWdg.getViewBox().viewRange()
+            wdg.disconnectYSpinbox()
+            wdg.sbMaxVal.setValue(range[1][1])
+            wdg.sbMinVal.setValue(range[1][0])
+            wdg.connectYSpinbox()
+            
 
     def reScalePlot(self, wdg, profiles, library):                         # called when spinbox value changed
         if profiles == None:
@@ -297,7 +304,13 @@ class PlottingTool:
             return
             
         if library == "PyQtGraph":
-            wdg.plotWdg.clear()
+            pitems = wdg.plotWdg.getPlotItem().listDataItems()
+            for item in pitems:
+                wdg.plotWdg.removeItem(item)
+            try:
+                wdg.plotWdg.scene().sigMouseMoved.disconnect(self.mouseMoved)
+            except:
+                pass
             
         elif library == "Qwt5" and has_qwt:
             wdg.plotWdg.clear()
@@ -318,19 +331,19 @@ class PlottingTool:
         wdg.sbMinVal.setEnabled(False)
         wdg.sbMaxVal.setValue(0)
         wdg.sbMinVal.setValue(0)
+        
+        
+        
 
 
     def changeColor(self,wdg, library, color1, name):                    #Action when clicking the tableview - color
     
         if library == "PyQtGraph":
             pitems = wdg.plotWdg.getPlotItem()
-            
-            if True:
-                for i, item in enumerate(pitems.listDataItems()):
-                    if item.name() == name:
-                        item.setPen( color1,  width=2)
+            for i, item in enumerate(pitems.listDataItems()):
+                if item.name() == name:
+                    item.setPen( color1,  width=2)
                     
-    
         if library == "Qwt5":
             temp1 = wdg.plotWdg.itemList()
             for i in range(len(temp1)):
@@ -351,16 +364,14 @@ class PlottingTool:
 
     def changeAttachCurve(self, wdg, library, bool, name):                #Action when clicking the tableview - checkstate
     
-    
         if library == "PyQtGraph":
             pitems = wdg.plotWdg.getPlotItem()
-            if True:
-                for i, item in enumerate(pitems.listDataItems()):
-                    if item.name() == name:
-                        if bool:
-                            item.setVisible(True)
-                        else:
-                            item.setVisible(False)
+            for i, item in enumerate(pitems.listDataItems()):
+                if item.name() == name:
+                    if bool:
+                        item.setVisible(True)
+                    else:
+                        item.setVisible(False)
                         
         elif library == "Qwt5":
             temp1 = wdg.plotWdg.itemList()
@@ -439,8 +450,16 @@ class PlottingTool:
                 name = str(mdl.item(i,2).data(Qt.EditRole))
                 #return
         fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
+        
         if fileName:
-            if library == "Qwt5" and has_qwt:
+            if isinstance(fileName,tuple):  #pyqt5 case
+                fileName = fileName[0]
+            if library == "PyQtGraph":
+                exporter = exporters.SVGExporter(wdg.plotWdg.getPlotItem().scene())
+                #exporter =  pg.exporters.ImageExporter(wdg.plotWdg.getPlotItem()
+                exporter.export(fileName = fileName)
+                
+            elif library == "Qwt5" and has_qwt:
                 printer = QSvgGenerator()
                 printer.setFileName(fileName)
                 printer.setSize(QSize(800, 400))
@@ -455,7 +474,12 @@ class PlottingTool:
                 #return
         fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".png","Portable Network Graphics (*.png)")
         if fileName:
-            if library == "Qwt5" and has_qwt:
+            if isinstance(fileName,tuple):  #pyqt5 case
+                fileName = fileName[0]
+            if library == "PyQtGraph":
+                exporter =  exporters.ImageExporter(wdg.plotWdg.getPlotItem())
+                exporter.export(fileName)
+            elif library == "Qwt5" and has_qwt:
                 QPixmap.grabWidget(wdg.plotWdg).save(fileName, "PNG")
             elif library == "Matplotlib" and has_mpl:
                 wdg.plotWdg.figure.savefig(str(fileName))

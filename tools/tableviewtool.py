@@ -70,7 +70,11 @@ class TableViewTool(QObject):
                 else:
                     return
         else : 
-            layer2 = layer1
+            if isProfilable(layer1):
+                layer2 = layer1
+            else:
+                QMessageBox.warning(iface.mainWindow(), "Profile tool", "Active layer is not a profilable layer")
+                return
 
         # Ask the Band by a input dialog
         #First, if isProfilable, considerate the real band number (instead of band + 1 for raster)
@@ -80,6 +84,7 @@ class TableViewTool(QObject):
         else:
             self.bandoffset = 1
             typename = 'band'
+            
         if layer2.bandCount() != 1:
             listband = []
             for i in range(0,layer2.bandCount()):

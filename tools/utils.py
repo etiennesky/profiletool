@@ -24,12 +24,12 @@
 #---------------------------------------------------------------------
 
 def isProfilable(layer):
-	"""
-		Returns True if layer is capable of being profiles,
-		else returns False
-	"""
+    """
+        Returns True if layer is capable of being profiles,
+        else returns False
+    """
 
-	return	(layer.type() == layer.RasterLayer) or \
-			(layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer') or \
-			(layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'selafin_viewer')
+    return    (layer.type() == layer.RasterLayer) or \
+            (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer') or \
+            (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'selafin_viewer')
 
