@@ -167,6 +167,11 @@ class ProfiletoolMapToolRenderer():
         self.tool.leftClicked.connect(self.leftClicked)
         self.tool.doubleClicked.connect(self.doubleClicked)
         self.tool.desactivate.connect(self.deactivate)
+        
+        if self.profiletool.dockwidget.selectionmethod == 0:
+            self.iface.mainWindow().statusBar().showMessage(self.textquit0)
+        elif self.profiletool.dockwidget.selectionmethod == 1:
+            self.iface.mainWindow().statusBar().showMessage(self.textquit1)
 
 
     def deactivate(self):        #enable clean exit of the plugin
