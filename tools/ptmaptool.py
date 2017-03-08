@@ -124,6 +124,7 @@ class ProfiletoolMapToolRenderer():
             self.previousLayer = result[2]
             #self.profiletool.calculateProfil(self.pointstoDraw, self.mdl,self.plotlibrary, False)
             self.profiletool.calculateProfil(self.pointstoDraw, False)
+            self.lastFreeHandPoints = self.pointstoDraw
             self.pointstoDraw = []
             self.iface.mainWindow().statusBar().showMessage(self.textquit1)
 

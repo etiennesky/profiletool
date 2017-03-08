@@ -315,6 +315,7 @@ class PTDockWidget(QDockWidget, FormClass):
     #********************************************************************************
     
     def addLayer(self, layer1 = None):
+        
         if isinstance(layer1,bool): #comes from click
             layer1 = self.iface.activeLayer()
         """
@@ -344,12 +345,10 @@ class PTDockWidget(QDockWidget, FormClass):
         #    Refreshes/updates the plot without requiring the user to
         #    redraw the plot line (rubberband)
         #
-        if self.selectionmethod == 0:
-            if len(self.profiletoolcore.toolrenderer.lastFreeHandPoints) > 1:
-                #self.profiletoolcore.calculateProfil(self.profiletoolcore.toolrenderer.lastFreeHandPoints, self.mdl, self.plotlibrary)
-                self.profiletoolcore.calculateProfil(self.profiletoolcore.toolrenderer.lastFreeHandPoints)
                 
-                
+        if len(self.profiletoolcore.toolrenderer.lastFreeHandPoints) > 1:
+            self.profiletoolcore.calculateProfil(self.profiletoolcore.toolrenderer.lastFreeHandPoints)
+        
                 
     def _onClick(self,index1):                    #action when clicking the tableview
         self.tableViewTool.onClick(self.iface, self, self.mdl, self.plotlibrary, index1)

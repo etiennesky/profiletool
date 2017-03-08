@@ -119,6 +119,7 @@ class ProfileToolCore(QWidget):
         if self.doTracking :
             self.rubberbandpoint.show()
         self.enableMouseCoordonates(self.dockwidget.plotlibrary)
+        
                 
 
     
@@ -238,11 +239,7 @@ class ProfileToolCore(QWidget):
                         for  item in pitems.listDataItems():
                             if item.isVisible() :
                                 x,y = item.getData()
-                                #print('y',y)
-                                #x = x[numpy.logical_not(numpy.isnan(x))]
-                                nearestindex = np.argmin( abs(np.array(x[np.logical_not(np.isnan(x))])-mousePoint.x()) )
-                                #print('nearestindex',nearestindex)
-                                
+                                nearestindex = np.argmin( abs(np.array(x)-mousePoint.x()) )
                                 if compt == 0:
                                     xtoplot = np.array(x)[nearestindex]
                                     ytoplot = np.array(y)[nearestindex]
@@ -251,7 +248,6 @@ class ProfileToolCore(QWidget):
                                         ytoplot = np.array(y)[nearestindex]
                                         xtoplot = np.array(x)[nearestindex]
                                 compt += 1
-                        #print(xtoplot,ytoplot)
                         #plot xy label and cursor
                         if not xtoplot is None and not ytoplot is None:
                             for item in self.dockwidget.plotWdg.allChildItems():
