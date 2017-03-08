@@ -246,22 +246,34 @@ class PTDockWidget(QDockWidget, FormClass):
             self.sbMaxVal.valueChanged.disconnect(self.reScalePlot)
         except:
             pass
+            
+    def connectPlotRangechanged(self):
+        self.plotWdg.getViewBox().sigRangeChanged.connect(self.plotRangechanged)
+        
+    def disconnectPlotRangechanged(self):
+        try:
+            self.plotWdg.getViewBox().sigRangeChanged.disconnect(self.plotRangechanged)
+        except:
+            pass
     
-    def plotRangechanged(self, param):                         # called when pyqtgraph view changed
+    def plotRangechanged(self, param = None):                         # called when pyqtgraph view changed
         PlottingTool().plotRangechanged(self,  self.cboLibrary.currentText () )
             
             
     def reScalePlot(self, param):                         # called when a spinbox value changed
-        
+        self.disconnectPlotRangechanged()
         if type(param) == bool:
             if self.plotlibrary == 'PyQtGraph':
                 self.plotWdg.getViewBox().autoRange( items=self.plotWdg.getPlotItem().listDataItems())
+                self.plotRangechanged()
         
         if self.sbMinVal.value() == self.sbMaxVal.value() == 0:
             # don't execute it on init
-            return
-        PlottingTool().reScalePlot(self, self.profiletoolcore.profiles, self.cboLibrary.currentText () )
-    
+            pass
+        else:
+            #print('rescale',self.sbMinVal.value(),self.sbMaxVal.value())
+            PlottingTool().reScalePlot(self, self.profiletoolcore.profiles, self.cboLibrary.currentText () )
+        self.connectPlotRangechanged()
         
     def showCursor(self,int1):
         if int1 == 2 :
@@ -314,12 +326,16 @@ class PTDockWidget(QDockWidget, FormClass):
         
         
     def removeLayer(self, index=None):
-        if index is None:
+        #if index is None:
+        if isinstance(index,bool):  #come from button
             index = self.tableViewTool.chooseLayerForRemoval(self.iface, self.mdl)
 
         if index is not None:
             layer = self.mdl.index(index, 4).data()
-            layer.dataChanged.disconnect(self.refreshPlot)
+            try:
+                layer.dataChanged.disconnect(self.refreshPlot)
+            except:
+                pass
             self.tableViewTool.removeLayer(self.mdl, index)
         
         

@@ -31,6 +31,10 @@ from PyQt4.QtGui import *
 """
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
+try:
+    from qgis.PyQt.QtWidgets import *
+except:
+    pass
 
 from .plottingtool import *
 from .utils import isProfilable
@@ -124,6 +128,7 @@ class TableViewTool(QObject):
                 return
 
     def chooseLayerForRemoval(self, iface, mdl):
+        
         if mdl.rowCount() < 2:
             if mdl.rowCount() == 1:
                 return 0

@@ -1,14 +1,16 @@
 [general]
 name=Profile tool
-qgisMinimumVersion=2.0
+qgisMinimumVersion=2.8
+qgisMaximumVersion=3.99
 description=Plots terrain profile
-about=This tool plots profile lines from raster layers. Supports multiple lines as well as export to svg, pdf, png or csv file. Works with both Qwt5 and Matplotlib plotting libraries.
+about=This tool plots profile lines from raster layers. Supports multiple lines as well as export to svg, pdf, png or csv file. Works also with Matplotlib plotting library.
 category=Raster
-version=3.7.1
+version=4.0.0
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
 
 changelog=
+    4.0.0 : update for qgis 2 and  and code cleaning
     3.7.1 : Remove ancient code and fix compatibility with QGIS 2.16
     3.7.0 : Mouse tracking and pluginlayer adaptations
     3.6.7 : Add option to include coordinates to the csv output (by martst)

@@ -38,6 +38,8 @@ except:
 import platform
 from math import sqrt
 
+import numpy as np
+
 from .. import pyqtgraph as pg
 from ..pyqtgraph import exporters 
 pg.setConfigOption('background', 'w')
@@ -177,11 +179,14 @@ class PlottingTool:
             for i in range(0 , model1.rowCount()):
 
                 tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"])
-                
+                #case line outside the raster
+                y = np.array(profiles[i]["z"], dtype=np.float)  #replace None value by np.nan
+                x = np.array(profiles[i]["l"])
+                        
                 if model1.item(i,0).data(Qt.CheckStateRole):
-                    wdg.plotWdg.plot(profiles[i]["l"], profiles[i]["z"], pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
+                    wdg.plotWdg.plot(x, y, pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
                 else:
-                    wdg.plotWdg.plot(profiles[i]["l"], profiles[i]["z"], pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
+                    wdg.plotWdg.plot(x, y, pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
                     wdg.plotWdg.getPlotItem().listDataItems()[-1].setVisible(False)
                     
                 
@@ -244,14 +249,16 @@ class PlottingTool:
 
     def findMin(self,profiles, nr):
         minVal = min( z for z in profiles[nr]["z"] if z is not None )
-        maxVal = max( profiles[nr]["z"] ) + 1
+        #maxVal = max( profiles[nr]["z"] ) + 1
+        maxVal = max( z for z in profiles[nr]["z"] if z is not None ) + 1
         d = ( maxVal - minVal ) or 1
         return minVal
 
 
     def findMax(self,profiles, nr):
         minVal = min( z for z in profiles[nr]["z"] if z is not None )
-        maxVal = max( profiles[nr]["z"] ) + 1
+        #maxVal = max( profiles[nr]["z"] ) + 1
+        maxVal = max( z for z in profiles[nr]["z"] if z is not None ) + 1
         d = ( maxVal - minVal ) or 1
         return maxVal
         
@@ -271,6 +278,7 @@ class PlottingTool:
             return
         minimumValue = wdg.sbMinVal.value()
         maximumValue = wdg.sbMaxVal.value()
+        
         if minimumValue == maximumValue:
             # Automatic mode
             minimumValue = 1000000000
@@ -288,7 +296,8 @@ class PlottingTool:
 
         if minimumValue < maximumValue:
             if library == "PyQtGraph":
-                wdg.plotWdg.setYRange(minimumValue,maximumValue)
+                #print('ok',minimumValue, maximumValue)
+                wdg.plotWdg.getViewBox().setYRange( minimumValue,maximumValue , padding = 0 )
         
             if library == "Qwt5" and has_qwt:
                 wdg.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)

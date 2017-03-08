@@ -203,7 +203,9 @@ class ProfileToolCore(QWidget):
         if library == "PyQtGraph":
             self.dockwidget.plotWdg.scene().sigMouseMoved.connect(self.mouseMovedPyQtGraph)
             self.dockwidget.plotWdg.getViewBox().autoRange( items=self.dockwidget.plotWdg.getPlotItem().listDataItems())
-            self.dockwidget.plotWdg.getViewBox().sigRangeChanged.connect(self.dockwidget.plotRangechanged)
+            #self.dockwidget.plotWdg.getViewBox().sigRangeChanged.connect(self.dockwidget.plotRangechanged)
+            self.dockwidget.connectPlotRangechanged()
+            
             
             
     def disableMouseCoordonates(self):
@@ -212,10 +214,8 @@ class ProfileToolCore(QWidget):
         except:
             pass
             
-        try:
-            self.dockwidget.plotWdg.getViewBox().sigRangeChanged.disconnect(self.dockwidget.plotRangechanged)
-        except:
-            pass
+        self.dockwidget.disconnectPlotRangechanged()
+        
     
         
     def mouseMovedPyQtGraph(self, pos): # si connexion directe du signal "mouseMoved" : la fonction reçoit le point courant
@@ -230,43 +230,53 @@ class ProfileToolCore(QWidget):
                     datas = []
                     pitems = self.dockwidget.plotWdg.getPlotItem()
                     ytoplot = None
+                    xtoplot = None
                     
                     if len(pitems.listDataItems())>0:
                         #get data and nearest xy from cursor
-                        for i, item in enumerate(pitems.listDataItems()):
-                            x,y = item.getData()
-                            nearestindex = np.argmin( abs(np.array(np.array(x))-mousePoint.x()) )
-                            xtoplot = np.array(x)[nearestindex]
-                            if i == 0:
-                                ytoplot = np.array(y)[nearestindex]
-                            else:
-                                if abs( np.array(y)[nearestindex] - mousePoint.y() ) < abs( ytoplot -  mousePoint.y() ):
+                        compt = 0
+                        for  item in pitems.listDataItems():
+                            if item.isVisible() :
+                                x,y = item.getData()
+                                #print('y',y)
+                                #x = x[numpy.logical_not(numpy.isnan(x))]
+                                nearestindex = np.argmin( abs(np.array(x[np.logical_not(np.isnan(x))])-mousePoint.x()) )
+                                #print('nearestindex',nearestindex)
+                                
+                                if compt == 0:
+                                    xtoplot = np.array(x)[nearestindex]
                                     ytoplot = np.array(y)[nearestindex]
-                                    
+                                else:
+                                    if abs( np.array(y)[nearestindex] - mousePoint.y() ) < abs( ytoplot -  mousePoint.y() ):
+                                        ytoplot = np.array(y)[nearestindex]
+                                        xtoplot = np.array(x)[nearestindex]
+                                compt += 1
+                        #print(xtoplot,ytoplot)
                         #plot xy label and cursor
-                        for item in self.dockwidget.plotWdg.allChildItems():
-                            if str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.InfiniteLine.InfiniteLine'>":
-                                if item.name() == 'cross_vertical':
-                                    item.show()
-                                    item.setPos(xtoplot)
-                                elif item.name() == 'cross_horizontal':
-                                    item.show()
-                                    item.setPos(ytoplot)
-                            elif str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.TextItem.TextItem'>":
-                                if item.textItem.toPlainText()[0] == 'X':
-                                    item.show()
-                                    item.setText('X : '+str(round(xtoplot,roundvalue)))
-                                    item.setPos(xtoplot,range[1][0] )
-                                elif item.textItem.toPlainText()[0] == 'Y':
-                                    item.show()
-                                    item.setText('Y : '+str(round(ytoplot,roundvalue)))
-                                    item.setPos(range[0][0],ytoplot )
+                        if not xtoplot is None and not ytoplot is None:
+                            for item in self.dockwidget.plotWdg.allChildItems():
+                                if str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.InfiniteLine.InfiniteLine'>":
+                                    if item.name() == 'cross_vertical':
+                                        item.show()
+                                        item.setPos(xtoplot)
+                                    elif item.name() == 'cross_horizontal':
+                                        item.show()
+                                        item.setPos(ytoplot)
+                                elif str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.TextItem.TextItem'>":
+                                    if item.textItem.toPlainText()[0] == 'X':
+                                        item.show()
+                                        item.setText('X : '+str(round(xtoplot,roundvalue)))
+                                        item.setPos(xtoplot,range[1][0] )
+                                    elif item.textItem.toPlainText()[0] == 'Y':
+                                        item.show()
+                                        item.setText('Y : '+str(round(ytoplot,roundvalue)))
+                                        item.setPos(range[0][0],ytoplot )
                                     
 
                                     
                                     
                     #tracking part
-                    if self.doTracking:
+                    if self.doTracking and not xtoplot is None and not ytoplot is None:
                         i=1
                         while  i < len(self.tabmouseevent) and xtoplot > self.tabmouseevent[i][0] and xtoplot < self.tabmouseevent[-1][0] :
                             i=i+1
