@@ -51,6 +51,7 @@ class ProfilePlugin:
         #self.wdg = None
         #self.tool = None
         #self.lastFreeHandPoints = []
+        self.canvas.mapToolSet.connect(self.mapToolChanged)
 
 
     def initGui(self):
@@ -70,6 +71,11 @@ class ProfilePlugin:
     def unload(self):
         try:
             self.profiletool.dockwidget.close()
+        except:
+            pass
+            
+        try:
+            self.canvas.mapToolSet.disconnect(self.mapToolChanged)
         except:
             pass
         
@@ -95,10 +101,14 @@ class ProfilePlugin:
         self.dockOpened = False
         self.profiletool.rubberband.reset(self.profiletool.polygon)
         self.profiletool.rubberbandpoint.hide()
+        self.canvas.unsetMapTool(self.profiletool.toolrenderer.tool)
         self.canvas.setMapTool(self.profiletool.saveTool)
+
         self.iface.mainWindow().statusBar().showMessage( "" )
         
-        
+    def mapToolChanged(self,newtool,oldtool = None):
+        pass
+        #print('maptoolchanged',newtool,oldtool)
             
     def about(self):
         from ui.dlgabout import DlgAbout

@@ -23,7 +23,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 #---------------------------------------------------------------------
-
+import qgis
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.Qt import *
@@ -71,16 +71,20 @@ class ProfileToolCore(QWidget):
         #The line information
         self.pointstoDraw = None
         #he renderer for temporary polyline
-        self.toolrenderer = ProfiletoolMapToolRenderer(self)
+        #self.toolrenderer = ProfiletoolMapToolRenderer(self)
+        self.toolrenderer = None
         #the maptool previously loaded
-        self.saveTool = self.iface.mapCanvas().mapTool()            #Save the standard mapttool for restoring it at the end
+        self.saveTool = None                #Save the standard mapttool for restoring it at the end
+        
         
     def activateProfileMapTool(self):
+        self.saveTool = self.iface.mapCanvas().mapTool()            #Save the standard mapttool for restoring it at the end
         #Listeners of mouse
+        self.toolrenderer = ProfiletoolMapToolRenderer(self)
         self.toolrenderer.connectTool()
         #init the mouse listener comportement and save the classic to restore it on quit
         self.iface.mapCanvas().setMapTool(self.toolrenderer.tool)
-        
+        self.dockwidget.selectionMethod(self.dockwidget.comboBox.currentIndex())
 
 
     #******************************************************************************************
@@ -127,8 +131,16 @@ class ProfileToolCore(QWidget):
     # remove layers which were removed from QGIS
     def removeClosedLayers(self, model1):
         qgisLayerNames = []
-        for i in range(0, self.iface.mapCanvas().layerCount()):
-                qgisLayerNames.append(self.iface.mapCanvas().layer(i).name())
+        if int(qgis.PyQt.QtCore.QT_VERSION_STR[0]) == 4 :    #qgis2
+            qgisLayerNames = [  layer.name()    for layer in self.iface.legendInterface().layers()]
+            """
+            for i in range(0, self.iface.mapCanvas().layerCount()):
+                    qgisLayerNames.append(self.iface.mapCanvas().layer(i).name())
+            """
+        elif int(qgis.PyQt.QtCore.QT_VERSION_STR[0]) == 5 :    #qgis3
+            qgisLayerNames = [  layer.name()    for layer in qgis.core.QgsProject().instance().mapLayers().values()]
+            
+        #print('qgisLayerNames',qgisLayerNames)
         for i in range(0 , model1.rowCount()):
             layerName = model1.item(i,2).data(Qt.EditRole)
             if not layerName in qgisLayerNames:

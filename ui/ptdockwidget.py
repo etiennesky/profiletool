@@ -187,6 +187,8 @@ class PTDockWidget(QDockWidget, FormClass):
             self.plotWdg = PlottingTool().changePlotWidget("PyQtGraph", self.frame_for_plot)
             layout.addWidget(self.plotWdg)
             self.TYPE = "PyQtGraph"
+            self.cbxSaveAs.clear()
+            self.cbxSaveAs.addItems(['PNG','SVG'])
             
         elif library == "Qwt5":
             self.stackedWidget.setCurrentIndex(0)
@@ -229,7 +231,8 @@ class PTDockWidget(QDockWidget, FormClass):
                 #mpltoolbar = matplotlib.backends.backend_qt5agg.NavigationToolbar2QTAgg(self.plotWdg, self.frame_for_plot)
                 pass
             self.TYPE = "Matplotlib"
-            
+            self.cbxSaveAs.clear()
+            self.cbxSaveAs.addItems(['PDF','PNG','SVG','print (PS)'])
             
     #********************************************************************************
     #graph things ****************************************************************
@@ -261,53 +264,56 @@ class PTDockWidget(QDockWidget, FormClass):
             
             
     def reScalePlot(self, param):                         # called when a spinbox value changed
-        self.disconnectPlotRangechanged()
-        if type(param) == bool:
-            if self.plotlibrary == 'PyQtGraph':
-                self.plotWdg.getViewBox().autoRange( items=self.plotWdg.getPlotItem().listDataItems())
-                self.plotRangechanged()
+            
+        if type(param) == bool: #comes from button
+            PlottingTool().reScalePlot(self, self.profiletoolcore.profiles, self.cboLibrary.currentText () , True)
         
-        if self.sbMinVal.value() == self.sbMaxVal.value() == 0:
-            # don't execute it on init
-            pass
-        else:
-            #print('rescale',self.sbMinVal.value(),self.sbMaxVal.value())
-            PlottingTool().reScalePlot(self, self.profiletoolcore.profiles, self.cboLibrary.currentText () )
-        self.connectPlotRangechanged()
+        else:   #spinboxchanged
+            
+            if self.sbMinVal.value() == self.sbMaxVal.value() == 0:
+                # don't execute it on init
+                pass
+            else:
+                #print('rescale',self.sbMinVal.value(),self.sbMaxVal.value())
+                PlottingTool().reScalePlot(self, self.profiletoolcore.profiles, self.cboLibrary.currentText () )
+                
+                
         
     def showCursor(self,int1):
-        if int1 == 2 :
-            self.showcursor = True
-            self.profiletoolcore.doTracking = bool(self.checkBox_mpl_tracking.checkState() )
-            self.checkBox_mpl_tracking.setEnabled(True)
-            for item in self.plotWdg.allChildItems():
-                if str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.InfiniteLine.InfiniteLine'>":
-                    if item.name() == 'cross_vertical':
-                        item.show()
-                    elif item.name() == 'cross_horizontal':
-                        item.show()
-                elif str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.TextItem.TextItem'>":
-                    if item.textItem.toPlainText()[0] == 'X':
-                        item.show()
-                    elif item.textItem.toPlainText()[0] == 'Y':
-                        item.show()
-        elif int1 == 0 :
-            self.showcursor = False
-            self.profiletoolcore.doTracking = False
-            self.checkBox_mpl_tracking.setEnabled(False)
-            self.profiletoolcore.rubberbandpoint.hide()
-            
-            for item in self.plotWdg.allChildItems():
-                if str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.InfiniteLine.InfiniteLine'>":
-                    if item.name() == 'cross_vertical':
-                        item.hide()
-                    elif item.name() == 'cross_horizontal':
-                        item.hide()
-                elif str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.TextItem.TextItem'>":
-                    if item.textItem.toPlainText()[0] == 'X':
-                        item.hide()
-                    elif item.textItem.toPlainText()[0] == 'Y':
-                        item.hide()
+        #For pyqtgraph mode
+        if self.plotlibrary == 'PyQtGraph':
+            if int1 == 2 :
+                self.showcursor = True
+                self.profiletoolcore.doTracking = bool(self.checkBox_mpl_tracking.checkState() )
+                self.checkBox_mpl_tracking.setEnabled(True)
+                for item in self.plotWdg.allChildItems():
+                    if str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.InfiniteLine.InfiniteLine'>":
+                        if item.name() == 'cross_vertical':
+                            item.show()
+                        elif item.name() == 'cross_horizontal':
+                            item.show()
+                    elif str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.TextItem.TextItem'>":
+                        if item.textItem.toPlainText()[0] == 'X':
+                            item.show()
+                        elif item.textItem.toPlainText()[0] == 'Y':
+                            item.show()
+            elif int1 == 0 :
+                self.showcursor = False
+                self.profiletoolcore.doTracking = False
+                self.checkBox_mpl_tracking.setEnabled(False)
+                self.profiletoolcore.rubberbandpoint.hide()
+                
+                for item in self.plotWdg.allChildItems():
+                    if str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.InfiniteLine.InfiniteLine'>":
+                        if item.name() == 'cross_vertical':
+                            item.hide()
+                        elif item.name() == 'cross_horizontal':
+                            item.hide()
+                    elif str(type(item)) == "<class 'profiletool.pyqtgraph.graphicsItems.TextItem.TextItem'>":
+                        if item.textItem.toPlainText()[0] == 'X':
+                            item.hide()
+                        elif item.textItem.toPlainText()[0] == 'Y':
+                            item.hide()
             
             
     #********************************************************************************

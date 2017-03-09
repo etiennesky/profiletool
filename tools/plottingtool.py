@@ -175,21 +175,21 @@ class PlottingTool:
     def attachCurves(self, wdg, profiles, model1, library):
     
         if library == "PyQtGraph":
-            
+            #cretae graph
             for i in range(0 , model1.rowCount()):
-
                 tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"])
                 #case line outside the raster
                 y = np.array(profiles[i]["z"], dtype=np.float)  #replace None value by np.nan
                 x = np.array(profiles[i]["l"])
+                wdg.plotWdg.plot(x, y, pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
+            #set it visible or not
+            for i in range(0 , model1.rowCount()):
+                tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"])
+                for item in wdg.plotWdg.getPlotItem().listDataItems():
+                    if item.name() == tmp_name:
+                        item.setVisible(model1.item(i,0).data(Qt.CheckStateRole))
                         
-                if model1.item(i,0).data(Qt.CheckStateRole):
-                    wdg.plotWdg.plot(x, y, pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
-                else:
-                    wdg.plotWdg.plot(x, y, pen=pg.mkPen( model1.item(i,1).data(Qt.BackgroundRole),  width=2) , name = tmp_name)
-                    wdg.plotWdg.getPlotItem().listDataItems()[-1].setVisible(False)
-                    
-                
+            
     
         elif library == "Qwt5" and has_qwt:
             for i in range(0 , model1.rowCount()):
@@ -265,6 +265,7 @@ class PlottingTool:
         
         
     def plotRangechanged(self, wdg, library):
+    
         if library == "PyQtGraph":
             range = wdg.plotWdg.getViewBox().viewRange()
             wdg.disconnectYSpinbox()
@@ -273,7 +274,7 @@ class PlottingTool:
             wdg.connectYSpinbox()
             
 
-    def reScalePlot(self, wdg, profiles, library):                         # called when spinbox value changed
+    def reScalePlot(self, wdg, profiles, library,auto = False):                         # called when spinbox value changed
         if profiles == None:
             return
         minimumValue = wdg.sbMinVal.value()
@@ -296,12 +297,19 @@ class PlottingTool:
 
         if minimumValue < maximumValue:
             if library == "PyQtGraph":
-                #print('ok',minimumValue, maximumValue)
-                wdg.plotWdg.getViewBox().setYRange( minimumValue,maximumValue , padding = 0 )
-        
+                wdg.disconnectPlotRangechanged()
+                if auto:
+                    wdg.plotWdg.getViewBox().autoRange( items=wdg.plotWdg.getPlotItem().listDataItems())
+                    wdg.plotRangechanged()
+                else:
+                    wdg.plotWdg.getViewBox().setYRange( minimumValue,maximumValue , padding = 0 )
+                wdg.connectPlotRangechanged()
+                
+                
             if library == "Qwt5" and has_qwt:
                 wdg.plotWdg.setAxisScale(0,minimumValue,maximumValue,0)
                 wdg.plotWdg.replot()
+                
             elif library == "Matplotlib" and has_mpl:
                 wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
                 wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
@@ -393,6 +401,7 @@ class PlottingTool:
                         curve.setVisible(False)
                     wdg.plotWdg.replot()
                     break
+                    
         if library == "Matplotlib":
             temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
             for i in range(len(temp1)):

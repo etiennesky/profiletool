@@ -155,6 +155,7 @@ class ProfiletoolMapToolRenderer():
         except:
             pass
         self.profiletool.rubberbandpoint.hide()
+        self.canvas.unsetMapTool(self.tool)
         self.canvas.setMapTool(self.profiletool.saveTool)
         self.profiletool.rubberband.reset(self.profiletool.polygon)
         self.iface.mainWindow().statusBar().showMessage( "" )
@@ -228,6 +229,7 @@ class ProfiletoolMapTool(QgsMapTool):
         self.desactivate.emit()
         self.button.setCheckable(False)
         QgsMapTool.deactivate(self)
+
 
 
     def isZoomTool(self):
