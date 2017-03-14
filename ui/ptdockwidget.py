@@ -195,7 +195,7 @@ class PTDockWidget(QDockWidget, FormClass):
             layout.addWidget(self.plotWdg)
             self.TYPE = "PyQtGraph"
             self.cbxSaveAs.clear()
-            self.cbxSaveAs.addItems(['PNG','SVG'])
+            self.cbxSaveAs.addItems(['Graph - PNG','Graph - SVG','3D line - DXF'])
             
         elif library == "Qwt5":
             self.stackedWidget.setCurrentIndex(0)
@@ -239,7 +239,7 @@ class PTDockWidget(QDockWidget, FormClass):
                 pass
             self.TYPE = "Matplotlib"
             self.cbxSaveAs.clear()
-            self.cbxSaveAs.addItems(['PDF','PNG','SVG','print (PS)'])
+            self.cbxSaveAs.addItems(['Graph - PDF','Graph - PNG','Graph - SVG','Graph - print (PS)','3D line - DXF'])
             
     #********************************************************************************
     #graph things ****************************************************************
@@ -558,15 +558,17 @@ class PTDockWidget(QDockWidget, FormClass):
 
     # generic save as button
     def saveAs(self):
-        idx = self.cbxSaveAs.currentIndex()
-        if idx == 0:
+        idx = self.cbxSaveAs.currentText()
+        if idx == 'Graph - PDF':
                 self.outPDF()
-        elif idx == 1:
+        elif idx == 'Graph - PNG':
                 self.outPNG()
-        elif idx == 2:
+        elif idx == 'Graph - SVG':
                 self.outSVG()
-        elif idx == 3:
+        elif idx == 'Graph - print (PS)':
                 self.outPrint()
+        elif idx == '3D line - DXF':
+                self.outDXF()
         else:
             print('plottingtool: invalid index '+str(idx))
 
@@ -581,4 +583,7 @@ class PTDockWidget(QDockWidget, FormClass):
 
     def outPNG(self):
         PlottingTool().outPNG(self.iface, self, self.mdl, self.cboLibrary.currentText ())
+        
+    def outDXF(self):
+        PlottingTool().outDXF(self.iface, self, self.mdl, self.cboLibrary.currentText (), self.profiletoolcore.profiles)
 

@@ -3,13 +3,14 @@ name=Profile tool
 qgisMinimumVersion=2.8
 qgisMaximumVersion=3.99
 description=Plots terrain profile
-about=This tool plots profile lines from raster layers. Supports multiple lines as well as export to svg, pdf, png or csv file. Works also with Matplotlib plotting library.
+about=This tool plots profile lines from raster layers or point vector layer with elevation field. Supports multiple lines as well as graph export to svg, pdf, png or csv file. Supports 3D polyline export to dxf. 
 category=Raster
-version=4.0.0
+version=4.0.1
 author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
 
 changelog=
+    4.0.1 : dxf export of 3D polyline 
     4.0.0 : update for qgis 2 and  and code cleaning
     3.7.1 : Remove ancient code and fix compatibility with QGIS 2.16
     3.7.0 : Mouse tracking and pluginlayer adaptations
@@ -40,7 +41,7 @@ changelog=
     3.0   : -Enable profile along polyline
             -Enable "on the fly" working with raster
 
-tags=raster,profile
+tags=raster,vector, profile
 
 homepage=https://github.com/etiennesky/profiletool
 tracker=https://github.com/etiennesky/profiletool/issues

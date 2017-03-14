@@ -44,6 +44,9 @@ from .. import pyqtgraph as pg
 from ..pyqtgraph import exporters 
 pg.setConfigOption('background', 'w')
 
+from .. import dxfwrite
+from ..dxfwrite import DXFEngine as dxf
+
 has_qwt = False
 has_mpl = False
 try:
@@ -509,3 +512,21 @@ class PlottingTool:
                 QPixmap.grabWidget(wdg.plotWdg).save(fileName, "PNG")
             elif library == "Matplotlib" and has_mpl:
                 wdg.plotWdg.figure.savefig(str(fileName))
+                
+    def outDXF(self, iface, wdg, mdl, library, profiles):
+                    
+        for i in range (0,mdl.rowCount()):
+            if  mdl.item(i,0).data(Qt.CheckStateRole):
+                name = str(mdl.item(i,2).data(Qt.EditRole))
+                #return
+        fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".dxf","dxf (*.dxf)")
+        if fileName:   
+            if isinstance(fileName,tuple):  #pyqt5 case
+                fileName = fileName[0]
+            drawing = dxf.drawing(fileName)
+            for profile in profiles:
+                name = profile['layer'].name()
+                drawing.add_layer(name)
+                points = [(profile['x'][i], profile['y'][i],profile['z'][i]) for i in range(len(profile['l']))]
+                drawing.add(dxf.polyline(points, color=7, layer=name))
+            drawing.save()
