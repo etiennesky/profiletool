@@ -85,11 +85,15 @@ class TableViewTool(QObject):
         if layer2.type() == layer2.PluginLayer and  isProfilable(layer2):
             self.bandoffset = 0
             typename = 'parameter'
-        else:
+        elif layer2.type() == layer2.RasterLayer:
             self.bandoffset = 1
             typename = 'band'
+        elif layer2.type() == layer2.VectorLayer:
+            self.bandoffset = 0
+            typename = 'field'
+
             
-        if layer2.bandCount() != 1:
+        if layer2.type() == layer2.RasterLayer and layer2.bandCount() != 1:
             listband = []
             for i in range(0,layer2.bandCount()):
                 listband.append(str(i+self.bandoffset))
@@ -98,6 +102,22 @@ class TableViewTool(QObject):
                 choosenBand = int(testqt) - self.bandoffset
             else:
                 return 2
+        elif layer2.type() == layer2.VectorLayer :
+            fieldstemp = [field.name() for field in layer2.fields() ]
+            fields = [field.name() for field in layer2.fields() if field.isNumeric()]
+            if len(fields)==0:
+                QMessageBox.warning(iface.mainWindow(), "Profile tool", "Active layer is not a profilable layer")
+                return
+            elif len(fields) == 1 :
+                choosenBand = fieldstemp.index(fields[0])
+                
+            else:
+                testqt, ok = QInputDialog.getItem(iface.mainWindow(), typename + " selector", "Choose the " + typename, fields, False)
+                if ok :
+                    choosenBand = fieldstemp.index(testqt)
+                else:
+                    return 2
+            
         else:
             choosenBand = 0
 
@@ -115,8 +135,18 @@ class TableViewTool(QObject):
         mdl.item(row,2).setFlags(Qt.NoItemFlags) 
         mdl.setData( mdl.index(row, 3, QModelIndex())  ,choosenBand + self.bandoffset)
         mdl.item(row,3).setFlags(Qt.NoItemFlags) 
-        mdl.setData( mdl.index(row, 4, QModelIndex())  ,layer2)
-        mdl.item(row,4).setFlags(Qt.NoItemFlags)
+
+        if layer2.type() == layer2.VectorLayer :
+            #mdl.setData( mdl.index(row, 4, QModelIndex())  ,QVariant(100.0))
+            mdl.setData( mdl.index(row, 4, QModelIndex())  ,100.0)
+            #mdl.item(row,3).setFlags(Qt.NoItemFlags) 
+        else:
+            mdl.setData( mdl.index(row, 4, QModelIndex())  ,'')
+            mdl.item(row,4).setFlags(Qt.NoItemFlags) 
+            
+            
+        mdl.setData( mdl.index(row, 5, QModelIndex())  ,layer2)
+        mdl.item(row,5).setFlags(Qt.NoItemFlags)
         self.layerAddedOrRemoved.emit()
         
         
@@ -161,6 +191,11 @@ class TableViewTool(QObject):
                 booltemp = True
             mdl.setData( mdl.index(temp.row(), 0, QModelIndex())  ,booltemp, Qt.CheckStateRole)
             PlottingTool().changeAttachCurve(wdg, plotlibrary, booltemp, name)
+        elif False and index1.column() == 4:               
+            #name = mdl.item(index1.row(),2).data(Qt.EditRole)   
+            name = mdl.item(index1.row(),4).data(Qt.EditRole)
+            print(name)
+            
         else:
             return
 

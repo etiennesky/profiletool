@@ -33,6 +33,8 @@ from qgis.PyQt.QtGui import *
 from qgis.PyQt.Qt import *
 
 from qgis.core import *
+import qgis
+import numpy as np
 
 import platform
 from math import sqrt
@@ -44,7 +46,7 @@ class DataReaderTool:
     """def __init__(self):
         self.profiles = None"""
 
-    def dataReaderTool(self, iface1,tool1, profile1, pointstoDraw1, fullresolution1):
+    def dataRasterReaderTool(self, iface1,tool1, profile1, pointstoDraw1, fullresolution1):
         """
         Return a dictionnary : {"layer" : layer read,
                                 "band" : band read,
@@ -156,8 +158,209 @@ class DataReaderTool:
         self.iface.mainWindow().statusBar().showMessage("")
 
         return self.profiles
+        
+        
+    def dataVectorReaderTool(self, iface1,tool1, profile1, pointstoDraw1, valbuf1):
+        """
+        compute the projected points
+        return :
+            self.buffergeom : the qgsgeometry of the buffer
+            self.projectedpoints : [..., [(point caracteristics : )
+                                          #index : descripion
+                                          #0 : the pk of the projected point relative to line
+                                          #1 : the x coordinate of the projected point
+                                          #2 : the y coordinate of the projected point
+                                          #3 : the lenght between original point and projected point else -1 if interpolated
+                                          #4 : the segment of the polyline on which the point is projected
+                                          #5 : the interp value if interpfield>-1, else None
+                                          #6 : the x coordinate of the original point if the point is not interpolated, else None
+                                          #6 : the y coordinate of the original point if the point is not interpolated, else None
+                                          #6 : the feature the original point if the point is not interpolated, else None],
+                                           ...]
+        Return a dictionnary : {"layer" : layer read,
+                                "band" : band read,
+                                "l" : array of computed lenght,
+                                "z" : array of computed z
+                                           
+                                           
+        """
+        #self.dialog.label_info.setText('Starting ...')
+        #print 'Starting ...'
+        valbuffer = valbuf1
+        projectedpoints = []
+        buffergeom = None
+        #fet = self.changeFetLineCrs(fet)
+ 
+        #geom = fet.geometry()
+        """
+        polyline = geom.asPolyline()
+        polylineshapely = LineString(polyline)
+        """
+        sourceCrs = QgsCoordinateReferenceSystem( qgis.utils.iface.mapCanvas().mapSettings().destinationCrs() )
+        destCrs = QgsCoordinateReferenceSystem(profile1["layer"].crs())
+        xform = QgsCoordinateTransform(sourceCrs, destCrs)
+        
+        geom =  qgis.core.QgsGeometry.fromPolyline([QgsPoint(point[0], point[1]) for point in pointstoDraw1])
+        geominlayercrs = qgis.core.QgsGeometry(geom)
+        
+        tempresult = geominlayercrs.transform(xform)
+        
+        #geominlayercrs = xform.transform(geom)
+        
+        if True:
+            
+            #self.buffergeom = geom.buffer(valbuffer,12)
+            buffergeom = geom.buffer(valbuffer,12)
+            #buffergeominlayercrs = xform.transform(buffergeom)
+            buffergeominlayercrs = qgis.core.QgsGeometry(buffergeom)
+            tempresult = buffergeominlayercrs.transform(xform)
+            
+            #buffershapely = polylineshapely.buffer(valbuffer)
+            #buffer = QgsGeometry.fromWkt(buffershapely.to_wkt() )
+            #self.buffergeom = QgsGeometry.fromWkt(buffershapely.to_wkt() )
+           
+            
+            #featsPnt = self.pointlayer.getFeatures(QgsFeatureRequest().setFilterRect(self.buffergeom.boundingBox()))
+            featsPnt = profile1["layer"].getFeatures(QgsFeatureRequest().setFilterRect(buffergeominlayercrs.boundingBox()))
+            compt = 0
+            
+            for featPnt in featsPnt:
+                if compt % 500 == 0 :
+                    #self.dialog.label_info.setText('Element ' + str(compt))
+                    #print 'Element ' + str(compt)
+                    pass
+                compt += 1
+                
+                #iterate preselected point features and perform exact check with current polygon
+                #if featPnt.geometry().intersects(self.buffergeom):
+                #point3 = Point(featPnt.geometry().asPoint())
+                point3 = featPnt.geometry()
+                #distpoint = point3.distance(polylineshapely)
+                distpoint = geominlayercrs.distance(point3)
+                
+                if distpoint <= valbuffer :
+                    #point2,dist1,lenght,segment = self.compute_point(fet,featPnt)
+                    #distline = polylineshapely.project(point3)
+                    #pointprojected = polylineshapely.interpolate(distline)
+                    
+                    distline = geominlayercrs.lineLocatePoint(point3)
+                    pointprojected = geominlayercrs.interpolate(distline)
+                    
+                    
+                    if profile1["band"] >-1 :
+                        #interptemp = float(featPnt[self.interpfield])
+                        try:
+                            interptemp = float(featPnt[profile1["band"]])
+                        except:
+                            continue
+                    else:
+                        interptemp = None
+                    
+                    #self.projectedpoints.append([lenght,point2.x, point2.y,dist1,segment ,interptemp, featPnt.geometry().asPoint().x(),featPnt.geometry().asPoint().y(),featPnt ])
+                    projectedpoints.append([distline,pointprojected.asPoint().x(), pointprojected.asPoint().y(),distpoint,0 ,interptemp, featPnt.geometry().asPoint().x(),featPnt.geometry().asPoint().y(),featPnt ])
+                    
+        projectedpoints = np.array(projectedpoints)
+        
+        
+        #perform postprocess computation
+        if len(projectedpoints)>0:
+            projectedpoints = self.removeDuplicateLenght(projectedpoints)
+        
+        """
+        #perform postprocess computation
+        if len(projectedpoints)>0:
+            #Remove duplicate points
+            #self.dialog.label_info.setText('Removing duplicates ...')
+            print 'Removing duplicates ...'
+            self.removeDuplicateLenght()    
+            #Interpolate points beteen porjected points
+            #self.dialog.label_info.setText('Interpoling points ...')
+            print 'Interpoling points ...'
+            self.interpolateNodeofPolyline(geom)
+            if spatialstep > 0 :
+                #discretize points
+                self.dialog.label_info.setText('Discretizing line ...')
+                self.discretizeLine(spatialstep)
+            self.dialog.label_info.setText('Finished')
+            return self.buffergeom, self.projectedpoints
+        else:
+            self.dialog.label_info.setText('Finished with no points')
+            return self.buffergeom, None
+        """
+        
+        
+        
+        
+        
+        
+        
+        
+        profile={}
+        profile["layer"] = profile1["layer"]
+        profile["band"] = profile1["band"]
+        profile['l'] = [projectedpoint[0] for projectedpoint in projectedpoints]
+        profile['z'] = [projectedpoint[5] for projectedpoint in projectedpoints]
+        profile['x'] = [projectedpoint[1] for projectedpoint in projectedpoints]
+        profile['y'] = [projectedpoint[2] for projectedpoint in projectedpoints]
+        
+        #multipolyinlayercrs = qgis.core.QgsGeometry.fromMultiPolyline([[QgsPoint(projectedpoint[1], projectedpoint[2]), QgsPoint(projectedpoint[6], projectedpoint[7]) ] for projectedpoint in projectedpoints])
+        #multipoly = multipolyinlayercrs.transform(xform,qgis.core.QgsCoordinateTransform.ReverseTransform)
+        #multipoly = xform.transform(multipolyinlayercrs, qgis.core.QgsCoordinateTransform.ReverseTransform)
+        multipoly = qgis.core.QgsGeometry.fromMultiPolyline([[xform.transform(QgsPoint(projectedpoint[1], projectedpoint[2]), qgis.core.QgsCoordinateTransform.ReverseTransform) , 
+                                                              xform.transform(QgsPoint(projectedpoint[6], projectedpoint[7]), qgis.core.QgsCoordinateTransform.ReverseTransform)  ] for projectedpoint in projectedpoints])
+        
+        
+        return profile, buffergeom, multipoly
+        
 
 
 
+    def removeDuplicateLenght(self,projectedpoints):
+        
+        projectedpointsfinal = []
+        duplicate = []
+        leninterp = len(projectedpoints)
+        PRECISION = 0.01
+        
+        for i in range(len(projectedpoints)):
+        
+            pointtoinsert = None
+            
+            if i in duplicate:
+                continue
+            else:
+                mindist = np.absolute(projectedpoints[:,0] - projectedpoints[i,0])
+                mindeltaalti = np.absolute(projectedpoints[:,5] - projectedpoints[i,5])
+                mindistindex = np.where(mindist < PRECISION)
+                
+                if False:
+                    minalitindex = np.where(mindeltaalti < PRECISION )
+                    minindex = np.intersect1d(mindistindex[0],minalitindex[0])
+                    #duplicate lenght with same alti : keep only one
+                    if len(minindex) <= 1 :
+                        #pointtoinsert = projectedpoints[i]
+                        projectedpointsfinal.append(projectedpoints[i])
+                    else:
+                        duplicate += minindex.tolist()
+                        #pointtoinsert = projectedpoints[i]
+                        projectedpointsfinal.append(projectedpoints[i])
+                        
+                    #duplicate lenght with different alti : keep the closest
+                    mindistindex = np.setdiff1d(mindistindex[0],minindex,assume_unique=True)
+                    #TO DO
+                        
+                else:
+                    #insert closest point
+                    closestindex = np.argmin(projectedpoints[mindistindex[0],3])
+                    projectedpointsfinal.append(projectedpoints[mindistindex[0][closestindex]])
+                    duplicate += mindistindex[0].tolist()
+
+                
+                
+                
+                    
+        projectedpoints = np.array(projectedpointsfinal)
+        projectedpoints = projectedpoints[projectedpoints[:,0].argsort()]
+        return projectedpoints
 
 

@@ -60,6 +60,12 @@ class ProfileToolCore(QWidget):
         self.rubberbandpoint.setIconSize(5)
         self.rubberbandpoint.setIconType(QgsVertexMarker.ICON_BOX) # or ICON_CROSS, ICON_X
         self.rubberbandpoint.setPenWidth(3)
+        
+        self.rubberbandbuf = QgsRubberBand(self.iface.mapCanvas())
+        self.rubberbandbuf.setWidth(1)
+        self.rubberbandbuf.setColor(QColor(Qt.blue))
+        
+        
         #mouse tracking
         self.doTracking = False
         #the dockwidget
@@ -95,9 +101,10 @@ class ProfileToolCore(QWidget):
     #def calculateProfil(self, points1, model1, library, vertline = True):
     def calculateProfil(self, points1,  vertline = True):
         self.disableMouseCoordonates()
+        self.rubberbandbuf.reset()
         self.pointstoDraw = points1
         
-        self.prepar_points(self.pointstoDraw)   #for mouse tracking
+        #self.prepar_points(self.pointstoDraw)   #for mouse tracking
         self.removeClosedLayers(self.dockwidget.mdl)
         if self.pointstoDraw == None:
             return
@@ -111,15 +118,27 @@ class ProfileToolCore(QWidget):
 
         #calculate profiles
         for i in range(0 , self.dockwidget.mdl.rowCount()):
-            self.profiles.append( {"layer": self.dockwidget.mdl.item(i,4).data(Qt.EditRole) } )
+            self.profiles.append( {"layer": self.dockwidget.mdl.item(i,5).data(Qt.EditRole) } )
             self.profiles[i]["band"] = self.dockwidget.mdl.item(i,3).data(Qt.EditRole)
-            self.profiles[i] = DataReaderTool().dataReaderTool(self.iface, self.toolrenderer.tool, self.profiles[i], self.pointstoDraw, self.dockwidget.checkBox.isChecked())
+            #if self.dockwidget.mdl.item(i,5).data(Qt.EditRole).type() == self.dockwidget.mdl.item(i,5).data(Qt.EditRole).VectorLayer :
+            if self.dockwidget.mdl.item(i,5).data(Qt.EditRole).type() == qgis.core.QgsMapLayer.VectorLayer :
+                self.profiles[i], buffer, multipoly = DataReaderTool().dataVectorReaderTool(self.iface, self.toolrenderer.tool, self.profiles[i], self.pointstoDraw, float(self.dockwidget.mdl.item(i,4).data(Qt.EditRole)) )
+                self.rubberbandbuf.addGeometry(buffer,None)
+                self.rubberbandbuf.addGeometry(multipoly,None)
+                
+            else:
+                self.profiles[i] = DataReaderTool().dataRasterReaderTool(self.iface, self.toolrenderer.tool, self.profiles[i], self.pointstoDraw, self.dockwidget.checkBox.isChecked())
+            
+            
+            
         #plot profiles
         PlottingTool().attachCurves(self.dockwidget, self.profiles, self.dockwidget.mdl, self.dockwidget.plotlibrary)
         PlottingTool().reScalePlot(self.dockwidget, self.profiles, self.dockwidget.plotlibrary)
         #create tab with profile xy
         self.dockwidget.updateCoordinateTab()
         #Mouse tracking
+        
+        
         if self.doTracking :
             self.rubberbandpoint.show()
         self.enableMouseCoordonates(self.dockwidget.plotlibrary)
@@ -285,16 +304,10 @@ class ProfileToolCore(QWidget):
                                     
                     #tracking part
                     if self.doTracking and not xtoplot is None and not ytoplot is None:
-                        i=1
-                        while  i < len(self.tabmouseevent) and xtoplot > self.tabmouseevent[i][0] and xtoplot < self.tabmouseevent[-1][0] :
-                            i=i+1
-                        i=i-1
-                        x = self.tabmouseevent[i][1] +(self.tabmouseevent[i+1][1] - self.tabmouseevent[i][1] )/ ( self.tabmouseevent[i+1][0] - self.tabmouseevent[i][0]  )  *   (xtoplot - self.tabmouseevent[i][0])
-                        y = self.tabmouseevent[i][2] +(self.tabmouseevent[i+1][2] - self.tabmouseevent[i][2] )/ ( self.tabmouseevent[i+1][0] - self.tabmouseevent[i][0]  )  *   (xtoplot - self.tabmouseevent[i][0]) 
+                        geom =  qgis.core.QgsGeometry.fromPolyline([QgsPoint(point[0], point[1]) for point in self.pointstoDraw])
+                        pointprojected = geom.interpolate(xtoplot)
                         self.rubberbandpoint.show() 
-                        
-                        point = QgsPoint( x,y    )
-                        self.rubberbandpoint.setCenter(point)
+                        self.rubberbandpoint.setCenter(pointprojected.asPoint())
 
 
             

@@ -23,13 +23,21 @@
 #
 #---------------------------------------------------------------------
 
+import qgis
+
 def isProfilable(layer):
     """
         Returns True if layer is capable of being profiles,
         else returns False
     """
-
-    return    (layer.type() == layer.RasterLayer) or \
-            (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer') or \
-            (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'selafin_viewer')
+    try:    #qgis3
+        return    (layer.type() == layer.RasterLayer) or \
+                (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer') or \
+                (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'selafin_viewer') or \
+                (layer.type() == layer.VectorLayer and layer.geometryType() == qgis.core.QgsWkbTypes.PointGeometry )
+    except:     #qgis2
+        return    (layer.type() == layer.RasterLayer) or \
+                (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'crayfish_viewer') or \
+                (layer.type() == layer.PluginLayer and layer.LAYER_TYPE == 'selafin_viewer') or \
+                (layer.type() == layer.VectorLayer and layer.geometryType() == qgis.core.QGis.Point )
 

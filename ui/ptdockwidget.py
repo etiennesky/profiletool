@@ -89,15 +89,15 @@ class PTDockWidget(QDockWidget, FormClass):
         #self.sbMaxVal.valueChanged.connect(self.reScalePlot)
         
         #model
-        self.mdl = QStandardItemModel(0, 5)         #the model whitch in are saved layers analysed caracteristics
+        self.mdl = QStandardItemModel(0, 6)         #the model whitch in are saved layers analysed caracteristics
         self.tableView.setModel(self.mdl)
         self.tableView.setColumnWidth(0, 20)
         self.tableView.setColumnWidth(1, 20)
         #self.tableView.setColumnWidth(2, 150)
         hh = self.tableView.horizontalHeader()
         hh.setStretchLastSection(True)
-        self.tableView.setColumnHidden(4 , True)
-        self.mdl.setHorizontalHeaderLabels(["","","Layer","Band"])
+        self.tableView.setColumnHidden(5 , True)
+        self.mdl.setHorizontalHeaderLabels(["","","Layer","Band/Field","Search buffer"])
         self.tableViewTool = TableViewTool()
         
         #other
@@ -109,6 +109,7 @@ class PTDockWidget(QDockWidget, FormClass):
         #Signals
         self.butSaveAs.clicked.connect(self.saveAs)
         self.tableView.clicked.connect(self._onClick)
+        self.mdl.itemChanged.connect(self._onChange)
         self.pushButton_2.clicked.connect(self.addLayer)
         self.pushButton.clicked.connect(self.removeLayer)
         self.comboBox.currentIndexChanged.connect(self.selectionMethod)
@@ -359,6 +360,16 @@ class PTDockWidget(QDockWidget, FormClass):
     def _onClick(self,index1):                    #action when clicking the tableview
         self.tableViewTool.onClick(self.iface, self, self.mdl, self.plotlibrary, index1)
         
+    def _onChange(self,item):
+        #print('data',self.mdl.item(item.row(),4).data(Qt.EditRole))
+        #print('_onChange',self.mdl.item(item.row(),4), item.column(), self.mdl.item(item.row(),5).data(Qt.EditRole).type())
+        if (not self.mdl.item(item.row(),5) is None 
+                and item.column() == 4 
+                and self.mdl.item(item.row(),5).data(Qt.EditRole).type() == qgis.core.QgsMapLayer.VectorLayer
+                and len(self.profiletoolcore.toolrenderer.lastFreeHandPoints) > 1):
+            
+            self.profiletoolcore.calculateProfil(self.profiletoolcore.toolrenderer.lastFreeHandPoints)
+        
         
         
     #********************************************************************************
@@ -380,6 +391,7 @@ class PTDockWidget(QDockWidget, FormClass):
         self.groupBox = []
         self.profilePushButton = []
         self.coordsPushButton = []
+        self.tolayerPushButton = []
         self.tableView = []
         self.verticalLayout = []
         for i in range(0 , self.mdl.rowCount()):
@@ -444,8 +456,25 @@ class PTDockWidget(QDockWidget, FormClass):
             except: #qgis3
                 self.coordsPushButton[i].setText(QApplication.translate("GroupBox", "Copy to clipboard (with coordinates)", None))
                 
+            #button to copy to clipboard with coordinates
+            self.tolayerPushButton.append(QPushButton(self.groupBox[i]))
+            sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            sizePolicy.setHorizontalStretch(0)
+            sizePolicy.setVerticalStretch(0)
+            sizePolicy.setHeightForWidth(self.tolayerPushButton[i].sizePolicy().hasHeightForWidth())
+            self.tolayerPushButton[i].setSizePolicy(sizePolicy)
+            try:    #qgis2
+                self.tolayerPushButton[i].setText(QApplication.translate("GroupBox", "Create Temporary layer", None, QApplication.UnicodeUTF8))
+            except: #qgis3
+                self.tolayerPushButton[i].setText(QApplication.translate("GroupBox", "Create Temporary layer", None))
+                
+            
+                
             self.coordsPushButton[i].setObjectName(str(i))
             self.horizontalLayout.addWidget(self.coordsPushButton[i])
+            
+            self.tolayerPushButton[i].setObjectName(str(i))
+            self.horizontalLayout.addWidget(self.tolayerPushButton[i])
 
             self.horizontalLayout.addStretch(0)
             self.verticalLayout[i].addLayout(self.horizontalLayout)
@@ -454,6 +483,7 @@ class PTDockWidget(QDockWidget, FormClass):
             
             self.profilePushButton[i].clicked.connect(self.copyTable)
             self.coordsPushButton[i].clicked.connect(self.copyTableAndCoords)
+            self.tolayerPushButton[i].clicked.connect(self.createTemporaryLayer)
             
             
             
@@ -473,6 +503,42 @@ class PTDockWidget(QDockWidget, FormClass):
             text += str(self.profiletoolcore.profiles[nr]["l"][i]) + "\t" + str(self.profiletoolcore.profiles[nr]["x"][i]) + "\t"\
                  + str(self.profiletoolcore.profiles[nr]["y"][i]) + "\t" + str(self.profiletoolcore.profiles[nr]["z"][i]) + "\n"
         self.clipboard.setText(text)
+        
+        
+    def createTemporaryLayer(self):
+        nr = int( self.sender().objectName() )
+        type = "Point?crs="+str(self.profiletoolcore.profiles[nr]["layer"].crs().authid()) 
+        name = 'ProfileTool_'+str(self.profiletoolcore.profiles[nr]['layer'].name())
+        vl = QgsVectorLayer(type, name, "memory")
+        pr = vl.dataProvider()
+        vl.startEditing()
+        # add fields
+        #pr.addAttributes([QgsField("PointID", QVariant.Int)])
+        pr.addAttributes([QgsField("Value", QVariant.Double) ])
+        vl.updateFields()
+        #Add features to layer
+        for i in range( len(self.profiletoolcore.profiles[nr]["l"]) ):
+        
+            fet = QgsFeature(vl.fields())
+            #set geometry
+            fet.setGeometry(QgsGeometry.fromPoint(QgsPoint(self.profiletoolcore.profiles[nr]['x'][i],self.profiletoolcore.profiles[nr]['y'][i])))
+            #set attributes
+            fet.setAttributes( [self.profiletoolcore.profiles[nr]["z"][i]] )
+            pr.addFeatures([fet])
+        vl.commitChanges()
+        #labeling/enabled
+        if False:
+            labelsettings = vl.labeling().settings()
+            labelsettings.enabled = True
+        
+        #vl.setCustomProperty("labeling/enabled", "true")
+        #show layer
+        try:    #qgis2
+            qgis.core.QgsMapLayerRegistry.instance().addMapLayer(vl)
+        except:     #qgis3
+            qgis.core.QgsProject().instance().addMapLayer(vl)
+        
+        
         
     #********************************************************************************
     #other things ****************************************************************

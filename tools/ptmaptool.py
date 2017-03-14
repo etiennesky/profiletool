@@ -91,6 +91,7 @@ class ProfiletoolMapToolRenderer():
                 self.pointstoDraw = []
                 self.pointstoCal = []
                 self.profiletool.rubberband.reset(self.profiletool.polygon)
+                self.profiletool.rubberbandbuf.reset()
                 self.profiletool.rubberbandpoint.hide()
             else:
                 self.cleaning()
@@ -116,6 +117,7 @@ class ProfiletoolMapToolRenderer():
             else :
                 if len(self.pointstoDraw) == 0:
                     self.profiletool.rubberband.reset(self.profiletool.polygon)
+                    self.profiletool.rubberbandbuf.reset()
                 self.pointstoDraw += newPoints
         if self.profiletool.dockwidget.selectionmethod == 1:
             result = SelectLineTool().getPointTableFromSelectedLine(self.iface, self.tool, newPoints, self.layerindex, self.previousLayer , self.pointstoDraw)
@@ -158,6 +160,7 @@ class ProfiletoolMapToolRenderer():
         self.canvas.unsetMapTool(self.tool)
         self.canvas.setMapTool(self.profiletool.saveTool)
         self.profiletool.rubberband.reset(self.profiletool.polygon)
+        self.profiletool.rubberbandbuf.reset()
         self.iface.mainWindow().statusBar().showMessage( "" )
         
             

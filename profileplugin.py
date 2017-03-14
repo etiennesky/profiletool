@@ -100,6 +100,7 @@ class ProfilePlugin:
     def cleaning(self):  
         self.dockOpened = False
         self.profiletool.rubberband.reset(self.profiletool.polygon)
+        self.profiletool.rubberbandbuf.reset()
         self.profiletool.rubberbandpoint.hide()
         self.canvas.unsetMapTool(self.profiletool.toolrenderer.tool)
         self.canvas.setMapTool(self.profiletool.saveTool)
