@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>771</width>
-    <height>397</height>
+    <width>694</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -162,26 +162,25 @@
                 </widget>
                </item>
                <item>
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
                 <widget class="QStackedWidget" name="stackedWidget">
                  <property name="currentIndex">
                   <number>0</number>
                  </property>
                  <widget class="QWidget" name="page">
-                  <layout class="QHBoxLayout" name="horizontalLayout_4">
-                   <item>
-                    <spacer name="horizontalSpacer_2">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>0</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4"/>
                  </widget>
                 </widget>
                </item>

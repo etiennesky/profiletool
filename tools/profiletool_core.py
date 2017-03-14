@@ -196,7 +196,10 @@ class ProfileToolCore(QWidget):
                 self.cid = self.dockwidget.plotWdg.mpl_connect('motion_notify_event', self.mouseevent_mpl)
             elif int1 == 0 :
                 self.doTracking = False
-                self.dockwidget.plotWdg.mpl_disconnect(self.cid)
+                try:
+                    self.dockwidget.plotWdg.mpl_disconnect(self.cid)
+                except:
+                    pass
                 self.rubberbandpoint.hide()
                 try:
                     if self.vline:
@@ -220,6 +223,7 @@ class ProfileToolCore(QWidget):
             xdata = float(event.xdata)
             self.vline = self.dockwidget.plotWdg.figure.get_axes()[0].axvline(xdata,linewidth=2, color = 'k')
             self.dockwidget.plotWdg.draw()
+            """
             i=1
             while  i < len(self.tabmouseevent) and xdata > self.tabmouseevent[i][0] :
                 i=i+1
@@ -229,6 +233,13 @@ class ProfileToolCore(QWidget):
             self.rubberbandpoint.show() 
             point = QgsPoint( x,y )
             self.rubberbandpoint.setCenter(point)
+            """
+            if not self.pointstoDraw is None:
+                geom =  qgis.core.QgsGeometry.fromPolyline([QgsPoint(point[0], point[1]) for point in self.pointstoDraw])
+                pointprojected = geom.interpolate(xdata)
+                self.rubberbandpoint.show() 
+                self.rubberbandpoint.setCenter(pointprojected.asPoint())
+            
             
             
     def enableMouseCoordonates(self,library):

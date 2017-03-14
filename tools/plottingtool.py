@@ -230,8 +230,7 @@ class PlottingTool:
             
         elif library == "Matplotlib" and has_mpl:
             for i in range(0 , model1.rowCount()):
-
-                tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"]+1)
+                tmp_name = ("%s#%d") % (profiles[i]["layer"].name(), profiles[i]["band"])
                 if model1.item(i,0).data(Qt.CheckStateRole):
                     wdg.plotWdg.figure.get_axes()[0].plot(profiles[i]["l"], profiles[i]["z"], gid = tmp_name, linewidth = 3, visible = True)
                 else:
@@ -311,9 +310,13 @@ class PlottingTool:
                 wdg.plotWdg.replot()
                 
             elif library == "Matplotlib" and has_mpl:
-                wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
-                wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
-                wdg.plotWdg.draw()
+                if auto:
+                    wdg.sbMaxVal.setValue(wdg.sbMinVal.value()) 
+                    self.reScalePlot(wdg, profiles, library)
+                else:
+                    wdg.plotWdg.figure.get_axes()[0].set_ybound(minimumValue,maximumValue)
+                    wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
+                    wdg.plotWdg.draw()
 
 
     def clearData(self, wdg, profiles, library):                             # erase one of profiles
@@ -369,12 +372,14 @@ class PlottingTool:
                     curve.setPen(QPen(color1, 3))
                     wdg.plotWdg.replot()
                     # break  # Don't break as there may be multiple curves with a common name (segments separated with None values)
+                    
         if library == "Matplotlib":
             temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
             for i in range(len(temp1)):
                 if name == str(temp1[i].get_gid()):
                     temp1[i].set_color((color1.red() / 255.0 , color1.green() / 255.0 , color1.blue() / 255.0 ,  color1.alpha() / 255.0 ))
-                    #wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
+                    wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
+                    wdg.plotWdg.figure.canvas.draw()
                     wdg.plotWdg.draw()
                     break
 
@@ -403,6 +408,7 @@ class PlottingTool:
                     break
                     
         if library == "Matplotlib":
+            
             temp1 = wdg.plotWdg.figure.get_axes()[0].get_lines()
             for i in range(len(temp1)):
                 if name == str(temp1[i].get_gid()):
@@ -411,7 +417,9 @@ class PlottingTool:
                     else:
                         temp1[i].set_visible(False)
                     wdg.plotWdg.figure.get_axes()[0].redraw_in_frame()
+                    wdg.plotWdg.figure.canvas.draw()
                     wdg.plotWdg.draw()
+                    
                     break
 
 

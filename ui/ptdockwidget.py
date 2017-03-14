@@ -159,8 +159,10 @@ class PTDockWidget(QDockWidget, FormClass):
     def changePlotLibrary(self, item):
         self.plotlibrary = self.cboLibrary.itemText(item)
         self.addPlotWidget(self.plotlibrary)
+        
         if self.plotlibrary == 'PyQtGraph':
             self.checkBox_mpl_tracking.setEnabled(True)
+            self.checkBox_showcursor.setEnabled(True)
             self.checkBox_mpl_tracking.setCheckState(2)
             self.profiletoolcore.activateMouseTracking(2)
             self.checkBox_mpl_tracking.stateChanged.connect(self.profiletoolcore.activateMouseTracking) 
@@ -168,7 +170,11 @@ class PTDockWidget(QDockWidget, FormClass):
             
         elif self.plotlibrary == 'Matplotlib':
             self.checkBox_mpl_tracking.setEnabled(True)
+            self.checkBox_showcursor.setEnabled(False)
+            self.checkBox_mpl_tracking.setCheckState(2)
+            self.profiletoolcore.activateMouseTracking(2)
             self.checkBox_mpl_tracking.stateChanged.connect(self.profiletoolcore.activateMouseTracking) 
+            
         else:
             self.checkBox_mpl_tracking.setCheckState(0)
             self.checkBox_mpl_tracking.setEnabled(False)
