@@ -184,18 +184,10 @@ class DataReaderTool:
                                            
                                            
         """
-        #self.dialog.label_info.setText('Starting ...')
-        #print 'Starting ...'
         valbuffer = valbuf1
         projectedpoints = []
         buffergeom = None
-        #fet = self.changeFetLineCrs(fet)
- 
-        #geom = fet.geometry()
-        """
-        polyline = geom.asPolyline()
-        polylineshapely = LineString(polyline)
-        """
+
         sourceCrs = QgsCoordinateReferenceSystem( qgis.utils.iface.mapCanvas().mapSettings().destinationCrs() )
         destCrs = QgsCoordinateReferenceSystem(profile1["layer"].crs())
         xform = QgsCoordinateTransform(sourceCrs, destCrs)
@@ -205,96 +197,42 @@ class DataReaderTool:
         
         tempresult = geominlayercrs.transform(xform)
         
-        #geominlayercrs = xform.transform(geom)
+        buffergeom = geom.buffer(valbuffer,12)
+        buffergeominlayercrs = qgis.core.QgsGeometry(buffergeom)
+        tempresult = buffergeominlayercrs.transform(xform)
         
-        if True:
-            
-            #self.buffergeom = geom.buffer(valbuffer,12)
-            buffergeom = geom.buffer(valbuffer,12)
-            #buffergeominlayercrs = xform.transform(buffergeom)
-            buffergeominlayercrs = qgis.core.QgsGeometry(buffergeom)
-            tempresult = buffergeominlayercrs.transform(xform)
-            
-            #buffershapely = polylineshapely.buffer(valbuffer)
-            #buffer = QgsGeometry.fromWkt(buffershapely.to_wkt() )
-            #self.buffergeom = QgsGeometry.fromWkt(buffershapely.to_wkt() )
-           
-            
-            #featsPnt = self.pointlayer.getFeatures(QgsFeatureRequest().setFilterRect(self.buffergeom.boundingBox()))
-            featsPnt = profile1["layer"].getFeatures(QgsFeatureRequest().setFilterRect(buffergeominlayercrs.boundingBox()))
-            compt = 0
-            
-            for featPnt in featsPnt:
-                if compt % 500 == 0 :
-                    #self.dialog.label_info.setText('Element ' + str(compt))
-                    #print 'Element ' + str(compt)
-                    pass
-                compt += 1
-                
-                #iterate preselected point features and perform exact check with current polygon
-                #if featPnt.geometry().intersects(self.buffergeom):
-                #point3 = Point(featPnt.geometry().asPoint())
-                point3 = featPnt.geometry()
-                #distpoint = point3.distance(polylineshapely)
-                distpoint = geominlayercrs.distance(point3)
-                
-                if distpoint <= valbuffer :
-                    #point2,dist1,lenght,segment = self.compute_point(fet,featPnt)
-                    #distline = polylineshapely.project(point3)
-                    #pointprojected = polylineshapely.interpolate(distline)
-                    
-                    distline = geominlayercrs.lineLocatePoint(point3)
-                    pointprojected = geominlayercrs.interpolate(distline)
-                    
-                    
-                    if profile1["band"] >-1 :
-                        #interptemp = float(featPnt[self.interpfield])
-                        try:
-                            interptemp = float(featPnt[profile1["band"]])
-                        except:
-                            continue
-                    else:
-                        interptemp = None
-                    
-                    #self.projectedpoints.append([lenght,point2.x, point2.y,dist1,segment ,interptemp, featPnt.geometry().asPoint().x(),featPnt.geometry().asPoint().y(),featPnt ])
-                    projectedpoints.append([distline,pointprojected.asPoint().x(), pointprojected.asPoint().y(),distpoint,0 ,interptemp, featPnt.geometry().asPoint().x(),featPnt.geometry().asPoint().y(),featPnt ])
+        featsPnt = profile1["layer"].getFeatures(QgsFeatureRequest().setFilterRect(buffergeominlayercrs.boundingBox()))
+        
+        for featPnt in featsPnt:
+            #iterate preselected point features and perform exact check with current polygon
+            point3 = featPnt.geometry()
+            distpoint = geominlayercrs.distance(point3)
+            if distpoint <= valbuffer :
+                distline = geominlayercrs.lineLocatePoint(point3)
+                pointprojected = geominlayercrs.interpolate(distline)
+                if profile1["band"] >-1 :
+                    try:
+                        interptemp = float(featPnt[profile1["band"]])
+                    except:
+                        continue
+                else:
+                    interptemp = None
+                projectedpoints.append([distline,pointprojected.asPoint().x(), pointprojected.asPoint().y(),distpoint,0 ,interptemp, featPnt.geometry().asPoint().x(),featPnt.geometry().asPoint().y(),featPnt ])
                     
         projectedpoints = np.array(projectedpoints)
         
         
         #perform postprocess computation
+        
         if len(projectedpoints)>0:
+            #remove duplicates
             projectedpoints = self.removeDuplicateLenght(projectedpoints)
-        
-        """
-        #perform postprocess computation
-        if len(projectedpoints)>0:
-            #Remove duplicate points
-            #self.dialog.label_info.setText('Removing duplicates ...')
-            print 'Removing duplicates ...'
-            self.removeDuplicateLenght()    
-            #Interpolate points beteen porjected points
-            #self.dialog.label_info.setText('Interpoling points ...')
-            print 'Interpoling points ...'
-            self.interpolateNodeofPolyline(geom)
-            if spatialstep > 0 :
-                #discretize points
-                self.dialog.label_info.setText('Discretizing line ...')
-                self.discretizeLine(spatialstep)
-            self.dialog.label_info.setText('Finished')
-            return self.buffergeom, self.projectedpoints
-        else:
-            self.dialog.label_info.setText('Finished with no points')
-            return self.buffergeom, None
-        """
+            #interpolate value at nodes of polyline
+            projectedpoints = self.interpolateNodeofPolyline(geominlayercrs,projectedpoints)
         
         
         
-        
-        
-        
-        
-        
+        #preparing return value
         profile={}
         profile["layer"] = profile1["layer"]
         profile["band"] = profile1["band"]
@@ -303,9 +241,6 @@ class DataReaderTool:
         profile['x'] = [projectedpoint[1] for projectedpoint in projectedpoints]
         profile['y'] = [projectedpoint[2] for projectedpoint in projectedpoints]
         
-        #multipolyinlayercrs = qgis.core.QgsGeometry.fromMultiPolyline([[QgsPoint(projectedpoint[1], projectedpoint[2]), QgsPoint(projectedpoint[6], projectedpoint[7]) ] for projectedpoint in projectedpoints])
-        #multipoly = multipolyinlayercrs.transform(xform,qgis.core.QgsCoordinateTransform.ReverseTransform)
-        #multipoly = xform.transform(multipolyinlayercrs, qgis.core.QgsCoordinateTransform.ReverseTransform)
         multipoly = qgis.core.QgsGeometry.fromMultiPolyline([[xform.transform(QgsPoint(projectedpoint[1], projectedpoint[2]), qgis.core.QgsCoordinateTransform.ReverseTransform) , 
                                                               xform.transform(QgsPoint(projectedpoint[6], projectedpoint[7]), qgis.core.QgsCoordinateTransform.ReverseTransform)  ] for projectedpoint in projectedpoints])
         
@@ -323,9 +258,7 @@ class DataReaderTool:
         PRECISION = 0.01
         
         for i in range(len(projectedpoints)):
-        
             pointtoinsert = None
-            
             if i in duplicate:
                 continue
             else:
@@ -338,29 +271,83 @@ class DataReaderTool:
                     minindex = np.intersect1d(mindistindex[0],minalitindex[0])
                     #duplicate lenght with same alti : keep only one
                     if len(minindex) <= 1 :
-                        #pointtoinsert = projectedpoints[i]
                         projectedpointsfinal.append(projectedpoints[i])
                     else:
                         duplicate += minindex.tolist()
-                        #pointtoinsert = projectedpoints[i]
                         projectedpointsfinal.append(projectedpoints[i])
                         
                     #duplicate lenght with different alti : keep the closest
                     mindistindex = np.setdiff1d(mindistindex[0],minindex,assume_unique=True)
-                    #TO DO
-                        
                 else:
                     #insert closest point
                     closestindex = np.argmin(projectedpoints[mindistindex[0],3])
                     projectedpointsfinal.append(projectedpoints[mindistindex[0][closestindex]])
                     duplicate += mindistindex[0].tolist()
-
-                
-                
-                
                     
         projectedpoints = np.array(projectedpointsfinal)
         projectedpoints = projectedpoints[projectedpoints[:,0].argsort()]
         return projectedpoints
 
+        
+    #def interpolateNodeofPolyline(self,geom):
+    def interpolateNodeofPolyline(self,geom,projectedpoints):
+        """
+        projectedpoints : array [[lenght, xprojected ,yprojected ,dist from origignal point, segment of polyline on witch it's projected, atribute (z), xoriginal point, yoriginal point ,original point feature], ... ]
+        """
+        PRECISION = 0.01
+        polyline = geom.asPolyline()
+        projectedpoints = projectedpoints[projectedpoints[:,0].argsort()]
+
+        lenpoly = 0
+        
+        #Write fist and last element if no value
+        if projectedpoints[0][0] != 0:
+            projectedpoints = np.append(projectedpoints,[[0,polyline[0].x(), polyline[0].y(), -1,0,projectedpoints[0][5],polyline[0].x(), polyline[0].y(),projectedpoints[0][8] ]], axis = 0)
+            projectedpoints = projectedpoints[projectedpoints[:,0].argsort()]
+        if projectedpoints[-1][0] != geom.length():
+            projectedpoints = np.append(projectedpoints,[[geom.length(),polyline[-1].x(), polyline[-1].y(), -1,len(polyline)-2,projectedpoints[-1][5],polyline[-1].x(), polyline[-1].y(),projectedpoints[0][8] ]], axis = 0)
+            projectedpoints = projectedpoints[projectedpoints[:,0].argsort()]
+        
+        projectedpointsinterp = []
+        
+        for i,point in enumerate(polyline):
+            if i == 0:
+                continue
+            elif i == len(polyline) -1 :  
+                break
+            else:
+                vertexpoint = geom.vertexAt(i)
+                lenpoly = geom.lineLocatePoint(qgis.core.QgsGeometry.fromPoint(vertexpoint))
+                
+                if min(abs(projectedpoints[:,0] - lenpoly)) < PRECISION :
+                    continue
+                else:
+                    temp1 = self.interpolatePoint(vertexpoint,geom,projectedpoints)
+                    if temp1 != None :
+                        projectedpointsinterp.append( temp1 )
+                            
+        
+        temp = projectedpoints.tolist() + projectedpointsinterp
+        projectedpoints = np.array(temp)
+        
+        projectedpoints = projectedpoints[projectedpoints[:,0].argsort()]
+        
+        return projectedpoints
+        
+        
+    def interpolatePoint(self,vertexpoint,geom,projectedpoints):
+    
+        lenpoly = geom.lineLocatePoint(qgis.core.QgsGeometry.fromPoint(vertexpoint))
+        
+        previouspointindex = np.max(np.where(projectedpoints[:,0]<=lenpoly)[0])
+        nextpointindex = np.min(np.where(projectedpoints[:,0]>=lenpoly)[0])
+        
+        lentot = projectedpoints[nextpointindex][0] - projectedpoints[previouspointindex][0]
+        if lentot>0:
+            lentemp = lenpoly  - projectedpoints[previouspointindex][0]
+            z = projectedpoints[previouspointindex][5] + ( projectedpoints[nextpointindex][5] - projectedpoints[previouspointindex][5] )/ lentot * lentemp
+            #return [lenpoly, point[0], point[1], -1, None ,z,point[0], point[1], None ]
+            return [lenpoly, vertexpoint.x(), vertexpoint.y(), -1, None ,z,vertexpoint.x(), vertexpoint.y(), None ]
+        else :
+            return None
 

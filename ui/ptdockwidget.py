@@ -558,6 +558,7 @@ class PTDockWidget(QDockWidget, FormClass):
 
     # generic save as button
     def saveAs(self):
+        
         idx = self.cbxSaveAs.currentText()
         if idx == 'Graph - PDF':
                 self.outPDF()

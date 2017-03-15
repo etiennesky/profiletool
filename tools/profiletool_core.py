@@ -64,6 +64,11 @@ class ProfileToolCore(QWidget):
         self.rubberbandbuf = QgsRubberBand(self.iface.mapCanvas())
         self.rubberbandbuf.setWidth(1)
         self.rubberbandbuf.setColor(QColor(Qt.blue))
+        #remimber repository for saving
+        if QtCore.QSettings().value("profiletool/lastdirectory") != '':
+            self.loaddirectory = qgis.PyQt.QtCore.QSettings().value("profiletool/lastdirectory")       
+        else:
+            self.loaddirectory = ''
         
         
         #mouse tracking

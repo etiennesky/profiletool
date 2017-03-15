@@ -478,11 +478,21 @@ class PlottingTool:
             if  mdl.item(i,0).data(Qt.CheckStateRole):
                 name = str(mdl.item(i,2).data(Qt.EditRole))
                 #return
-        fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
+        #fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As",wdg.profiletoolcore.loaddirectory,"Profile of " + name + ".svg","Scalable Vector Graphics (*.svg)")
+        fileName = QFileDialog.getSaveFileName(parent = iface.mainWindow(), 
+                                               caption = "Save As", 
+                                               directory = wdg.profiletoolcore.loaddirectory, 
+                                               #filter = "Profile of " + name + ".png", 
+                                               filter = "Scalable Vector Graphics (*.svg)")
+        
         
         if fileName:
             if isinstance(fileName,tuple):  #pyqt5 case
                 fileName = fileName[0]
+                
+            wdg.profiletoolcore.loaddirectory = os.path.dirname(fileName)
+            qgis.PyQt.QtCore.QSettings().setValue("profiletool/lastdirectory", wdg.profiletoolcore.loaddirectory)
+                
             if library == "PyQtGraph":
                 exporter = exporters.SVGExporter(wdg.plotWdg.getPlotItem().scene())
                 #exporter =  pg.exporters.ImageExporter(wdg.plotWdg.getPlotItem()
@@ -501,10 +511,20 @@ class PlottingTool:
             if  mdl.item(i,0).data(Qt.CheckStateRole):
                 name = str(mdl.item(i,2).data(Qt.EditRole))
                 #return
-        fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".png","Portable Network Graphics (*.png)")
+        fileName = QFileDialog.getSaveFileName(parent = iface.mainWindow(), 
+                                               caption = "Save As", 
+                                               directory = wdg.profiletoolcore.loaddirectory, 
+                                               #filter = "Profile of " + name + ".png", 
+                                               filter = "Portable Network Graphics (*.png)")
+        
         if fileName:
+
             if isinstance(fileName,tuple):  #pyqt5 case
                 fileName = fileName[0]
+                
+            wdg.profiletoolcore.loaddirectory = os.path.dirname(fileName)
+            qgis.PyQt.QtCore.QSettings().setValue("profiletool/lastdirectory", wdg.profiletoolcore.loaddirectory)
+                
             if library == "PyQtGraph":
                 exporter =  exporters.ImageExporter(wdg.plotWdg.getPlotItem())
                 exporter.export(fileName)
@@ -519,10 +539,19 @@ class PlottingTool:
             if  mdl.item(i,0).data(Qt.CheckStateRole):
                 name = str(mdl.item(i,2).data(Qt.EditRole))
                 #return
-        fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As","Profile of " + name + ".dxf","dxf (*.dxf)")
+        #fileName = QFileDialog.getSaveFileName(iface.mainWindow(), "Save As",wdg.profiletoolcore.loaddirectory,"Profile of " + name + ".dxf","dxf (*.dxf)")
+        fileName = QFileDialog.getSaveFileName(parent = iface.mainWindow(), 
+                                               caption = "Save As", 
+                                               directory = wdg.profiletoolcore.loaddirectory, 
+                                               #filter = "Profile of " + name + ".png", 
+                                               filter = "dxf (*.dxf)")
         if fileName:   
             if isinstance(fileName,tuple):  #pyqt5 case
                 fileName = fileName[0]
+                
+            wdg.profiletoolcore.loaddirectory = os.path.dirname(fileName)
+            qgis.PyQt.QtCore.QSettings().setValue("profiletool/lastdirectory", wdg.profiletoolcore.loaddirectory)
+                
             drawing = dxf.drawing(fileName)
             for profile in profiles:
                 name = profile['layer'].name()

@@ -10,7 +10,7 @@ author=Borys Jurgiel - Patrice Verchere - Etienne Tourigny
 email=etourigny.dev@gmail.com
 
 changelog=
-    4.0.1 : dxf export of 3D polyline 
+    4.0.1 : dxf export of 3D polyline - bug fix
     4.0.0 : update for qgis 2 and  and code cleaning
     3.7.1 : Remove ancient code and fix compatibility with QGIS 2.16
     3.7.0 : Mouse tracking and pluginlayer adaptations
