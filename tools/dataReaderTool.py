@@ -58,6 +58,8 @@ class DataReaderTool:
         self.profiles = profile1                #profile with layer and band to compute
         self.pointstoDraw = pointstoDraw1        #the polyline to compute
         self.iface = iface1                        #QGis interface to show messages in status bar
+        
+        distance = qgis.core.QgsDistanceArea()
 
         layer = self.profiles["layer"]
         choosenBand = self.profiles["band"]
@@ -184,22 +186,28 @@ class DataReaderTool:
                                            
                                            
         """
+        layercrs = profile1["layer"].crs()
+        mapcanvascrs = qgis.utils.iface.mapCanvas().mapSettings().destinationCrs()
+        
         valbuffer = valbuf1
+            
         projectedpoints = []
         buffergeom = None
 
         sourceCrs = QgsCoordinateReferenceSystem( qgis.utils.iface.mapCanvas().mapSettings().destinationCrs() )
         destCrs = QgsCoordinateReferenceSystem(profile1["layer"].crs())
         xform = QgsCoordinateTransform(sourceCrs, destCrs)
+        xformrev = QgsCoordinateTransform(destCrs, sourceCrs)
         
         geom =  qgis.core.QgsGeometry.fromPolyline([QgsPoint(point[0], point[1]) for point in pointstoDraw1])
         geominlayercrs = qgis.core.QgsGeometry(geom)
-        
         tempresult = geominlayercrs.transform(xform)
         
+
         buffergeom = geom.buffer(valbuffer,12)
         buffergeominlayercrs = qgis.core.QgsGeometry(buffergeom)
         tempresult = buffergeominlayercrs.transform(xform)
+        
         
         featsPnt = profile1["layer"].getFeatures(QgsFeatureRequest().setFilterRect(buffergeominlayercrs.boundingBox()))
         
@@ -217,6 +225,8 @@ class DataReaderTool:
                         continue
                 else:
                     interptemp = None
+                    
+                
                 projectedpoints.append([distline,pointprojected.asPoint().x(), pointprojected.asPoint().y(),distpoint,0 ,interptemp, featPnt.geometry().asPoint().x(),featPnt.geometry().asPoint().y(),featPnt ])
                     
         projectedpoints = np.array(projectedpoints)

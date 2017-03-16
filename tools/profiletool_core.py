@@ -88,6 +88,7 @@ class ProfileToolCore(QWidget):
         self.saveTool = None                #Save the standard mapttool for restoring it at the end
         
         
+        
     def activateProfileMapTool(self):
         self.saveTool = self.iface.mapCanvas().mapTool()            #Save the standard mapttool for restoring it at the end
         #Listeners of mouse

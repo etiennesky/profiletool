@@ -196,11 +196,11 @@ class ProfiletoolMapToolRenderer():
 
 class ProfiletoolMapTool(QgsMapTool):
 
-    moved = QtCore.pyqtSignal(dict)
-    rightClicked = QtCore.pyqtSignal(dict)
-    leftClicked = QtCore.pyqtSignal(dict)
-    doubleClicked = QtCore.pyqtSignal(dict)
-    desactivate = QtCore.pyqtSignal()
+    moved = pyqtSignal(dict)
+    rightClicked = pyqtSignal(dict)
+    leftClicked = pyqtSignal(dict)
+    doubleClicked = pyqtSignal(dict)
+    desactivate = pyqtSignal()
 
     def __init__(self, canvas,button):
         QgsMapTool.__init__(self,canvas)
