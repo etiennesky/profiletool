@@ -23,20 +23,24 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 #---------------------------------------------------------------------
-import qgis
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.Qt import *
-from qgis.PyQt.QtSvg import * # required in some distros
 
+#Qt import
+from qgis.PyQt import uic, QtCore, QtGui
+try:
+    from qgis.PyQt.QtGui import QWidget
+except:
+    from qgis.PyQt.QtWidgets import QWidget
+from qgis.PyQt.QtSvg import * # required in some distros
+#qgis import
+import qgis
 from qgis.core import *
 from qgis.gui import *
-
+#other
 import platform
 import sys
 from math import sqrt
 import numpy as np
-
+#plugin import
 from .dataReaderTool import DataReaderTool
 from .plottingtool import PlottingTool
 from .ptmaptool import ProfiletoolMapTool, ProfiletoolMapToolRenderer
@@ -54,19 +58,19 @@ class ProfileToolCore(QWidget):
         self.polygon = False
         self.rubberband = QgsRubberBand(self.iface.mapCanvas(), self.polygon)
         self.rubberband.setWidth(2)
-        self.rubberband.setColor(QColor(Qt.red))
+        self.rubberband.setColor(QtGui.QColor(QtCore.Qt.red))
         self.rubberbandpoint = QgsVertexMarker(self.iface.mapCanvas())
-        self.rubberbandpoint.setColor(QColor(Qt.red))
+        self.rubberbandpoint.setColor(QtGui.QColor(QtCore.Qt.red))
         self.rubberbandpoint.setIconSize(5)
         self.rubberbandpoint.setIconType(QgsVertexMarker.ICON_BOX) # or ICON_CROSS, ICON_X
         self.rubberbandpoint.setPenWidth(3)
         
         self.rubberbandbuf = QgsRubberBand(self.iface.mapCanvas())
         self.rubberbandbuf.setWidth(1)
-        self.rubberbandbuf.setColor(QColor(Qt.blue))
+        self.rubberbandbuf.setColor(QtGui.QColor(QtCore.Qt.blue))
         #remimber repository for saving
         if QtCore.QSettings().value("profiletool/lastdirectory") != '':
-            self.loaddirectory = qgis.PyQt.QtCore.QSettings().value("profiletool/lastdirectory")       
+            self.loaddirectory = QtCore.QSettings().value("profiletool/lastdirectory")       
         else:
             self.loaddirectory = ''
         
@@ -124,11 +128,11 @@ class ProfileToolCore(QWidget):
 
         #calculate profiles
         for i in range(0 , self.dockwidget.mdl.rowCount()):
-            self.profiles.append( {"layer": self.dockwidget.mdl.item(i,5).data(Qt.EditRole) } )
-            self.profiles[i]["band"] = self.dockwidget.mdl.item(i,3).data(Qt.EditRole)
+            self.profiles.append( {"layer": self.dockwidget.mdl.item(i,5).data(QtCore.Qt.EditRole) } )
+            self.profiles[i]["band"] = self.dockwidget.mdl.item(i,3).data(QtCore.Qt.EditRole)
             #if self.dockwidget.mdl.item(i,5).data(Qt.EditRole).type() == self.dockwidget.mdl.item(i,5).data(Qt.EditRole).VectorLayer :
-            if self.dockwidget.mdl.item(i,5).data(Qt.EditRole).type() == qgis.core.QgsMapLayer.VectorLayer :
-                self.profiles[i], buffer, multipoly = DataReaderTool().dataVectorReaderTool(self.iface, self.toolrenderer.tool, self.profiles[i], self.pointstoDraw, float(self.dockwidget.mdl.item(i,4).data(Qt.EditRole)) )
+            if self.dockwidget.mdl.item(i,5).data(QtCore.Qt.EditRole).type() == qgis.core.QgsMapLayer.VectorLayer :
+                self.profiles[i], buffer, multipoly = DataReaderTool().dataVectorReaderTool(self.iface, self.toolrenderer.tool, self.profiles[i], self.pointstoDraw, float(self.dockwidget.mdl.item(i,4).data(QtCore.Qt.EditRole)) )
                 self.rubberbandbuf.addGeometry(buffer,None)
                 self.rubberbandbuf.addGeometry(multipoly,None)
                 
@@ -156,18 +160,18 @@ class ProfileToolCore(QWidget):
     # remove layers which were removed from QGIS
     def removeClosedLayers(self, model1):
         qgisLayerNames = []
-        if int(qgis.PyQt.QtCore.QT_VERSION_STR[0]) == 4 :    #qgis2
+        if int(QtCore.QT_VERSION_STR[0]) == 4 :    #qgis2
             qgisLayerNames = [  layer.name()    for layer in self.iface.legendInterface().layers()]
             """
             for i in range(0, self.iface.mapCanvas().layerCount()):
                     qgisLayerNames.append(self.iface.mapCanvas().layer(i).name())
             """
-        elif int(qgis.PyQt.QtCore.QT_VERSION_STR[0]) == 5 :    #qgis3
+        elif int(QtCore.QT_VERSION_STR[0]) == 5 :    #qgis3
             qgisLayerNames = [  layer.name()    for layer in qgis.core.QgsProject().instance().mapLayers().values()]
             
         #print('qgisLayerNames',qgisLayerNames)
         for i in range(0 , model1.rowCount()):
-            layerName = model1.item(i,2).data(Qt.EditRole)
+            layerName = model1.item(i,2).data(QtCore.Qt.EditRole)
             if not layerName in qgisLayerNames:
                 self.dockwidget.removeLayer(i)
                 self.removeClosedLayers(model1)

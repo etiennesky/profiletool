@@ -7,8 +7,8 @@ crs1 = vl.crs()
 crs2 = iface.mapCanvas().mapSettings().destinationCrs()
 
 dist = qgis.core.QgsDistanceArea()
-dist.setEllipsoid(qgis.core.QgsProject().instance().ellipsoid())
-dist.setEllipsoidalMode(True)
+#dist.setEllipsoid(qgis.core.QgsProject().instance().ellipsoid())
+#dist.setEllipsoidalMode(True)
 dist.setSourceCrs(crs2)
 
 dist2 = qgis.core.QgsDistanceArea()

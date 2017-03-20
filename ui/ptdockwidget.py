@@ -23,22 +23,22 @@
 #
 #---------------------------------------------------------------------
 
-from qgis.PyQt import uic
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
+#Qt import
+from qgis.PyQt import uic, QtCore, QtGui
 try:
-    from qgis.PyQt.QtWidgets import *
+    from qgis.PyQt.QtGui import QDockWidget
 except:
-    pass
-    
-import platform
-import os
-
+    from qgis.PyQt.QtWidgets import QDockWidget
+#qgis import
 from qgis.core import *
 from qgis.gui import *
-
+#other
+import platform
+import os
+#plugin import
 from ..tools.plottingtool import *
 from ..tools.tableviewtool import TableViewTool
+
 
 try:
     from PyQt4.Qwt5 import *
