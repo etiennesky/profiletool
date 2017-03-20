@@ -29,6 +29,7 @@ try:
     from qgis.PyQt.QtGui import QDockWidget
 except:
     from qgis.PyQt.QtWidgets import QDockWidget
+    
 #qgis import
 from qgis.core import *
 from qgis.gui import *
@@ -72,12 +73,12 @@ class PTDockWidget(QDockWidget, FormClass):
         self.profiletoolcore = profiletoolcore
         self.iface = iface1
         #Apperance
-        self.location = Qt.BottomDockWidgetArea
+        self.location = QtCore.Qt.BottomDockWidgetArea
         minsize = self.minimumSize()
         maxsize = self.maximumSize()
         self.setMinimumSize(minsize)
         self.setMaximumSize(maxsize)
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         
         #init scale widgets
         self.sbMaxVal.setValue(0)
@@ -139,10 +140,10 @@ class PTDockWidget(QDockWidget, FormClass):
     
         if item == 0:
             self.selectionmethod = 0
-            self.profiletoolcore.toolrenderer.tool.setCursor(Qt.CrossCursor)
+            self.profiletoolcore.toolrenderer.tool.setCursor(QtCore.Qt.CrossCursor)
         elif item == 1:
             self.selectionmethod = 1
-            self.profiletoolcore.toolrenderer.tool.setCursor(Qt.PointingHandCursor)
+            self.profiletoolcore.toolrenderer.tool.setCursor(QtCore.Qt.PointingHandCursor)
             self.pointstoDraw = []
             self.pointstoCal = []
             
@@ -209,11 +210,11 @@ class PTDockWidget(QDockWidget, FormClass):
 
             if QT_VERSION < 0X040100:
                 idx = self.cbxSaveAs.model().index(0, 0)
-                self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
+                self.cbxSaveAs.model().setData(idx, QVariant(0), QtCore.Qt.UserRole - 1)
                 self.cbxSaveAs.setCurrentIndex(1)
             if QT_VERSION < 0X040300:
                 idx = self.cbxSaveAs.model().index(1, 0)
-                self.cbxSaveAs.model().setData(idx, QVariant(0), Qt.UserRole - 1)
+                self.cbxSaveAs.model().setData(idx, QVariant(0), QtCore.Qt.UserRole - 1)
                 self.cbxSaveAs.setCurrentIndex(2)
             self.TYPE = "Qwt5"
 
@@ -371,7 +372,7 @@ class PTDockWidget(QDockWidget, FormClass):
         #print('_onChange',self.mdl.item(item.row(),4), item.column(), self.mdl.item(item.row(),5).data(Qt.EditRole).type())
         if (not self.mdl.item(item.row(),5) is None 
                 and item.column() == 4 
-                and self.mdl.item(item.row(),5).data(Qt.EditRole).type() == qgis.core.QgsMapLayer.VectorLayer
+                and self.mdl.item(item.row(),5).data(QtCore.Qt.EditRole).type() == qgis.core.QgsMapLayer.VectorLayer
                 and len(self.profiletoolcore.toolrenderer.lastFreeHandPoints) > 1):
             
             self.profiletoolcore.calculateProfil(self.profiletoolcore.toolrenderer.lastFreeHandPoints)
@@ -426,9 +427,9 @@ class PTDockWidget(QDockWidget, FormClass):
             self.mdl2 = QStandardItemModel(2, column)
             for j in range(len(self.profiletoolcore.profiles[i]["l"])):
                 self.mdl2.setData(self.mdl2.index(0, j, QModelIndex())  ,self.profiletoolcore.profiles[i]["l"][j])
-                self.mdl2.setData(self.mdl2.index(0, j, QModelIndex())  ,font ,Qt.FontRole)
+                self.mdl2.setData(self.mdl2.index(0, j, QModelIndex())  ,font ,QtCore.Qt.FontRole)
                 self.mdl2.setData(self.mdl2.index(1, j, QModelIndex())  ,self.profiletoolcore.profiles[i]["z"][j])
-                self.mdl2.setData(self.mdl2.index(1, j, QModelIndex())  ,font ,Qt.FontRole)
+                self.mdl2.setData(self.mdl2.index(1, j, QModelIndex())  ,font ,QtCore.Qt.FontRole)
             self.tableView[i].verticalHeader().setDefaultSectionSize(18)
             self.tableView[i].horizontalHeader().setDefaultSectionSize(60)
             self.tableView[i].setModel(self.mdl2)
